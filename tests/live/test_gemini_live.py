@@ -63,3 +63,4 @@ def test_live_gemini_research_and_conflict_resolution():
     # Não são a mesma métrica: deve reconhecer NOT_COMPARABLE ou INCONCLUSIVE!
     assert adjudication["verdict"] in ("NOT_COMPARABLE", "INCONCLUSIVE")
     assert adjudication["rubric"]["role_conflict_free"] is True
+

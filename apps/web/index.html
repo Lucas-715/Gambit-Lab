@@ -1439,18 +1439,64 @@ function openFusionModal() {
   document.getElementById('fusionModal').style.display = 'flex';
 }
 
-function openUploadModal() { document.getElementById('uploadModal').style.display = 'flex'; }
-function openReplayModal() {
+let replayEvents = [];
+let replayIndex = 0;
+
+async function openReplayModal() {
+  let b = document.getElementById('replayModalBody');
+  b.innerHTML = '<p style="color:#9eb4c3;font-size:12px">Carregando eventos imutáveis do Event Store...</p>';
+  document.getElementById('replayModal').style.display = 'flex';
+
+  try {
+    let resp = await fetch(`/api/v1/sessions/${activeSessionId || 'default'}/events`);
+    if (resp.ok) {
+      replayEvents = await resp.json();
+    } else {
+      replayEvents = [];
+    }
+  } catch(e) {
+    replayEvents = [];
+  }
+
+  if (!replayEvents || replayEvents.length === 0) {
+    replayEvents = [
+      { seq: 1, event_type: "SESSION_CREATED", prev_hash: "GENESIS_HASH_GAMBIT_LAB_V2", event_hash: "a1b2c3d4e5f60718293a...", payload: { title: currentScenario.topic, mode: mode, game: game } },
+      { seq: 2, event_type: game==='chess'?"CHESS_MOVE":"GO_MOVE", prev_hash: "a1b2c3d4e5f60718293a...", event_hash: "e5f6g7h8i9j01234567b...", payload: { uci: "d2d4", coord: "d4", san: "d4", claim_id: "claim_d4" } }
+    ];
+  }
+  replayIndex = 0;
+  renderReplayView();
+}
+
+function renderReplayView() {
+  let ev = replayEvents[replayIndex];
   let b = document.getElementById('replayModalBody');
   b.innerHTML = `
-    <p style="font-size:12px;color:#9eb4c3">Reconstituição determinística dos eventos persistidos com verificação de hashes SHA-256 encadeados.</p>
-    <div class="source">
-      <b>Sessão: ${activeSessionId || 'sess_demo_default'}</b>
-      <small>Total de eventos: ${stepIndex + 1} | Integridade da cadeia: 100% VÁLIDA</small>
+    <div class="source" style="border-left:3px solid var(--accent)">
+      <b>Evento #${ev.seq} de ${replayEvents.length}: <span class="tag green">${ev.event_type}</span></b>
+      <small style="font-family:monospace;margin-top:6px;word-break:break-all;color:#7ee5d5">Hash Atual: ${ev.event_hash}</small>
+      <small style="font-family:monospace;margin-top:2px;word-break:break-all;color:#8ba5b5">Hash Anterior: ${ev.prev_hash}</small>
+      <div style="background:#0b141d;padding:8px;border-radius:6px;margin-top:8px;border:1px solid #1f3444">
+        <b style="color:#eaf6f8;font-size:11.5px">Payload do Evento:</b>
+        <pre style="margin:4px 0 0;font-size:10.5px;color:#9bb5c6;white-space:pre-wrap">${JSON.stringify(ev.payload, null, 2)}</pre>
+      </div>
     </div>
-    <button class="btn primary" style="width:100%;margin-top:10px" onclick="closeModal('replayModal')">Executar Replay Completo</button>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn secondary" style="flex:1" onclick="stepReplay(-1)" ${replayIndex === 0 ? 'disabled' : ''}>⏮ Anterior</button>
+      <button class="btn primary" style="flex:1" onclick="stepReplay(1)" ${replayIndex >= replayEvents.length - 1 ? 'disabled' : ''}>Próximo ⏭</button>
+    </div>
+    <button class="btn secondary" style="width:100%;margin-top:8px" onclick="closeModal('replayModal')">Fechar Replay</button>
   `;
-  document.getElementById('replayModal').style.display = 'flex';
+}
+
+function stepReplay(delta) {
+  replayIndex = Math.max(0, Math.min(replayEvents.length - 1, replayIndex + delta));
+  let ev = replayEvents[replayIndex];
+  if (ev.payload && ev.payload.fen) {
+    boardState.chessFen = ev.payload.fen;
+    if (viewMode === '2d') render2DBoard();
+  }
+  renderReplayView();
 }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 

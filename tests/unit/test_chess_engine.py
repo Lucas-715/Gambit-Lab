@@ -117,3 +117,62 @@ def test_extreme_case_impasse_da_variante_when_only_escape_is_blocked_capture():
     assert engine.is_game_over
     assert engine.get_game_result() == "IMPASSE_DA_VARIANTE"
     assert "Xeque não resolvido" in res.diagnostic_reason
+
+
+def test_ac21_castling_special_move():
+    """AC-21: Validação de roque curto (O-O) e roque longo (O-O-O)."""
+    # Monta posição onde o roque curto das brancas é legal
+    # White: e1 (K), h1 (R); e2e4, g1f3, f1c4 jogados
+    fen_castle = "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+    engine = EpistemicChessEngine(fen=fen_castle)
+
+    # Executa roque curto: e1g1
+    res = engine.validate_and_apply_move("e1g1")
+    assert res.legal
+    assert not res.is_capture
+    assert res.san == "O-O"
+    assert "RNBQ1RK1" in engine.fen
+
+
+def test_ac21_en_passant_with_epistemic_gate():
+    """AC-21: Captura en passant com verificação de gate epistêmico."""
+    # Posição: Peão branco em e5, Peão preto em d7 joga d7d5.
+    fen_ep = "rnbqkbnr/pppppppp/8/4P3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2"
+    engine = EpistemicChessEngine(fen=fen_ep)
+
+    # Pretas jogam d7d5 (avanço de 2 casas adjacente a e5)
+    res_d5 = engine.validate_and_apply_move("d7d5")
+    assert res_d5.legal
+
+    # Brancas têm captura en passant e5d6
+    assert engine.is_capture_move("e5d6")
+
+    # Tentativa com arbitragem recusada (INCONCLUSIVE)
+    res_blocked = engine.validate_and_apply_move(
+        "e5d6",
+        arbitration_verdict="INCONCLUSIVE",
+        require_epistemic_capture=True
+    )
+    assert res_blocked.epistemic_blocked
+
+    # Tentativa com arbitragem aprovada (REFUTED)
+    res_approved = engine.validate_and_apply_move(
+        "e5d6",
+        arbitration_verdict="REFUTED",
+        require_epistemic_capture=True
+    )
+    assert res_approved.legal
+    assert res_approved.is_capture
+    assert res_approved.captured_piece == "p"
+
+
+def test_ac21_pawn_promotion():
+    """AC-21: Promoção de peão (ex: e7e8q)."""
+    # Posição: Peão branco em e7 pronto para promover em e8
+    fen_prom = "8/4P3/8/8/8/8/k7/7K w - - 0 1"
+    engine = EpistemicChessEngine(fen=fen_prom)
+
+    res = engine.validate_and_apply_move("e7e8q")
+    assert res.legal
+    assert res.san == "e8=Q"
+    assert "Q" in engine.fen

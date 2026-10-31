@@ -76,3 +76,4 @@ def test_quote_mismatch_fails_evidence_assessment():
     # Citação falsa:
     v_false = client.get(f"/api/v1/artifacts/{art_id}/quote", params={"quote": "O céu é verde e quadrado"})
     assert v_false.json()["verified"] is False
+
