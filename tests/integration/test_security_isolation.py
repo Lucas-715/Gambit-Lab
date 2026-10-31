@@ -113,3 +113,4 @@ def test_no_api_key_leak_in_client_and_events():
         evt_str = str(evt)
         assert "GEMINI_API_KEY" not in evt_str
         assert "api_key" not in evt_str.lower() or "not" in evt_str.lower()
+

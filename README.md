@@ -106,7 +106,7 @@ Acesse a aplicação no navegador em:
 
 ## 5. Executando a Bateria de Testes Automatizados
 
-Para executar os 27 testes unitários e de integração (cobrindo as 6 combinações obrigatórias AC-01 a AC-06, FUSION AC-07, integridade de hash SHA-256 e replay AC-18):
+Para executar os 40 testes unitários e de integração (cobrindo as 6 combinações obrigatórias AC-01 a AC-06, lances especiais FIDE AC-21, FUSION AC-07, integridade de hash SHA-256 encadeado, isolamento de cofres privados e fluxo cósmico):
 
 ```bash
 # Definindo PYTHONPATH para a raiz do repositório:
@@ -116,15 +116,39 @@ pytest tests/ -v
 
 ---
 
-## 6. Integridade Tripartida e Regras Fundamentais
+## 6. Gambit Lab Cosmic — Experiência em Duas Fases ("Pergunta Primeiro, Investigação Depois")
 
-1. **Placar do Jogo** (`game_result`): Decidido pelo motor determinístico (`python-chess` ou `GoEngine9x9`). O LLM não pode sobrepor rejeições.
-2. **Cofres Privados**: No debate, cada lado vê somente seus próprios documentos até o início da partida (`LOCKED`), comprovados por manifesto de hashes SHA-256. O árbitro só recebe acesso aos trechos submetidos a julgamento.
-3. **Replay Determinístico**: Reconstitui o histórico de lances e vereditos aplicando os eventos canônicos diretamente sobre os motores formais, **sem chamar o LLM**.
-4. **Política de Fontes**: `own_only` garante zero chamadas de busca externa. `web_opt_in` exige consentimento explícito.
+A interface de usuário adota o paradigma cósmico:
+1. **Fase 1 (Home Screen / Compositor Central)**:
+   - Fundo espacial imersivo com estrelas em Canvas de baixo consumo de CPU e planetas flutuantes.
+   - Caixa de texto central inspirada em assistentes conversacionais modernos, com seletores compactos de Modo (Pesquisa, Debate, Auditoria), Jogo (Xadrez, Go) e Política de Fontes (`own_only` ou `web_opt_in` sinalizado como em desenvolvimento).
+   - Sugestões de cenários pré-configurados (Segurança em IA Autônoma NIST, Debate Demográfico 2030, Auditoria ISO 27001 / OWASP) e upload de arquivos diretamente para o cofre.
+   - Nenhum veredito factual ou selo de auditoria falso é exibido antes da sessão real existir no backend.
+
+2. **Fase 2 (Workspace de Investigação)**:
+   - Transição suave acionada assim que o backend confirma `POST /api/v1/sessions` com status `2xx`.
+   - Cabeçalho com a pergunta real em destaque, botão `✎ Refinar pergunta` (retorno reversível à caixa de busca) e `＋ Nova investigação`.
+   - **Arena do Tabuleiro**: Renderizador WebGL 3D nativo com shaders personalizados e peças esculpidas inspiradas nas silhuetas de alta fidelidade (Rei com Cruz Luminosa em cyan, Dama com coroa de pétalas, Cavalo modelado, Torre com ameias e peões em degraus; realces de lance em âmbar para origem e cyan para destino) ou alternância para **2D Acessível (WCAG AA)**.
+   - **Auditoria em Três Camadas (Problema 1 Solucionado)**:
+     - Camada 1: `integrity_status` (`INTEGRITY_VERIFIED` com hash SHA-256 encadeado).
+     - Camada 2: `source_status` (`SOURCE_VERIFIED` com verificação de citação exata nos bytes do documento ou `NO_SOURCES_ATTACHED`).
+     - Camada 3: `evidence_assessment` (`SUPPORTED`, `REFUTED`, `INSUFFICIENT` ou `HYPOTHESIS`). Sem documentos anexados, o sistema jamais emite `SUPPORTED`.
+   - **Rubrica do Árbitro Epistêmico**: Avaliação em 7 pontos (Identidade, Comparabilidade, Proveniência, Citação, etc.) para debates e auditorias.
+   - **Replay Determinístico do Event Store**: Navegação lance a lance pelo histórico de eventos criptograficamente encadeados sem refazer chamadas ao LLM.
+   - **Pesquisa FUSION**: Síntese unificada, deduplicação de fontes por hash e matriz de divergências entre múltiplos ramos investigativos independentes.
 
 ---
 
-## 7. Licença
+## 7. Integridade Tripartida e Regras Fundamentais
+
+1. **Placar do Jogo** (`game_result`): Decidido pelo motor determinístico (`python-chess` ou `GoEngine9x9`). O LLM não pode sobrepor rejeições.
+2. **Cofres Privados**: No debate, cada lado vê somente seus próprios documentos até o início da partida (`LOCKED`), comprovados por manifesto de hashes SHA-256. Acesso cruzado pré-início é bloqueado com `HTTP 403`.
+3. **Replay Determinístico**: Reconstitui o histórico de lances e vereditos aplicando os eventos canônicos diretamente sobre os motores formais, **sem chamar o LLM**.
+4. **Política de Fontes**: `own_only` garante zero chamadas de busca externa. `web_opt_in` é sinalizado como planejado / em desenvolvimento.
+5. **Segurança de Chaves (BYOK)**: `GEMINI_API_KEY` reside exclusivamente no `.env` do backend, nunca exposta ao JavaScript do navegador nem versionada no repositório.
+
+---
+
+## 8. Licença
 Projeto acadêmico e de engenharia de software distribuído sob a licença MIT.
 

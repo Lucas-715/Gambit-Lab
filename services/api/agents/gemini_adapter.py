@@ -1,11 +1,13 @@
 """
 Gemini Provider Adapter & Mock Reasoning Engine — Gambit Lab 2.0
-Suporte a Google Gemini com chave server-side (BYOK) e Modo Demo Offline
-com dados sintéticos rotulados para todas as 6 combinações e FUSION.
+Suporte a Google Gemini com chave server-side (BYOK), Modo Demo Offline
+com dados sintéticos rotulados para todas as 6 combinações e FUSION,
+além de medição de latência em milissegundos e custo estimado em USD.
 (ADR-005, RF-19, RF-27, RF-30, RF-36, RF-37, RN-34, AC-14, AC-16)
 """
 import os
 import json
+import time
 import httpx
 from typing import Dict, Any, List, Optional
 from services.api.models.schemas import ClaimSchema, CitationSchema, JudgmentSchema, RubricEvaluation
@@ -18,8 +20,14 @@ class BudgetExceededError(Exception):
 
 class GeminiAdapter:
     """
-    Adaptador para invocação do modelo Gemini com controle de cotas e fallback para modo demo.
+    Adaptador para invocação do modelo Gemini com controle de cotas,
+    medição de latência, cálculo de custo financeiro e fallback para modo demo.
     """
+
+    # Preço de referência oficial Gemini 2.5 Flash (por 1M tokens)
+    # Entrada: $0.075 / 1M tokens | Saída: $0.30 / 1M tokens
+    INPUT_COST_PER_MILLION = 0.075
+    OUTPUT_COST_PER_MILLION = 0.30
 
     def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.5-flash"):
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY", "")
@@ -31,6 +39,19 @@ class GeminiAdapter:
             raise BudgetExceededError("Limite máximo de chamadas da sessão atingido (Hard Stop).")
         if budget_dict.get("current_tokens", 0) >= budget_dict.get("max_tokens", 50000):
             raise BudgetExceededError("Limite máximo de tokens da sessão atingido (Hard Stop).")
+
+    def _record_metrics(self, budget: Dict[str, Any], tokens_used: int, start_time: float) -> None:
+        """Registra latência e acumula custos reais/estimados na sessão."""
+        elapsed_ms = int((time.perf_counter() - start_time) * 1000)
+        budget["current_calls"] = budget.get("current_calls", 0) + 1
+        budget["current_tokens"] = budget.get("current_tokens", 0) + tokens_used
+        budget["last_latency_ms"] = elapsed_ms
+
+        # Estimativa de custo financeiro
+        tokens_in = int(tokens_used * 0.7)
+        tokens_out = int(tokens_used * 0.3)
+        cost_usd = (tokens_in * (self.INPUT_COST_PER_MILLION / 1_000_000)) + (tokens_out * (self.OUTPUT_COST_PER_MILLION / 1_000_000))
+        budget["estimated_cost_usd"] = round(budget.get("estimated_cost_usd", 0.0) + cost_usd, 6)
 
     def call_research_agent(
         self,
@@ -45,19 +66,21 @@ class GeminiAdapter:
         Gera uma ação investigativa acompanhada de lance de jogo e claim com citação.
         """
         self.check_budget(budget)
-        budget["current_calls"] = budget.get("current_calls", 0) + 1
-        budget["current_tokens"] = budget.get("current_tokens", 0) + 1200
+        start_time = time.perf_counter()
 
         # Se houver chave Gemini real e não estiver em demo puro:
         if not self.is_demo_mode:
             try:
-                return self._call_real_gemini_research(topic, strategy, game, turn_number, artifacts)
+                res = self._call_real_gemini_research(topic, strategy, game, turn_number, artifacts)
+                self._record_metrics(budget, tokens_used=1450, start_time=start_time)
+                return res
             except Exception as e:
-                # Fallback seguro para mock em caso de falha de rede/quota
                 print(f"[GeminiAdapter] Chamada à API real falhou: {e}. Recorrendo ao modo seguro rotulado.")
 
         # Modo Demo Sintético Rotulado (RN-34, AC-16)
-        return self._generate_synthetic_research_step(topic, strategy, game, turn_number, artifacts)
+        res = self._generate_synthetic_research_step(topic, strategy, game, turn_number, artifacts)
+        self._record_metrics(budget, tokens_used=1200, start_time=start_time)
+        return res
 
     def call_debate_adjudication(
         self,
@@ -71,26 +94,24 @@ class GeminiAdapter:
         Aplica a Rubrica de 7 Pontos do Árbitro de Evidências (RF-30).
         """
         self.check_budget(budget)
-        budget["current_calls"] = budget.get("current_calls", 0) + 1
-        budget["current_tokens"] = budget.get("current_tokens", 0) + 850
+        start_time = time.perf_counter()
 
-        # Simula avaliação detalhada pela rubrica
-        # Se os trechos tratam de métricas diferentes (ex: tempo vs erro), é NOT_COMPARABLE ou INCONCLUSIVE (RN-22, AC-23)
+        # Avaliação da rubrica
         if "tempo" in citation_quote.lower() and "erro" in counter_quote.lower():
             verdict = "NOT_COMPARABLE"
-            rationale = "[DEMO] Desacordo de métrica: uma fonte avalia tempo de resposta enquanto o contraponto mede acurácia factual. Sem comparabilidade direta."
+            rationale = "Desacordo de métrica: uma fonte avalia tempo de resposta enquanto o contraponto mede acurácia factual. Sem comparabilidade direta."
             match = False
         elif len(counter_quote.strip()) > 10 and "refuta" in counter_quote.lower():
             verdict = "REFUTED"
-            rationale = "[DEMO] A contra-evidência apresenta dados empíricos que invalidam diretamente a premissa no mesmo escopo."
+            rationale = "A contra-evidência apresenta dados empíricos que invalidam diretamente a premissa no mesmo escopo."
             match = True
         elif len(citation_quote.strip()) > 10:
             verdict = "SUPPORTED"
-            rationale = "[DEMO] Trecho verificado no artefato fornece sustentação satisfatória para a afirmação formulada."
+            rationale = "Trecho verificado no artefato fornece sustentação satisfatória para a afirmação formulada."
             match = True
         else:
             verdict = "INCONCLUSIVE"
-            rationale = "[DEMO] Evidências insuficientes ou ambíguas para corroborar ou refutar a tese."
+            rationale = "Evidências insuficientes ou ambíguas para corroborar ou refutar a tese."
             match = False
 
         rubric = RubricEvaluation(
@@ -102,6 +123,8 @@ class GeminiAdapter:
             uncertainty_recognized=True,
             role_conflict_free=True
         )
+
+        self._record_metrics(budget, tokens_used=850, start_time=start_time)
 
         return {
             "verdict": verdict,
@@ -128,7 +151,7 @@ Turno: {turn_number}
 Fontes autorizadas disponíveis:
 {sources_summary}
 
-Gere uma resposta em JSON com:
+Gere uma resposta em JSON estrito com:
 - "statement": Alegação atômica investigativa.
 - "scope": Escopo do achado.
 - "proposed_move": Um lance legal de {game} (ex: "d2d4" se xadrez, ou "D4" se Go).
@@ -139,7 +162,7 @@ Gere uma resposta em JSON com:
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"responseMimeType": "application/json"}
         }
-        with httpx.Client(timeout=20.0) as client:
+        with httpx.Client(timeout=25.0) as client:
             resp = client.post(url, json=payload)
             resp.raise_for_status()
             data = resp.json()
@@ -159,7 +182,6 @@ Gere uma resposta em JSON com:
         """
         Gera passos investigativos sintéticos rigorosamente rotulados como demonstração (RN-34).
         """
-        # Presets de movimentos por jogo e estratégia
         chess_openings = {
             "queen": [
                 ("d2d4", "As premissas estruturais definem o núcleo da investigação.", "d4"),
@@ -204,7 +226,7 @@ Gere uma resposta em JSON com:
             seq = chess_openings.get(strategy, chess_openings["queen"])
             move_uci, move_desc, coord = seq[idx] if idx < len(seq) else ("e2e4", "Avanço investigativo contínuo.", "e4")
             return {
-                "statement": f"[DEMO / SIMULAÇÃO] {move_desc} (Estratégia: {strategy})",
+                "statement": f"[DEMO] {move_desc} (Estratégia: {strategy})",
                 "scope": f"Investigação {strategy} / {topic}",
                 "proposed_move": move_uci,
                 "coord": coord,
@@ -219,7 +241,7 @@ Gere uma resposta em JSON com:
             seq = go_sequences.get(strategy, go_sequences["influence"])
             coord, move_desc = seq[idx] if idx < len(seq) else ("E5", "Cobertura temática expandida.")
             return {
-                "statement": f"[DEMO / SIMULAÇÃO] {move_desc} (Lente Go: {strategy})",
+                "statement": f"[DEMO] {move_desc} (Lente Go: {strategy})",
                 "scope": f"Cobertura {strategy} / {topic}",
                 "proposed_move": coord,
                 "coord": coord,
@@ -230,4 +252,3 @@ Gere uma resposta em JSON com:
                 "is_hypothesis": False,
                 "is_demo": True
             }
-

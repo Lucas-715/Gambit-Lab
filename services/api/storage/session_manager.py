@@ -125,12 +125,13 @@ class SessionManager:
         claims_list = []
         lower_title = req.title.lower()
 
+        import re
         matched_scenario = None
         if "elei" in lower_title or "2030" in lower_title:
             matched_scenario = SAMPLE_SCENARIOS["eleicoes_2030"]
         elif "audit" in lower_title or "iso" in lower_title or "controle" in lower_title:
             matched_scenario = SAMPLE_SCENARIOS["auditoria_controles"]
-        elif "ia" in lower_title or "seguran" in lower_title or "arquitetura" in lower_title:
+        elif bool(re.search(r'\b(ia|ai)\b', lower_title)) or "inteligência artificial" in lower_title or "seguran" in lower_title or "nist" in lower_title:
             matched_scenario = SAMPLE_SCENARIOS["ia_seguranca"]
 
         if matched_scenario:
