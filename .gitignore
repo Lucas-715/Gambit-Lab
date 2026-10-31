@@ -56,3 +56,6 @@ out/
 .DS_Store
 Thumbs.db
 
+
+# Scratch / Temporary
+scratch/

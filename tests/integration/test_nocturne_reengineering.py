@@ -798,3 +798,4 @@ def test_at24_report_export_reflects_exact_session_state():
     rep_html = client.get(f"/api/v1/sessions/{sid}/report", params={"format": "html"}).text
     assert "#040405" in rep_html
     assert "DEMO_OFFLINE" in rep_html
+

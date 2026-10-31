@@ -28,6 +28,7 @@ from services.api.agents.web_search_adapter import (
     SSRFBlockedError,
 )
 from services.api.fusion.pipeline import FusionOrchestrator
+from services.api.match.orchestrator import ResearchMatchOrchestrator
 from services.api.models.schemas import (
     CreateSessionRequest,
     BoardPositionSchema,
@@ -87,6 +88,7 @@ class SessionManager:
         self.gemini_adapter = gemini_adapter or GeminiAdapter()
         self.web_search_adapter = web_search_adapter or WebSearchAdapter()
         self.fusion_orchestrator = FusionOrchestrator(self.gemini_adapter)
+        self.match_orchestrator = ResearchMatchOrchestrator(self)
         self.idempotency_cache: Dict[str, Dict[str, Any]] = {}
         self.advance_idempotency_cache: Dict[str, Dict[str, Any]] = {}
 
@@ -250,6 +252,7 @@ class SessionManager:
             "version": 1,
             "source_policy": req.source_policy,
             "normalized_source_policy": norm_policy,
+            "depth": req.depth,
             "ply_count": 0,
             "investigation_step_index": 0,
             "max_steps": max_steps,
@@ -278,6 +281,7 @@ class SessionManager:
             "web_queries_executed": [],
             "source_status_override": None,
             "fusion_report": None,
+            "research_match": None,
             "created_at": now,
             "updated_at": now,
         }
@@ -505,7 +509,10 @@ class SessionManager:
         tiers = self._evaluate_verification_tiers(sess)
         events = self.event_store.get_events(sess["id"])
         public_artifacts = self.vault.list_artifacts_for_session(sess["id"])
-        res = sess.copy()
+        res = {k: v for k, v in sess.items() if not k.startswith("_")}
+        rm = res.get("research_match")
+        if rm:  # resumo leve: timeline/peças completas vivem em GET /match e GET /pieces
+            res["research_match"] = {k: v for k, v in rm.items() if k not in ("timeline", "pieces")}
         res.update(tiers)
         res["verification_tiers"] = tiers
         res["artifacts"] = public_artifacts

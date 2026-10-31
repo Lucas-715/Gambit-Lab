@@ -28,6 +28,7 @@ def get_session_report(
     claims = sess.get("claims", [])
     judgments = sess.get("judgments", [])
     fusion_rep = sess.get("fusion_report")
+    rmatch = sess.get("research_match")
     usage = sess.get("provider_usage") or {}
 
     report_data = {
@@ -51,6 +52,7 @@ def get_session_report(
         "evidence_assessment": sess.get("evidence_assessment", "NOT_ASSESSED"),
         "diagnostic_reason": sess.get("diagnostic_reason"),
         "provider_usage": usage,
+        "research_match": rmatch,
         "fusion_report": fusion_rep,
         "artifacts": artifacts,
         "claims": claims,
@@ -93,8 +95,21 @@ def get_session_report(
                 ver_tag = "VERIFICADA" if cit.get("quote_verified") else "NÃO VERIFICADA"
                 md += f"  > *Citação ({ver_tag})*: \"{cit.get('quote_text')}\" ({cit.get('artifact_name')}, {cit.get('page_or_offset')})\n"
 
+        if rmatch and rmatch.get("conclusion"):
+            conc = rmatch["conclusion"]
+            md += (
+                f"\n## Conclusão Final Research Match (Duplo Resultado)\n"
+                f"- **Critério de Encerramento**: `{conc.get('termination_criterion')}` — {conc.get('termination_reason')}\n"
+                f"- **Resultado Lúdico (Tabuleiro)**: `{conc.get('ludic_result')}` — {conc.get('ludic_score_label')}\n"
+                f"- **Resultado Epistêmico (Evidências)**: `{conc.get('epistemic_result')}` — {conc.get('epistemic_verdict_label')}\n"
+                f"- **Tese Pró**: {conc.get('pro_thesis')}\n"
+                f"- **Tese Contra**: {conc.get('contra_thesis')}\n"
+                f"- **Ponto de Virada**: Lance #{conc.get('turning_point_ply') or '-'} — {conc.get('turning_point_summary') or ''}\n\n"
+                f"### Síntese Final\n{conc.get('final_synthesis')}\n"
+            )
+
         if fusion_rep:
-            md += f"\n## 3. Síntese FUSION\n{fusion_rep.get('unified_synthesis')}\n"
+            md += f"\n## Síntese FUSION\n{fusion_rep.get('unified_synthesis')}\n"
 
         return Response(content=md, media_type="text/markdown")
     else:

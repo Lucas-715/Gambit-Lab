@@ -1107,6 +1107,382 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =========================================================================
+   Gambit Lab Nocturne v2.2 — Research Match v2, Fundo Vivo & Dossiês
+   ========================================================================= */
+
+/* Fundo Vivo & Parallax Canvas */
+#space {
+  transition: opacity 0.5s ease;
+  will-change: transform;
+}
+body.star-motion-paused #space {
+  opacity: 0.25 !important;
+}
+
+/* Dual Conclusion Card (Desacoplamento Epistêmico vs Lúdico - Research Match v2) */
+.dual-conclusion-card {
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+  animation: fadeIn 0.4s ease;
+}
+.dcc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.dcc-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dcc-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(121, 134, 203, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(121, 134, 203, 0.35);
+}
+.dcc-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.dcc-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dcc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.dcc-column {
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.dcc-column.ludic {
+  border-left: 3px solid #7986cb;
+}
+.dcc-column.epistemic {
+  border-left: 3px solid #4db6ac;
+  background: linear-gradient(135deg, rgba(77, 182, 172, 0.05) 0%, var(--panel-elevated) 100%);
+}
+.dcc-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.dcc-winner, .dcc-verdict {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dcc-winner { color: var(--text); }
+.dcc-verdict { color: #80cbc4; }
+.dcc-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.dcc-pill {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+}
+.dcc-pill.highlight {
+  background: rgba(77, 182, 172, 0.15);
+  border-color: rgba(77, 182, 172, 0.4);
+  color: #80cbc4;
+  font-weight: 600;
+}
+.dcc-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.4;
+}
+.dcc-synthesis {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.dcc-syn-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.dcc-tp-label {
+  font-size: 11.5px;
+  color: #ffb74d;
+  font-weight: 600;
+}
+.dcc-syn-body {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.dcc-pills-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* 5ª Aba: Peças & Teses */
+.pieces-controls {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.pieces-filter-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.filter-pill {
+  font-size: 11px;
+  padding: 4px 10px;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.filter-pill:hover, .filter-pill.active {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+#pieceSearchInput {
+  width: 100%;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+.pieces-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.piece-card {
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+.piece-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.piece-card.highlighted {
+  border-color: #80cbc4;
+  box-shadow: 0 0 12px rgba(128, 203, 196, 0.4);
+  transform: scale(1.01);
+}
+.piece-card.fallen {
+  opacity: 0.65;
+  border-style: dashed;
+}
+.piece-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.piece-glyph {
+  font-size: 20px;
+  line-height: 1;
+}
+.piece-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.piece-badge-side {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.piece-badge-side.pro {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.piece-badge-side.contra {
+  background: rgba(50, 50, 60, 0.7);
+  color: #b0bec5;
+  border: 1px solid rgba(120, 144, 156, 0.3);
+}
+.piece-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.piece-status-badge.supported { background: rgba(77, 182, 172, 0.2); color: #80cbc4; }
+.piece-status-badge.contested { background: rgba(255, 183, 77, 0.2); color: #ffb74d; }
+.piece-status-badge.fallen { background: rgba(144, 164, 174, 0.15); color: #90a4ae; }
+.piece-status-badge.refuted { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
+.piece-status-badge.untested { background: rgba(121, 134, 203, 0.15); color: #9fa8da; }
+
+.piece-role {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-style: italic;
+}
+.piece-claim {
+  font-size: 12.5px;
+  color: var(--text);
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+.confidence-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.confidence-bar {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.confidence-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.piece-fall-alert {
+  font-size: 11px;
+  padding: 5px 8px;
+  background: rgba(239, 83, 80, 0.1);
+  border: 1px solid rgba(239, 83, 80, 0.3);
+  border-radius: 6px;
+  color: #ef9a9a;
+  margin-top: 6px;
+}
+.piece-artifacts-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.artifact-chip {
+  font-size: 10.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  cursor: pointer;
+}
+.artifact-chip:hover {
+  background: rgba(121, 134, 203, 0.15);
+}
+
+/* Modal de Progresso dos 7 Estágios */
+.stage-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  transition: all 0.25s ease;
+}
+.stage-row.done {
+  border-color: rgba(77, 182, 172, 0.4);
+  background: rgba(77, 182, 172, 0.05);
+}
+.stage-row.active {
+  border-color: var(--accent);
+  background: rgba(121, 134, 203, 0.08);
+  box-shadow: 0 0 12px rgba(121, 134, 203, 0.2);
+}
+.stage-icon {
+  font-size: 16px;
+  width: 24px;
+  text-align: center;
+}
+.stage-info {
+  flex: 1;
+}
+.stage-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+.stage-desc {
+  font-size: 11px;
+  color: var(--muted);
+}
+.stage-status-pill {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+.stage-status-pill.pending { background: rgba(255, 255, 255, 0.05); color: var(--muted); }
+.stage-status-pill.running { background: rgba(121, 134, 203, 0.2); color: var(--accent); animation: pulse 1.5s infinite; }
+.stage-status-pill.completed { background: rgba(77, 182, 172, 0.2); color: #80cbc4; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 </style>
 </head>
 <body>
@@ -1125,6 +1501,7 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
     <button class="rail-btn" id="historyBtn" title="Replay Event Store" aria-label="Abrir replay do Event Store">◷</button>
     <button class="rail-btn" id="fusionRailBtn" title="Síntese FUSION" aria-label="Abrir síntese FUSION">◇</button>
     <div class="rail-bottom">
+      <button class="rail-btn" id="motionBtn" title="Alternar animação estelar viva (Parallax / Drift)" aria-label="Alternar animação estelar viva" onclick="toggleStarMotion()">✨</button>
       <button class="rail-btn" id="themeBtn" title="Alternar tema Nocturne / Cosmic" aria-label="Alternar tema visual">◐</button>
       <button class="rail-btn" id="infoBtn" title="Princípios de honestidade epistêmica" aria-label="Sobre o Gambit Lab">ⓘ</button>
     </div>
@@ -1183,6 +1560,7 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
 
         <div class="prompt-opts">
           <label><input id="fusionCheck" type="checkbox" checked> FUSION (múltiplas estratégias)</label>
+          <label><input id="researchMatchCheck" type="checkbox" checked> <strong style="color:var(--accent)">Research Match v2 (Partida Completa + Dossiês)</strong></label>
           <label><input id="forceDemoCheck" type="checkbox"> Modo DEMO_OFFLINE (sem cota Gemini)</label>
           <label style="color:var(--accent)">＋ Anexar arquivo <input type="file" id="uploadFile" multiple accept=".pdf,.txt,.md,.csv,.json" hidden></label>
           <span class="mini-info" id="uploadsInfo">Nenhum arquivo local selecionado</span>
@@ -1247,6 +1625,54 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
         </div>
       </div>
 
+      
+      <!-- Cartão de Conclusão Dual (Desacoplamento Epistêmico vs Lúdico - Research Match v2) -->
+      <section class="dual-conclusion-card" id="dualConclusionCard" style="display:none" aria-label="Conclusão da partida e veredito científico">
+        <div class="dcc-header">
+          <div class="dcc-title-wrap">
+            <span class="dcc-badge">RESEARCH MATCH v2.2</span>
+            <h3>Conclusão da Partida de Investigação</h3>
+          </div>
+          <div class="dcc-actions">
+            <button class="btn sm accent" id="turningPointBtn" style="display:none" onclick="jumpToTurningPoint()">⚡ Ponto de Virada (Lance #<span id="tpPlyNum">0</span>)</button>
+            <button class="btn sm secondary" onclick="exportReport('markdown')">⬇ Exportar Dossiê MD</button>
+          </div>
+        </div>
+
+        <div class="dcc-grid">
+          <!-- Coluna 1: Resultado Lúdico (Tabuleiro) -->
+          <div class="dcc-column ludic">
+            <div class="dcc-col-title">⚔️ RESULTADO LÚDICO (TABULEIRO)</div>
+            <div class="dcc-winner" id="ludicWinner">—</div>
+            <div class="dcc-meta">
+              <span class="dcc-pill" id="ludicCriterion">Critério: —</span>
+              <span class="dcc-pill" id="ludicPlies">0 lances simulados</span>
+            </div>
+            <p class="dcc-desc" id="ludicDesc">Resultado determinístico apurado pelas regras formais do jogo (python-chess / Go 9×9).</p>
+          </div>
+
+          <!-- Coluna 2: Veredito Epistêmico (Verdade Científica Desacoplada) -->
+          <div class="dcc-column epistemic">
+            <div class="dcc-col-title">⚖️ VEREDITO EPISTÊMICO (VERDADE CIENTÍFICA)</div>
+            <div class="dcc-verdict" id="epistemicVerdict">—</div>
+            <div class="dcc-meta">
+              <span class="dcc-pill highlight" id="epistemicStatusPill">EVIDÊNCIA AUDITADA</span>
+            </div>
+            <p class="dcc-desc" id="epistemicDesc">Desacoplado das regras do tabuleiro: reflete estritamente citações literais e provas no cofre.</p>
+          </div>
+        </div>
+
+        <!-- Síntese e Citações Chave -->
+        <div class="dcc-synthesis">
+          <div class="dcc-syn-head">
+            <strong>Síntese Cruzada de Argumentos</strong>
+            <span id="tpReasonLabel" class="dcc-tp-label"></span>
+          </div>
+          <div class="dcc-syn-body" id="synthesisBody">Carregando síntese da investigação...</div>
+          <div class="dcc-pills-row" id="conclusionPills"></div>
+        </div>
+      </section>
+
       <div class="ws-grid">
         <!-- Coluna Esquerda: Tabuleiro 3D WebGL / 2D WCAG + Barra de Avanço + Barra de Replay -->
         <div>
@@ -1278,6 +1704,8 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
               <div class="exec-bar">
                 <button class="btn primary" id="continueBtn" onclick="continueInvestigation(1)">▶ Continuar investigação</button>
                 <button class="btn accent" id="advance3Btn" onclick="continueInvestigation(3)">⏭ +3 etapas</button>
+                <button class="btn accent" id="runMatchV2Btn" onclick="triggerRunMatchV2()" title="Simular partida completa com 7 estágios e dossiês">⚔ Gerar Partida Completa v2</button>
+                <button class="btn secondary" id="resumeMatchBtn" style="display:none" onclick="triggerResumeMatch()" title="Retomar partida interrompida por limite de lances">▶ Retomar Partida (+12 lances)</button>
                 <button class="btn secondary" id="passGoBtn" style="display:none" onclick="submitGoPass()">Passe (Go)</button>
                 <span class="turn-indicator" id="execHint">Pronto para gerar próximo ciclo</span>
               </div>
@@ -1311,6 +1739,9 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
             </button>
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelAudit" id="tabBtnAudit" onclick="switchTab('audit')">
               Auditoria <span class="tab-count" id="countAudit">0</span>
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelPieces" id="tabBtnPieces" onclick="switchTab('pieces')">
+              Peças & Teses <span class="tab-count" id="countPieces">0</span>
             </button>
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelHistory" id="tabBtnHistory" onclick="switchTab('history')">
               Histórico <span class="tab-count" id="countHistory">1</span>
@@ -1376,6 +1807,24 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
           </div>
 
           <!-- ABA 4: Histórico Imutável (Event Store) -->
+          
+          <!-- ABA 5: Peças & Teses (Dossiês Argumentativos por Peça) -->
+          <div class="tab-panel" role="tabpanel" id="tabPanelPieces" aria-labelledby="tabBtnPieces">
+            <div class="pieces-controls">
+              <div class="pieces-filter-pills">
+                <button class="filter-pill active" id="fPillAll" onclick="filterPieces('all')">Todas (<span id="pCountAll">0</span>)</button>
+                <button class="filter-pill" id="fPillWhite" onclick="filterPieces('white')">⚪ Pró (<span id="pCountWhite">0</span>)</button>
+                <button class="filter-pill" id="fPillBlack" onclick="filterPieces('black')">⚫ Contra (<span id="pCountBlack">0</span>)</button>
+                <button class="filter-pill" id="fPillActive" onclick="filterPieces('active')">Em Jogo (<span id="pCountActive">0</span>)</button>
+                <button class="filter-pill" id="fPillFallen" onclick="filterPieces('fallen')">Caídas / Refutadas (<span id="pCountFallen">0</span>)</button>
+              </div>
+              <input type="text" id="pieceSearchInput" placeholder="Filtrar por peça, tese ou palavra-chave..." oninput="onPieceSearch(this.value)">
+            </div>
+            <div class="pieces-list" id="piecesList">
+              <div class="empty-state">Inicie ou carregue um Research Match v2 para visualizar os dossiês e teses vinculados a cada peça.</div>
+            </div>
+          </div>
+
           <div class="tab-panel" role="tabpanel" id="tabPanelHistory" aria-labelledby="tabBtnHistory">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
               <span style="font-size:11.5px;color:var(--muted)">Cadeia append-only encadeada por SHA-256</span>
@@ -1458,7 +1907,38 @@ html[data-theme="cosmic"] body:not(.in-workspace) .planet {
 </div>
 
 <!-- Modal: Inspeção de Casa/Interseção -->
-<div class="modal-overlay" id="inspectModal" role="dialog" aria-modal="true" aria-labelledby="inspectTitle">
+
+  <!-- MODAL: Progresso dos 7 Estágios do Research Match v2.2 -->
+  <div class="modal-overlay" id="matchProgressModal" role="dialog" aria-modal="true" style="display:none">
+    <div class="modal-box modal-lg" style="max-width: 680px;">
+      <div class="modal-head">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="dot-live" style="width:10px;height:10px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent);"></span>
+          <h3 style="margin:0;font-size:16px;">Executando Research Match v2.2</h3>
+        </div>
+        <button class="close-btn" onclick="closeModal('matchProgressModal')" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:18px 20px;">
+        <p style="font-size:13px;color:var(--muted);margin:0 0 16px;">
+          A partida está sendo simulada com isolamento estrito de cofres (Pró vs Contra), motores determinísticos e desacoplamento entre resultado lúdico e verdade epistêmica.
+        </p>
+
+        <div class="prog-bar-wrap" style="height:8px;background:var(--panel-elevated);border-radius:4px;overflow:hidden;margin-bottom:18px;border:1px solid var(--border);">
+          <div id="matchProgFill" style="height:100%;width:0%;background:linear-gradient(90deg, var(--accent), #7986cb);transition:width 0.3s ease;"></div>
+        </div>
+
+        <div class="stage-list" id="stageList" style="display:flex;flex-direction:column;gap:8px;">
+          <!-- Preenchido dinamicamente via JS -->
+        </div>
+
+        <div id="matchStageLiveMsg" style="margin-top:16px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);font-family:var(--font-mono, monospace);">
+          Iniciando orquestrador...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="inspectModal" role="dialog" aria-modal="true" aria-labelledby="inspectTitle">
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="inspectTitle">Inspeção Epistêmica da Posição</h3>
@@ -1516,6 +1996,10 @@ const spaceCanvas = document.getElementById('space');
 const spaceCtx = spaceCanvas.getContext('2d');
 let stars = [];
 
+let starMotionEnabled = true;
+let mouseTargetX = 0, mouseTargetY = 0;
+let parallaxX = 0, parallaxY = 0;
+
 function initStars() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = window.innerWidth, h = window.innerHeight;
@@ -1530,35 +2014,88 @@ function initStars() {
     seed = (seed * 1664525 + 1013904223) >>> 0;
     return seed / 4294967296;
   }
-  stars = Array.from({ length: Math.min(160, Math.floor(w * h / 7500)) }, () => ({
-    x: rand() * w,
-    y: rand() * h,
-    r: 0.35 + rand() * 1.05,
-    a: 0.14 + rand() * 0.5,
-    p: rand() * 6.28
-  }));
+
+  // Fundo Vivo: 3 camadas de profundidade com velocidades diferenciadas e drift contínuo
+  const count = Math.min(220, Math.floor(w * h / 5500));
+  stars = Array.from({ length: count }, (_, i) => {
+    const layer = i % 3; // 0 = distante, 1 = intermediária, 2 = próxima
+    const depth = layer === 0 ? 0.3 : (layer === 1 ? 0.65 : 1.0);
+    const speed = layer === 0 ? 0.04 : (layer === 1 ? 0.09 : 0.16);
+    return {
+      x: rand() * w,
+      y: rand() * h,
+      vx: (rand() - 0.5) * speed * 0.5,
+      vy: -speed - rand() * 0.05, // suave drift vertical cósmico
+      r: (0.35 + rand() * 0.8) * (layer === 0 ? 0.8 : (layer === 1 ? 1.0 : 1.3)),
+      a: (0.12 + rand() * 0.45) * (layer === 0 ? 0.6 : (layer === 1 ? 0.85 : 1.0)),
+      p: rand() * 6.28,
+      depth: depth,
+      twinkleSpeed: 0.0006 + rand() * 0.0008
+    };
+  });
 }
 
 function drawStars(t) {
-  spaceCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  const w = window.innerWidth, h = window.innerHeight;
+  spaceCtx.clearRect(0, 0, w, h);
+
+  // Interpolação suave de mouse parallax
+  if (starMotionEnabled) {
+    parallaxX += (mouseTargetX - parallaxX) * 0.04;
+    parallaxY += (mouseTargetY - parallaxY) * 0.04;
+  }
+
   for (const s of stars) {
+    if (starMotionEnabled) {
+      s.x += s.vx;
+      s.y += s.vy;
+      if (s.x < 0) s.x += w;
+      if (s.x > w) s.x -= w;
+      if (s.y < 0) s.y += h;
+      if (s.y > h) s.y -= h;
+    }
+
+    // Parallax proporcional à camada de profundidade
+    const drawX = s.x + parallaxX * s.depth * 0.025;
+    const drawY = s.y + parallaxY * s.depth * 0.025;
+
+    const twinkle = 0.82 + 0.18 * Math.sin(t * s.twinkleSpeed + s.p);
     spaceCtx.beginPath();
-    spaceCtx.fillStyle = `rgba(220, 224, 245, ${s.a * (0.88 + 0.12 * Math.sin(t * 0.0005 + s.p))})`;
-    spaceCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    spaceCtx.fillStyle = `rgba(220, 226, 255, ${s.a * twinkle})`;
+    spaceCtx.arc(drawX, drawY, s.r, 0, Math.PI * 2);
     spaceCtx.fill();
   }
 }
 
 function starLoop(t) {
   drawStars(t);
-  requestAnimationFrame(starLoop);
+  if (starMotionEnabled) {
+    requestAnimationFrame(starLoop);
+  }
 }
+
+function toggleStarMotion() {
+  starMotionEnabled = !starMotionEnabled;
+  document.body.classList.toggle('star-motion-paused', !starMotionEnabled);
+  const btn = document.getElementById('motionBtn');
+  if (btn) btn.textContent = starMotionEnabled ? '✨' : '⏸';
+  if (starMotionEnabled) requestAnimationFrame(starLoop);
+  else drawStars(0);
+}
+
+window.addEventListener('pointermove', (e) => {
+  mouseTargetX = e.clientX - window.innerWidth / 2;
+  mouseTargetY = e.clientY - window.innerHeight / 2;
+});
+
 initStars();
 window.addEventListener('resize', initStars);
-if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  requestAnimationFrame(starLoop);
-} else {
+
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  starMotionEnabled = false;
   drawStars(0);
+} else {
+  requestAnimationFrame(starLoop);
 }
 
 function toggleVisualTheme() {
@@ -1976,7 +2513,31 @@ function inspectCell(c, r, label) {
   });
 
   const body = document.getElementById('inspectBody');
-  if (matched.length > 0) {
+
+  // Consulta dossiê da peça correspondente a esta coordenada
+  const pieceDossier = (activePieces || []).find(p => 
+    (p.current_square && p.current_square.toLowerCase() === label.toLowerCase()) ||
+    (p.origin_square && p.origin_square.toLowerCase() === label.toLowerCase())
+  );
+
+  let pieceHtml = '';
+  if (pieceDossier) {
+    const isPro = pieceDossier.owner_side === 'white';
+    pieceHtml = `
+      <div class="source-box" style="border-left: 3px solid ${isPro ? '#7986cb' : '#ef5350'}; margin-bottom: 12px; background: rgba(121, 134, 203, 0.08);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <b>Dossiê da Peça: ${escapeHtml(pieceDossier.piece_id)} (${isPro ? '⚪ Pró' : '⚫ Contra'})</b>
+          <span class="piece-status-badge ${pieceDossier.epistemic_status.toLowerCase()}">${escapeHtml(pieceDossier.epistemic_status)}</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px"><em>${escapeHtml(pieceDossier.role_description)}</em></div>
+        <div style="font-size:12.5px;color:var(--text);margin-bottom:6px">"${escapeHtml(pieceDossier.claim)}"</div>
+        <div style="font-size:11.5px;color:var(--muted)">Confiança Epistêmica: ${Math.round((pieceDossier.confidence_score || 0) * 100)}%</div>
+        <button class="btn sm secondary" style="margin-top:6px" onclick="switchTab('pieces');closeModal('inspectModal')">Ver na Aba Peças & Teses →</button>
+      </div>
+    `;
+  }
+
+  if (matched.length > 0 || pieceDossier) {
     body.innerHTML = matched.map(cl => {
       const citHtml = (cl.citations || []).map(ct => `
         <div class="msg-quote">
@@ -1992,6 +2553,7 @@ function inspectCell(c, r, label) {
         </div>
       `;
     }).join('');
+    body.innerHTML = pieceHtml + body.innerHTML;
   } else {
     body.innerHTML = `<div class="empty-state">Nenhuma alegação vinculada diretamente à coordenada <strong>${escapeHtml(label)}</strong> até o momento.</div>`;
   }
@@ -2120,6 +2682,12 @@ async function startInvestigation() {
     if (viewMode === '3d') requestAnimationFrame(render3DScene);
     else render2DBoard();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Se a opção Research Match v2 estiver ativada, executa o ciclo completo de 7 estágios
+    const runV2 = document.getElementById('researchMatchCheck') && document.getElementById('researchMatchCheck').checked;
+    if (runV2) {
+      await runResearchMatchLifecycle(activeSessionId);
+    }
   } catch (err) {
     notify('Erro de comunicação com o servidor FastAPI: ' + err.message);
   }
@@ -2554,6 +3122,7 @@ function switchTab(key) {
     chat: ['tabBtnChat', 'tabPanelChat'],
     sources: ['tabBtnSources', 'tabPanelSources'],
     audit: ['tabBtnAudit', 'tabPanelAudit'],
+    pieces: ['tabBtnPieces', 'tabPanelPieces'],
     history: ['tabBtnHistory', 'tabPanelHistory']
   };
   for (const [k, [btnId, panelId]] of Object.entries(map)) {
@@ -2799,6 +3368,462 @@ window.addEventListener('keydown', e => {
 });
 
 loadCapabilities();
+
+
+/* =========================================================================
+   6. Research Match v2.2 — Orquestração de 7 Estágios, Dossiês & Conclusão Dual
+   ========================================================================= */
+let activeMatchState = null;
+let activePieces = [];
+let pieceFilter = 'all';
+let pieceSearchQuery = '';
+
+const STAGE_METADATA = [
+  { num: 1, name: 'DEFINING_SIDES', label: '1. Definição dos Lados Pró vs Contra', icon: '♟️', desc: 'Identificação da pergunta central e tese de cada lado' },
+  { num: 2, name: 'PRO_RESEARCH', label: '2. Investigação Pró (Cofre Isolado)', icon: '🔒', desc: 'Coleta de fontes e evidências a favor sem acesso ao lado contra' },
+  { num: 3, name: 'CONTRA_RESEARCH', label: '3. Investigação Contra (Cofre Isolado)', icon: '🔒', desc: 'Coleta de fontes e evidências contrárias em cofre estritamente isolado' },
+  { num: 4, name: 'DOSSIER_ASSIGNMENT', label: '4. Atribuição de Dossiês às Peças', icon: '📜', desc: 'Vinculação de papéis argumentativos e teses a peças e casas' },
+  { num: 5, name: 'LUDIC_SIMULATION', label: '5. Simulação do Jogo (python-chess / Go 9×9)', icon: '⚔️', desc: 'Confronto lúdico determinístico com gating epistêmico em capturas' },
+  { num: 6, name: 'SYNTHESIS', label: '6. Síntese Epistêmica Desacoplada', icon: '⚖️', desc: 'Veredito científico desacoplado do vencedor das regras do jogo' },
+  { num: 7, name: 'REPLAY_SEALED', label: '7. Selagem Criptográfica SHA-256', icon: '🔏', desc: 'Hash chain do Event Store selada para replay auditável sem LLM' }
+];
+
+function renderStageList(stages = [], currentStageIndex = 1, liveMsg = '') {
+  const container = document.getElementById('stageList');
+  if (!container) return;
+
+  const stageMap = {};
+  for (const s of stages) stageMap[s.stage_index] = s;
+
+  let html = '';
+  for (const meta of STAGE_METADATA) {
+    const s = stageMap[meta.num];
+    let statusClass = 'pending';
+    let statusText = 'Aguardando';
+
+    if (s) {
+      if (s.status === 'COMPLETED') {
+        statusClass = 'completed';
+        statusText = '✓ Concluído';
+      } else if (s.status === 'RUNNING') {
+        statusClass = 'running';
+        statusText = 'Em execução...';
+      } else if (s.status === 'FAILED') {
+        statusClass = 'failed';
+        statusText = 'Falhou';
+      }
+    } else if (meta.num === currentStageIndex) {
+      statusClass = 'running';
+      statusText = 'Em execução...';
+    }
+
+    html += `
+      <div class="stage-row ${statusClass === 'completed' ? 'done' : (statusClass === 'running' ? 'active' : '')}">
+        <div class="stage-icon">${meta.icon}</div>
+        <div class="stage-info">
+          <div class="stage-name">${escapeHtml(meta.label)}</div>
+          <div class="stage-desc">${escapeHtml(s && s.summary ? s.summary : meta.desc)}</div>
+        </div>
+        <span class="stage-status-pill ${statusClass}">${statusText}</span>
+      </div>
+    `;
+  }
+  container.innerHTML = html;
+
+  const pct = Math.min(100, Math.round(((currentStageIndex - 1) / 7) * 100));
+  const fill = document.getElementById('matchProgFill');
+  if (fill) fill.style.width = pct + '%';
+
+  const msgEl = document.getElementById('matchStageLiveMsg');
+  if (msgEl && liveMsg) msgEl.textContent = liveMsg;
+}
+
+async function runResearchMatchLifecycle(sessionId) {
+  document.getElementById('matchProgressModal').style.display = 'flex';
+  renderStageList([], 1, 'Iniciando orquestrador de Research Match v2...');
+
+  try {
+    // Executa estágio a estágio para fornecer feedback visual em tempo real ao usuário
+    let state = null;
+    for (let stg = 1; stg <= 7; stg++) {
+      renderStageList((state && state.stages) || [], stg, `Executando estágio ${stg}/7: ${STAGE_METADATA[stg - 1].label}...`);
+      
+      const resp = await fetch(`/api/v1/sessions/${sessionId}/match/stage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ depth: null })
+      });
+
+      if (!resp.ok) {
+        // Se stage individual falhar ou não suportar, tenta chamada direta completa
+        const fullResp = await fetch(`/api/v1/sessions/${sessionId}/match`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (fullResp.ok) {
+          state = await fullResp.json();
+          break;
+        } else {
+          const err = await resp.json().catch(() => ({}));
+          throw new Error(err.detail || `Falha no estágio ${stg} (${resp.status})`);
+        }
+      }
+
+      state = await resp.json();
+      renderStageList(state.stages || [], stg, `Estágio ${stg} concluído com sucesso.`);
+      
+      if (state.is_complete || state.current_stage >= 7 || state.status === 'COMPLETED' || state.status === 'BUDGET_EXHAUSTED') {
+        break;
+      }
+    }
+
+    const fill = document.getElementById('matchProgFill');
+    if (fill) fill.style.width = '100%';
+    renderStageList((state && state.stages) || [], 7, 'Partida concluída e selada criptograficamente!');
+
+    // Breve pausa para o usuário contemplar a conclusão antes de abrir o workspace
+    await new Promise(r => setTimeout(r, 600));
+    closeModal('matchProgressModal');
+
+    // Carrega dados completos da partida e peças
+    await loadMatchAndPieces(sessionId);
+  } catch (err) {
+    notify('Erro na simulação do Research Match: ' + err.message);
+    const msgEl = document.getElementById('matchStageLiveMsg');
+    if (msgEl) msgEl.textContent = 'Erro: ' + err.message;
+    setTimeout(() => closeModal('matchProgressModal'), 2500);
+  }
+}
+
+async function triggerRunMatchV2() {
+  if (!activeSessionId) return;
+  await runResearchMatchLifecycle(activeSessionId);
+}
+
+async function triggerResumeMatch() {
+  if (!activeSessionId) return;
+  try {
+    notify('Retomando partida com orçamento ampliado (+12 lances)...');
+    const resp = await fetch(`/api/v1/sessions/${activeSessionId}/match/resume`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ extra_plies: 12 })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || resp.statusText);
+    }
+    const state = await resp.json();
+    notify('Partida retomada com sucesso!');
+    await loadMatchAndPieces(activeSessionId);
+  } catch (err) {
+    notify('Falha ao retomar partida: ' + err.message);
+  }
+}
+
+async function loadMatchAndPieces(sessionId, viewerSide = null) {
+  try {
+    const [mResp, pResp] = await Promise.all([
+      fetch(`/api/v1/sessions/${sessionId}/match`),
+      fetch(`/api/v1/sessions/${sessionId}/pieces${viewerSide ? `?viewer_side=${viewerSide}` : ''}`)
+    ]);
+
+    if (mResp.ok) {
+      activeMatchState = await mResp.json();
+      renderDualConclusionCard(activeMatchState.conclusion, activeMatchState);
+      
+      // Controla visibilidade de botões na barra de ação
+      const runV2Btn = document.getElementById('runMatchV2Btn');
+      const resumeBtn = document.getElementById('resumeMatchBtn');
+      if (runV2Btn) runV2Btn.style.display = (activeMatchState.status === 'COMPLETED' || activeMatchState.current_stage >= 6) ? 'none' : 'inline-flex';
+      if (resumeBtn) resumeBtn.style.display = activeMatchState.status === 'BUDGET_EXHAUSTED' ? 'inline-flex' : 'none';
+    }
+
+    if (pResp.ok) {
+      activePieces = await pResp.json();
+      renderPiecesList(activePieces);
+      const cPieces = document.getElementById('countPieces');
+      if (cPieces) cPieces.textContent = String(activePieces.length);
+    }
+
+    // Atualiza eventos e posição do tabuleiro
+    await refreshEventsList();
+    const sResp = await fetch(`/api/v1/sessions/${sessionId}`);
+    if (sResp.ok) {
+      const fullSess = await sResp.json();
+      applySessionStateToUI(fullSess);
+    }
+  } catch (err) {
+    console.warn('loadMatchAndPieces error:', err);
+  }
+}
+
+function renderDualConclusionCard(conc, matchState) {
+  const card = document.getElementById('dualConclusionCard');
+  if (!card) return;
+
+  const hasConclusion = !!conc || (matchState && (matchState.is_complete || matchState.current_stage >= 6 || matchState.conclusion));
+  if (!hasConclusion) {
+    card.style.display = 'none';
+    return;
+  }
+
+  card.style.display = 'block';
+
+  // 1. Resultado Lúdico
+  const winnerMap = {
+    WHITE_WINS: '⚪ Brancas Vencem',
+    BLACK_WINS: '⚫ Pretas Vencem',
+    DRAW: '⚖ Empate',
+    UNDECIDED: '⏳ Indefinido'
+  };
+  const critMap = {
+    CHECKMATE: 'Xeque-mate',
+    RESIGNATION: 'Resignação Técnica (Déficit ≥ 800 cp)',
+    TERRITORY_COUNTING: 'Contagem Territorial (Go)',
+    TWO_CONSECUTIVE_PASSES: 'Passes Consecutivos (Go)',
+    STALEMATE: 'Afogamento',
+    DRAW_REPETITION: 'Repetição de Lances',
+    DRAW_50_MOVES: 'Regra dos 50 Lances',
+    INSUFFICIENT_MATERIAL: 'Material Insuficiente',
+    BUDGET_EXHAUSTED: 'Orçamento de Lances Atingido'
+  };
+
+  const lWinner = document.getElementById('ludicWinner');
+  const lCrit = document.getElementById('ludicCriterion');
+  const lPlies = document.getElementById('ludicPlies');
+  const lDesc = document.getElementById('ludicDesc');
+
+  const ludicResult = (conc && conc.ludic_result) || (matchState && matchState.ludic_result) || 'UNDECIDED';
+  const crit = (conc && conc.termination_criterion) || (matchState && matchState.termination_criterion) || 'BUDGET_EXHAUSTED';
+  const pliesSim = matchState ? (matchState.plies_played != null ? matchState.plies_played : (matchState.total_plies_simulated || (matchState.timeline ? matchState.timeline.length : 0))) : 0;
+
+  if (lWinner) lWinner.textContent = winnerMap[ludicResult] || ludicResult;
+  if (lCrit) lCrit.textContent = `Critério: ${critMap[crit] || crit}`;
+  if (lPlies) lPlies.textContent = `${pliesSim} lances simulados`;
+  if (lDesc) {
+    lDesc.textContent = crit === 'RESIGNATION'
+      ? 'A partida encerrou por resignação após déficit cumulativo irreversível (≥ 800 centipawns por 3 lances).'
+      : 'Resultado formal determinado pelos motores deterministicos python-chess / GoEngine 9×9.';
+  }
+
+  // 2. Veredito Epistêmico (Desacoplado)
+  const verdictMap = {
+    PRO_THESIS_SUPPORTED: '🟢 TESE PRÓ SUSTENTADA',
+    CONTRA_THESIS_SUPPORTED: '🔵 TESE CONTRA SUSTENTADA',
+    INCONCLUSIVE: '🟡 INCONCLUSIVO',
+    OPEN_HYPOTHESIS: '🟣 HIPÓTESE EM ABERTO (OPEN HYPOTHESIS)'
+  };
+  const eVerdict = document.getElementById('epistemicVerdict');
+  const eStatusPill = document.getElementById('epistemicStatusPill');
+  const eDesc = document.getElementById('epistemicDesc');
+
+  const epistemicResult = conc ? conc.epistemic_result : (matchState ? matchState.epistemic_result : 'OPEN_HYPOTHESIS');
+  if (eVerdict) eVerdict.textContent = verdictMap[epistemicResult] || epistemicResult;
+  if (eStatusPill) {
+    eStatusPill.textContent = epistemicResult === 'OPEN_HYPOTHESIS'
+      ? 'PROJEÇÃO FUTURA / INCERTEZA'
+      : 'EVIDÊNCIA AUDITADA';
+  }
+  if (eDesc) {
+    eDesc.textContent = epistemicResult === 'OPEN_HYPOTHESIS'
+      ? 'Como o tema trata de eventos futuros ou inconclusos, a verdade epistêmica permanece aberta independente do vencedor do jogo.'
+      : 'Veredito científico apurado estritamente a partir das fontes auditadas no cofre e citações literais verificadas.';
+  }
+
+  // 3. Ponto de Virada (Turning Point)
+  const tpBtn = document.getElementById('turningPointBtn');
+  const tpNum = document.getElementById('tpPlyNum');
+  const tpReason = document.getElementById('tpReasonLabel');
+  const tpPly = (conc && conc.turning_point_ply) || (matchState && matchState.turning_point_ply);
+  const tpDesc = (conc && (conc.turning_point_summary || conc.turning_point_description)) || (matchState && (matchState.turning_point_reason || matchState.turning_point_summary));
+
+  if (tpBtn && tpPly) {
+    tpBtn.style.display = 'inline-flex';
+    if (tpNum) tpNum.textContent = String(tpPly);
+    if (tpReason) tpReason.textContent = `⚡ Ponto de Virada no lance #${tpPly}${tpDesc ? `: ${tpDesc}` : ''}`;
+  } else if (tpBtn) {
+    tpBtn.style.display = 'none';
+    if (tpReason) tpReason.textContent = '';
+  }
+
+  // 4. Síntese Textual & Pills
+  const synBody = document.getElementById('synthesisBody');
+  if (synBody) {
+    const rawSyn = (conc && (conc.final_synthesis || conc.synthesis_markdown)) || 'Síntese da partida disponível no dossiê de auditoria.';
+    synBody.innerHTML = escapeHtml(rawSyn).replace(/\n/g, '<br>');
+  }
+
+  const pillsRow = document.getElementById('conclusionPills');
+  if (pillsRow) {
+    pillsRow.innerHTML = '';
+    const citations = (conc && conc.key_evidence_citations) || [];
+    for (const c of citations) {
+      const sp = document.createElement('span');
+      sp.className = 'dcc-pill highlight';
+      sp.textContent = `📖 Citação: ${c.length > 50 ? c.slice(0, 50) + '…' : c}`;
+      pillsRow.appendChild(sp);
+    }
+    const caveats = (conc && (conc.limitations || conc.caveats)) || [];
+    for (const cav of caveats) {
+      const sp = document.createElement('span');
+      sp.className = 'dcc-pill';
+      sp.textContent = `⚠️ ${cav}`;
+      pillsRow.appendChild(sp);
+    }
+  }
+}
+
+function jumpToTurningPoint() {
+  const tpPly = (activeMatchState && activeMatchState.turning_point_ply) || 
+                (activeMatchState && activeMatchState.conclusion && activeMatchState.conclusion.turning_point_ply);
+  if (!tpPly) {
+    notify('Nenhum ponto de virada registrado para esta partida.');
+    return;
+  }
+
+  // Localiza o evento correspondente ao lance tpPly no histórico de lances
+  if (moveEventSeqs && moveEventSeqs.length >= tpPly) {
+    const seq = moveEventSeqs[tpPly - 1];
+    replayToSeq(seq, tpPly - 1);
+    notify(`Replay posicionado no Ponto de Virada (Lance #${tpPly})`);
+  } else {
+    notify(`Ponto de virada no lance #${tpPly}`);
+  }
+}
+
+function renderPiecesList(pieces = []) {
+  const listEl = document.getElementById('piecesList');
+  if (!listEl) return;
+
+  const glyphMap = {
+    K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙',
+    k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟',
+    white_stone: '⚪', black_stone: '⚫'
+  };
+
+  // Contadores de filtro com suporte aos esquemas flexíveis
+  let cAll = pieces.length, cWhite = 0, cBlack = 0, cActive = 0, cFallen = 0;
+  for (const p of pieces) {
+    const isPro = p.side === 'pro' || p.color === 'white' || p.owner_side === 'white';
+    const isFallen = p.alive === false || p.captured_at_ply != null || p.epistemic_status === 'FALLEN' || p.epistemic_status === 'REFUTED';
+    if (isPro) cWhite++; else cBlack++;
+    if (isFallen) cFallen++; else cActive++;
+  }
+  const elA = document.getElementById('pCountAll'); if (elA) elA.textContent = String(cAll);
+  const elW = document.getElementById('pCountWhite'); if (elW) elW.textContent = String(cWhite);
+  const elB = document.getElementById('pCountBlack'); if (elB) elB.textContent = String(cBlack);
+  const elAct = document.getElementById('pCountActive'); if (elAct) elAct.textContent = String(cActive);
+  const elFal = document.getElementById('pCountFallen'); if (elFal) elFal.textContent = String(cFallen);
+
+  // Aplica filtros
+  const q = pieceSearchQuery.toLowerCase().trim();
+  const filtered = pieces.filter(p => {
+    const isPro = p.side === 'pro' || p.color === 'white' || p.owner_side === 'white';
+    const isFallen = p.alive === false || p.captured_at_ply != null || p.epistemic_status === 'FALLEN' || p.epistemic_status === 'REFUTED';
+    if (pieceFilter === 'white' && !isPro) return false;
+    if (pieceFilter === 'black' && isPro) return false;
+    if (pieceFilter === 'active' && isFallen) return false;
+    if (pieceFilter === 'fallen' && !isFallen) return false;
+    if (q) {
+      const matchText = `${p.piece_id} ${p.label || ''} ${p.role || p.role_description || ''} ${p.claim || ''} ${p.current_coord || p.current_square || ''} ${p.initial_coord || p.origin_square || ''}`.toLowerCase();
+      if (!matchText.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = `<div class="empty-state">Nenhuma peça corresponde aos filtros selecionados.</div>`;
+    return;
+  }
+
+  let html = '';
+  for (const p of filtered) {
+    const isPro = p.side === 'pro' || p.color === 'white' || p.owner_side === 'white';
+    const isFallen = p.alive === false || p.captured_at_ply != null || p.epistemic_status === 'FALLEN' || p.epistemic_status === 'REFUTED';
+    const confPct = Math.round((p.confidence_score || 0) * 100);
+    const pieceGlyph = p.symbol || glyphMap[p.piece_type] || (isPro ? '⚪' : '⚫');
+    const pieceDisplayName = p.label || p.piece_id;
+    const statusClass = (p.epistemic_status || 'UNTESTED').toLowerCase();
+
+    const artsCount = (p.supporting_artifacts || []).length;
+    const curCoord = p.current_coord || p.current_square;
+    const initCoord = p.initial_coord || p.origin_square;
+    const sqLabel = curCoord ? `na casa ${curCoord}` : (initCoord ? `origem ${initCoord}` : '');
+    const fallAlert = p.fall_explanation || p.fall_reason;
+    const fallPly = p.captured_at_ply || p.fall_ply;
+
+    html += `
+      <div class="piece-card ${isFallen ? 'fallen' : ''}" id="pcard_${escapeHtml(p.piece_id)}" onclick="highlightPieceSquare('${curCoord || initCoord || ''}')">
+        <div class="piece-card-head">
+          <span class="piece-glyph">${pieceGlyph}</span>
+          <span class="piece-name">${escapeHtml(pieceDisplayName)} <small style="color:var(--muted);font-weight:450">${sqLabel}</small></span>
+          <span class="piece-badge-side ${isPro ? 'pro' : 'contra'}">${isPro ? '⚪ PRÓ' : '⚫ CONTRA'}</span>
+          <span class="piece-status-badge ${statusClass}">${escapeHtml(p.epistemic_status)}</span>
+        </div>
+
+        <div class="piece-role">${escapeHtml(p.role || p.role_description || 'Papel argumentativo no debate')}</div>
+        <div class="piece-claim">"${escapeHtml(p.claim || 'Tese reservada para este lance')}"</div>
+
+        <div class="confidence-wrap">
+          <span>Grau de Confiança: ${confPct}%</span>
+          <div class="confidence-bar">
+            <div class="confidence-fill" style="width:${confPct}%;background:${confPct >= 70 ? '#80cbc4' : (confPct >= 40 ? '#ffb74d' : '#ef5350')}"></div>
+          </div>
+        </div>
+
+        ${fallAlert ? `<div class="piece-fall-alert">⚔️ Queda no lance #${fallPly || '?'}: ${escapeHtml(fallAlert)}</div>` : ''}
+
+        ${artsCount > 0 ? `
+          <div class="piece-artifacts-row">
+            <span style="font-size:11px;color:var(--muted)">Evidências:</span>
+            ${p.supporting_artifacts.map(a => `<span class="artifact-chip" onclick="openArtifactFromPiece('${escapeHtml(a.artifact_id)}')">📄 ${escapeHtml(a.name || a.artifact_id)}</span>`).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+  listEl.innerHTML = html;
+}
+
+function filterPieces(type) {
+  pieceFilter = type;
+  const pills = ['fPillAll', 'fPillWhite', 'fPillBlack', 'fPillActive', 'fPillFallen'];
+  for (const id of pills) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  }
+  const activeId = type === 'all' ? 'fPillAll' : (type === 'white' ? 'fPillWhite' : (type === 'black' ? 'fPillBlack' : (type === 'active' ? 'fPillActive' : 'fPillFallen')));
+  const aEl = document.getElementById(activeId);
+  if (aEl) aEl.classList.add('active');
+  renderPiecesList(activePieces);
+}
+
+function onPieceSearch(val) {
+  pieceSearchQuery = val || '';
+  renderPiecesList(activePieces);
+}
+
+function highlightPieceSquare(sq) {
+  if (!sq) return;
+  notify(`Peça vinculada à casa ${sq.toUpperCase()}`);
+  if (game === 'chess' && sq.length === 2) {
+    const col = 'abcdefgh'.indexOf(sq[0].toLowerCase());
+    const row = 8 - parseInt(sq[1], 10);
+    if (col >= 0 && row >= 0) {
+      selectedCell = [col, row];
+      lastMoveDest = [col, row];
+      if (viewMode === '2d') render2DBoard();
+      else requestAnimationFrame(render3DScene);
+    }
+  }
+}
+
+function openArtifactFromPiece(artifactId) {
+  if (!activeSessionId) return;
+  window.open(`/api/v1/sessions/${activeSessionId}/artifacts/${artifactId}`, '_blank');
+}
+
 </script>
 </body>
 </html>

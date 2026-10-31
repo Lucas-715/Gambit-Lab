@@ -11,13 +11,14 @@ from services.api.routes.capabilities import router as capabilities_router
 from services.api.routes.sessions import router as sessions_router
 from services.api.routes.artifacts import router as artifacts_router
 from services.api.routes.fusion import router as fusion_router
+from services.api.routes.match import router as match_router
 from services.api.routes.replay import router as replay_router
 from services.api.routes.reports import router as reports_router
 
 app = FastAPI(
     title="Gambit Lab Nocturne API",
     description="Framework multiagente baseado em Xadrez e Go para Pesquisa, Debate e Auditoria com verificação epistêmica.",
-    version="2.1.0-nocturne",
+    version="2.2.0-nocturne",
 )
 
 app.add_middleware(
@@ -34,6 +35,7 @@ app.include_router(capabilities_router)
 app.include_router(sessions_router)
 app.include_router(artifacts_router)
 app.include_router(fusion_router)
+app.include_router(match_router)
 app.include_router(replay_router)
 app.include_router(reports_router)
 

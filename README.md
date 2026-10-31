@@ -1,4 +1,4 @@
-# Gambit Lab Nocturne (R1.0 / v2.1) — Framework Multiagente Orientado por Jogos
+# Gambit Lab Nocturne (v2.2) — Framework Multiagente Orientado por Jogos & Research Match
 
 > **Princípio Central**: *O LLM propõe, as regras do jogo restringem, as evidências sustentam e o sistema registra.*
 
@@ -8,8 +8,18 @@ $$\text{Pergunta} \longrightarrow \text{Hipótese} \longrightarrow \text{Busca /
 
 ---
 
-## 1. Novidades da Reengenharia Nocturne (`v2.1.0-nocturne`)
+## 1. Novidades da Reengenharia Nocturne (`v2.2.0-nocturne`)
 
+- **Research Match v2 (`services/api/match/`)**:
+  - Geração de partidas completas orientadas por 7 estágios determinísticos.
+  - Investigação Pró e Contra estritamente isoladas em cofres privados (HTTP 403).
+  - Dossiês argumentativos para cada peça (`PieceDossierSchema`), com glifo, papel, tese, evidências e barra de confiança.
+  - Simulação lúdica completa via `python-chess` e `GoEngine9x9` até regras formais de encerramento (xeque-mate, resignação por déficit $\ge 800\text{ cp}$, dois passes consecutivos ou esgotamento explícito de orçamento).
+  - Desacoplamento estrito entre Resultado Lúdico (tabuleiro) e Veredito Epistêmico (verdade científica baseada em evidências).
+  - Detecção determinística de Ponto de Virada (`turning_point_ply`) e navegação no histórico via replay SHA-256.
+- **Fundo Estelar Vivo & Experiência Nocturne**:
+  - Canvas estelar em 3 camadas de profundidade com drift contínuo suave, mouse parallax interpolado e alternador de movimento (`#motionBtn`).
+  - 5ª Aba Analítica **Peças & Teses** (`#tabPanelPieces`) com filtros dinâmicos e inspeção clicável nas casas do tabuleiro 2D/3D.
 - **Descoberta Real de Capacidades (`GET /api/v1/capabilities`)**: Expõe em tempo real a disponibilidade do Google Gemini e da Pesquisa Web pública, políticas ativas e orçamento padrão de etapas.
 - **Pesquisa Web Pública Opt-In com Anti-SSRF (`WebSearchAdapter`)**: Políticas explícitas `OWN_ONLY` (zero chamadas externas), `WEB_ONLY` e `HYBRID`, consultando fontes públicas HTTPS (OpenAlex + Wikimedia/Wikipedia + snapshots HTTPS validados) com bloqueio anti-SSRF estrito (`localhost`, RFC 1918, `169.254.169.254`, redirecionamentos e esquemas não-HTTPS) e registro `SHA-256`.
 - **Progressão Contínua sem Limite Artificial de 3 Lances (`POST /api/v1/sessions/{id}/advance`)**: Investigações avançam continuamente por 10+ lances legais em Xadrez 8×8 e Go 9×9 (padrão 12 etapas, configurável até 60), com `Idempotency-Key`, concorrência otimista (`expected_version` → `409 Conflict`) e controles `/pause`, `/resume` e `/cancel`.

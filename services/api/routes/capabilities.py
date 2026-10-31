@@ -17,3 +17,4 @@ def get_manager():
 @router.get("/capabilities", response_model=CapabilitiesResponseSchema)
 def get_capabilities(manager=Depends(get_manager)):
     return manager.get_capabilities()
+

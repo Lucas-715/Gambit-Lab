@@ -35,3 +35,4 @@ Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 
 ### Adicionado
 - Arquitetura base da matriz 3×2 (Pesquisa, Debate, Auditoria × Xadrez 8×8, Go 9×9), motores determinísticos `python-chess` e `GoEngine9x9`, `EventStore` com hash SHA-256 encadeado, `DocumentVault` com isolamento de cofres privados, `FusionOrchestrator` e visualização WebGL 3D + 2D WCAG.
+

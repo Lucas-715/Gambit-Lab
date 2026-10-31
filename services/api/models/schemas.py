@@ -99,6 +99,7 @@ class CreateSessionRequest(BaseModel):
     budget: Optional[SessionBudget] = None
     initial_strategy: Optional[str] = "queen"
     max_steps: int = Field(default=12, ge=1, le=60)
+    depth: Literal["quick", "standard", "deep"] = "standard"
     force_demo: Optional[bool] = None
     use_demo_fixture: Optional[bool] = None
 
@@ -319,6 +320,159 @@ class FusionSynthesisReportSchema(BaseModel):
     )
 
 
+MatchDepth = Literal["quick", "standard", "deep"]
+TerminationCriterion = Literal["BOARD_VICTORY", "DRAW_BY_RULE", "BUDGET_EXHAUSTED"]
+LudicResult = Literal["WHITE_WINS", "BLACK_WINS", "DRAW", "UNDECIDED"]
+EpistemicResult = Literal[
+    "PRO_THESIS_SUPPORTED",
+    "CONTRA_THESIS_SUPPORTED",
+    "INCONCLUSIVE",
+    "OPEN_HYPOTHESIS",
+]
+
+
+class PieceArtifactRefSchema(BaseModel):
+    artifact_id: str
+    title: str
+    sha256: str
+    owner_side: Literal["white", "black", "public"] = "public"
+    source_type: Literal["document", "web"] = "document"
+    url: Optional[str] = None
+    domain: Optional[str] = None
+    quote_text: Optional[str] = None
+    verified: bool = False
+    played_at_ply: Optional[int] = None
+
+
+class PieceHistoryEntrySchema(BaseModel):
+    ply: int
+    move_label: str
+    from_coord: Optional[str] = None
+    to_coord: Optional[str] = None
+    event_kind: Literal[
+        "DEPLOYED",
+        "ADVANCE",
+        "CONFRONTATION_WON",
+        "CONFRONTATION_BLOCKED",
+        "CAPTURED",
+        "TERRITORY_PRESSURE",
+    ] = "ADVANCE"
+    summary: str
+    arbiter_verdict: Optional[str] = None
+
+
+class PieceDossierSchema(BaseModel):
+    piece_id: str
+    side: Literal["pro", "contra"]
+    color: Literal["white", "black"]
+    piece_type: str
+    symbol: str
+    label: str
+    role: str
+    initial_coord: str
+    current_coord: Optional[str] = None
+    stones: List[str] = Field(default_factory=list)
+    alive: bool = True
+    captured_at_ply: Optional[int] = None
+    captured_by_piece_id: Optional[str] = None
+    fall_explanation: Optional[str] = None
+    claim: str
+    supporting_artifacts: List[PieceArtifactRefSchema] = Field(default_factory=list)
+    counter_artifacts: List[PieceArtifactRefSchema] = Field(default_factory=list)
+    confidence_score: float = 0.0
+    epistemic_status: EvidenceVerdict = "HYPOTHESIS"
+    history: List[PieceHistoryEntrySchema] = Field(default_factory=list)
+
+
+class MatchPlyRecordSchema(BaseModel):
+    ply: int
+    event_seq: int
+    side: Literal["pro", "contra"]
+    color: Literal["white", "black"]
+    move: str
+    san: str
+    from_coord: Optional[str] = None
+    to_coord: Optional[str] = None
+    piece_id: str
+    piece_label: str
+    piece_role: str
+    claim_statement: str
+    quote_text: Optional[str] = None
+    artifact_title: Optional[str] = None
+    artifact_id: Optional[str] = None
+    epistemic_verdict: EvidenceVerdict = "HYPOTHESIS"
+    is_capture: bool = False
+    epistemic_blocked: bool = False
+    captured_piece_id: Optional[str] = None
+    captured_piece_label: Optional[str] = None
+    confrontation_summary: Optional[str] = None
+    is_turning_point: bool = False
+    pro_momentum: float = 0.5
+    board_snapshot: BoardPositionSchema
+    piece_coords_snapshot: Dict[str, Optional[str]] = Field(default_factory=dict)
+    piece_stones_snapshot: Dict[str, List[str]] = Field(default_factory=dict)
+
+
+class MatchStageInfoSchema(BaseModel):
+    index: int
+    key: str
+    label: str
+    status: Literal["pending", "running", "completed", "failed"] = "pending"
+    detail: Optional[str] = None
+
+
+class MatchConclusionSchema(BaseModel):
+    termination_criterion: TerminationCriterion
+    termination_reason: str
+    ludic_result: LudicResult
+    ludic_score_label: str
+    winner_side: Literal["pro", "contra", "draw", "none"]
+    epistemic_result: EpistemicResult
+    epistemic_verdict_label: str
+    pro_thesis: str
+    contra_thesis: str
+    pro_epistemic_score: float
+    contra_epistemic_score: float
+    verified_sources_pro: int
+    verified_sources_contra: int
+    turning_point_ply: Optional[int] = None
+    turning_point_summary: Optional[str] = None
+    is_provisional: bool = False
+    final_synthesis: str
+    key_arguments_pro: List[str] = Field(default_factory=list)
+    key_arguments_contra: List[str] = Field(default_factory=list)
+    limitations: List[str] = Field(default_factory=list)
+
+
+class ResearchMatchStateSchema(BaseModel):
+    session_id: str
+    depth: MatchDepth = "standard"
+    execution_mode: str = "DEMO_OFFLINE"
+    plies_budget: int = 160
+    plies_played: int = 0
+    game_finished: bool = False
+    resumable: bool = False
+    pro_color: Literal["white", "black"] = "white"
+    contra_color: Literal["white", "black"] = "black"
+    pro_thesis: str = ""
+    contra_thesis: str = ""
+    current_stage: int = 0
+    percent_complete: int = 0
+    is_complete: bool = False
+    stages: List[MatchStageInfoSchema] = Field(default_factory=list)
+    pieces: List[PieceDossierSchema] = Field(default_factory=list)
+    timeline: List[MatchPlyRecordSchema] = Field(default_factory=list)
+    conclusion: Optional[MatchConclusionSchema] = None
+
+
+class RunMatchRequest(BaseModel):
+    depth: Optional[MatchDepth] = None
+
+
+class ResumeMatchRequest(BaseModel):
+    extra_plies: Optional[int] = Field(default=None, ge=2, le=400)
+
+
 class SessionResponseSchema(BaseModel):
     id: str
     title: str
@@ -329,6 +483,7 @@ class SessionResponseSchema(BaseModel):
     version: int
     source_policy: str
     normalized_source_policy: NormalizedSourcePolicy = "OWN_ONLY"
+    depth: MatchDepth = "standard"
     ply_count: int = 0
     investigation_step_index: int = 0
     max_steps: int = 12
@@ -340,6 +495,7 @@ class SessionResponseSchema(BaseModel):
     artifacts: List[ArtifactSchema] = Field(default_factory=list)
     messages: List[Dict[str, Any]] = Field(default_factory=list)
     judgments: List[Dict[str, Any]] = Field(default_factory=list)
+    research_match: Optional[ResearchMatchStateSchema] = None
     integrity_status: IntegrityStatus = "NOT_CALCULATED"
     source_status: SourceStatus = "NO_SOURCES_ATTACHED"
     evidence_assessment: EvidenceVerdict = "HYPOTHESIS"

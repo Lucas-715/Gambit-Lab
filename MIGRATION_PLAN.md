@@ -79,3 +79,4 @@ Como nenhuma estrutura persistente anterior foi corrompida e todos os contratos 
 1. Para desativar apenas a Pesquisa Web mantendo o restante da release Nocturne: defina `GAMBIT_WEB_SEARCH_ENABLED=0` no `.env`.
 2. Para operar 100% offline sem consumo de API externa: defina `GAMBIT_FORCE_DEMO=1` no `.env`.
 3. Para reverter integralmente ao baseline anterior: `git checkout master` (`21425e0`).
+

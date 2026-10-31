@@ -78,3 +78,50 @@ A interface **Gambit Lab Nocturne** (`apps/web/index.html`) foi validada em inst
 | **Suíte de Aceite Reengenharia Nocturne (`AT-01`..`AT-24`)** | `tests/integration/test_nocturne_reengineering.py` | 24 | **24** | 0 | 0 |
 | **Testes Ao Vivo Google Gemini + Web Pública (`LIVE_WEB`)** | `tests/live/test_gemini_live.py` | 2 | **2** | 0 | 0 |
 | **TOTAL GERAL** | **10 arquivos de teste** | **66** | **66** | **0** | **0** |
+
+
+
+---
+
+## 7. Reengenharia v2.2: Research Match, Fundo Vivo e Dossiês de Peças
+
+Em conformidade com os novos requisitos do produto ("Fundo Vivo", partidas completas sem morte em 12 lances, isolamento estrito de pesquisa Pró vs Contra, dossiês por peça e desacoplamento do veredito científico), a arquitetura foi estendida com o motor modular `services/api/match/` e a interface Nocturne v2.2:
+
+### 7.1 Fundo Vivo & Parallax Cósmico
+- Implementado canvas de estrelas em 3 camadas de profundidade (distante, intermediária, próxima) com velocidades e densidades diferenciadas.
+- Adicionado drift cósmico contínuo suave com renovação de bordas e interpolação de mouse parallax.
+- Inserido controle acessível `#motionBtn` na barra de navegação para alternar a animação (respeitando `prefers-reduced-motion`).
+
+### 7.2 Partida Completa em 7 Estágios Determinísticos
+1. `DEFINING_SIDES`: Identificação substantiva do tema e teses centrais.
+2. `PRO_RESEARCH`: Coleta em cofre privado isolado (HTTP 403 para a parte adversa).
+3. `CONTRA_RESEARCH`: Coleta contrária estritamente isolada em cofre independente.
+4. `DOSSIER_ASSIGNMENT`: Atribuição de papéis, teses e evidências a cada peça (32 no Xadrez).
+5. `LUDIC_SIMULATION`: Jogo completo em `python-chess` / `GoEngine9x9` até critério formal de término (xeque-mate, resignação com déficit de 800 cp por 3 lances, dois passes no Go ou `BUDGET_EXHAUSTED` explícito e retomável).
+6. `SYNTHESIS`: Síntese cruzada com desacoplamento lúdico vs epistêmico.
+7. `REPLAY_SEALED`: Hash chain SHA-256 selada para auditoria sem LLM.
+
+### 7.3 Conclusão Dual Desacoplada e Ponto de Virada
+- **Resultado Lúdico**: Apura o vencedor pelas regras do jogo (`WHITE_WINS`, `BLACK_WINS`, `DRAW`, `UNDECIDED`).
+- **Veredito Epistêmico**: Determinado unicamente por citações literais auditadas (`PRO_THESIS_SUPPORTED`, `CONTRA_THESIS_SUPPORTED`, `INCONCLUSIVE`, `OPEN_HYPOTHESIS`).
+- **Botão Ponto de Virada (`⚡ Ponto de Virada`)**: Posiciona o cursor de replay diretamente no lance chave onde a disputa argumentativa foi decidida.
+
+### 7.4 5ª Aba Analítica: Peças & Teses
+- Apresenta os dossiês de todas as peças em jogo, com glifos, lado (⚪ Pró / ⚫ Contra), status epistêmico (`SUPPORTED`, `CONTESTED`, `FALLEN`, etc.), barra de confiança percentual e alegação textual vinculada.
+- Clique em qualquer casa do tabuleiro 2D/3D exibe o dossiê da peça correspondente no modal e permite saltar para a aba analítica.
+
+---
+
+## 8. Tabela de Verificação Consolidada (Final v2.2)
+
+| Componente | Testes Automatizados | Status |
+| :--- | :---: | :---: |
+| Motores de Jogo (FIDE Chess + Go 9×9) | 15 unitários | **PASS (100%)** |
+| Event Store SHA-256 e Concorrência | 4 unitários | **PASS (100%)** |
+| FUSION Pipeline Multi-Estratégia | 2 unitários | **PASS (100%)** |
+| Endpoints REST & Aplicações 3×2 | 10 integração | **PASS (100%)** |
+| Camadas de Verificação e Segurança | 9 integração | **PASS (100%)** |
+| Reengenharia Nocturne R1.0 (`AT-01`..`AT-24`) | 24 integração | **PASS (100%)** |
+| **Research Match v2.2 (`RM-01`..`RM-17`)** | **17 integração** | **PASS (100%)** |
+| **Automação de Navegador Real (CDP)** | **6 cenários** | **PASS (100%)** |
+| **TOTAL CONSOLIDADO** | **81 unit/int + 6 CDP** | **87 / 87 PASS (100%)** |
