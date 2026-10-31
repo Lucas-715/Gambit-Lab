@@ -174,3 +174,25 @@ Em atendimento à auditoria de rastreamento de lances e alinhamento visual, a ve
 - **Suíte Pytest Total**: 90 testes aprovados (`90 passed, 0 failed, 1 warning`).
 - **Suíte E2E CDP v2.3.1**: 6 cenários aprovados com gravação de telas comprovando a resolução de T01 a T06.
 
+---
+
+## 9. Redesign e Consolidação de Produto v2.4 (Resolução R01–R07)
+
+A versão **v2.4.0** implementou a reformulação completa de experiência e simplificação arquitetural demandada pelo usuário e baseada nos templates Stitch:
+
+| ID | Item do Redesign | Causa / Requisito | Resolução Implementada | Evidência / Screenshot |
+|---|---|---|---|---|
+| **R01** | Simplificação para 2 Modos Principais | Funcionalidades concorrentes na Home e excesso de jargões técnicos | Interface focada em **Debate de Evidências** (`debate`) e **Auditoria de Controles** (`audit`). A antiga Pesquisa Estratégica foi aposentada e suas ferramentas (Web, cofre, FUSION) integradas ao Debate. Sessões legadas `research` continuam legíveis. | `nocturne_v24_home_redesign.png` (**PASS**) |
+| **R02** | Tema Único NOCTURNE | Tema azul Cosmic poluidor concorrendo com o foco analítico | Eliminação total do tema azul Cosmic. Identidade estrita Nocturne: `#08080A`, `#111114`, `#18181D`, `#202028`, `#2B2B32` e violeta discreto `#A78BFA`. Fundo estelar sutil em monocromático com drift e parallax suave. | E2E CDP Passo 1 (**PASS**) |
+| **R03** | Xadrez 2D SVG Profissional como Padrão | Visualização 3D como padrão gerava sobrecarga e 2D usava glifos de texto desalinhados | 2D definido como padrão inicial (`viewMode = '2d'`). Renderização SVG 800×800 pura com 12 peças vetoriais nítidas do Stitch (`#w-pawn`, `#b-king`, etc.), seta vetorial do lance (`marker-end="url(#arrow-move)"`), coordenadas de canto internas e inversão de tabuleiro (`#flipBoardBtn`). | `nocturne_v24_debate_2d_chess.png`, `nocturne_v24_debate_board_flipped.png` (**PASS**) |
+| **R04** | Go 9×9 2D SVG Refinado | Grade anterior simples sem textura ou profundidade | Tabuleiro em madeira escura `#1B1B22`, linhas `#33333F`, pedras com gradiente radial e filtro de sombra projetada (`#stoneShadow`), anel pulsante no último lance e coordenadas `A..H, J` e `1..9`. | `nocturne_v24_audit_2d_go.png` (**PASS**) |
+| **R05** | Replay Bar com Play/Pause e Notação Clicável | Navegação manual passo a passo cansativa sem visão geral da timeline | Botão `#repPlayPauseBtn` avança lances a cada 1.5s automaticamente; barra de notação SAN clicável (`#replayMovesStrip`) permite saltar diretamente para qualquer lance com destaque ativo. | E2E CDP Passo 3 (**PASS**) |
+| **R06** | Painel Contextual Adaptativo por Modo | Auditoria em Go ou Xadrez não exibia requisitos normativos nem riscos estruturados | Adicionado modelo e preenchimento de `control_audit` no backend (`schemas.py`, `preparation.py`, `play.py`) e painel `#smpAuditBox` na UI: requisito normativo (ISO 27001, SOC 2, NIST, LGPD), badges de risco e conformidade, critérios esperados, evidências, achados e recomendações. | `nocturne_v24_audit_2d_go.png` (**PASS**) |
+| **R07** | Segurança e Higiene de Pacotes (CRÍTICO) | Risco de distribuição acidental de chaves de API em arquivos `.env` | Atualizado `scratch/create_release_zip.py` com `EXCLUDE_FILES = {".env"}` e validação pós-geração obrigatória que falha caso `.env` esteja presente ou `.env.example` esteja ausente. | `create_release_zip.py` (**VERIFIED**) |
+
+### Resultados Consolidados v2.4
+- **Suíte Pytest Completa**: **90 passed, 0 failed, 1 warning**.
+- **Suíte E2E CDP Real**: Todos os 5 passos aprovados com 4 telas de alta fidelidade capturadas.
+- **Pacote de Distribuição**: `Gambit_Lab_v2.4_Nocturne_Redesign.zip` verificado e livre de segredos.
+
+

@@ -8,40 +8,30 @@
 <style>
 :root {
   color-scheme: dark;
-  --bg: #040405;
-  --panel: #0B0C0F;
-  --panel-elevated: #121319;
-  --sidebar: #070709;
-  --border: #242630;
-  --border-strong: #343746;
-  --text: #F4F4F6;
-  --muted: #9A9BA5;
-  --subtle: #666873;
-  --accent: #A68DFF;
-  --accent-soft: rgba(166, 141, 255, 0.14);
-  --success: #57D5B3;
-  --success-soft: rgba(87, 213, 179, 0.13);
-  --warning: #E0B66B;
-  --warning-soft: rgba(224, 182, 107, 0.14);
-  --danger: #EF8293;
-  --danger-soft: rgba(239, 130, 147, 0.14);
-  --square-dark: #282B35;
-  --square-light: #8C909D;
-  --go-wood: #A88D63;
-  --go-line: #2F2417;
-  --r: 12px;
+  --bg: #08080A;
+  --panel: #111114;
+  --panel-elevated: #18181D;
+  --card-bg: #202028;
+  --sidebar: #0B0B0E;
+  --border: #2B2B32;
+  --border-strong: #3A3A44;
+  --text: #F2F2F4;
+  --muted: #A1A1AA;
+  --subtle: #71717A;
+  --accent: #A78BFA;
+  --accent-soft: rgba(167, 139, 250, 0.14);
+  --success: #5BBFA7;
+  --success-soft: rgba(91, 191, 167, 0.14);
+  --warning: #D5A65B;
+  --warning-soft: rgba(213, 166, 91, 0.14);
+  --danger: #D86B75;
+  --danger-soft: rgba(216, 107, 117, 0.14);
+  --square-dark: #18181C;
+  --square-light: #292931;
+  --go-wood: #1B1B22;
+  --go-line: #33333F;
+  --r: 10px;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-html[data-theme="cosmic"] {
-  --bg: #05070e;
-  --panel: #0d1423eb;
-  --panel-elevated: #131e32f2;
-  --sidebar: #090e19d9;
-  --border: #27384a;
-  --border-strong: #3a536b;
-  --accent: #70f0d2;
-  --accent-soft: rgba(112, 240, 210, 0.14);
 }
 
 * { box-sizing: border-box; }
@@ -1782,14 +1772,240 @@ body.star-motion-paused #space {
   margin-top: 6px;
 }
 
+
+/* --- NOCTURNE FOCUS V2.4 STYLES --- */
+.mode-switcher-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 auto 20px auto;
+  max-width: 540px;
+}
+.mode-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mode-pill:hover {
+  background: var(--panel-elevated);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.mode-pill.active {
+  background: rgba(167, 139, 250, 0.12);
+  border-color: var(--accent);
+  color: #FFFFFF;
+  box-shadow: 0 0 16px rgba(167, 139, 250, 0.18);
+}
+.mode-pill .mode-icon {
+  font-size: 18px;
+}
+
+/* Replay Moves Strip */
+.replay-moves-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  margin-top: 8px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+.move-pill {
+  padding: 3px 8px;
+  font-size: 11.5px;
+  font-family: monospace;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.move-pill:hover {
+  background: var(--card-bg);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.move-pill.active {
+  background: rgba(167, 139, 250, 0.25);
+  color: #FFFFFF;
+  border-color: var(--accent);
+  font-weight: bold;
+}
+
+/* Audit Box in Selected Move Panel */
+.smp-audit-box {
+  background: rgba(32, 32, 40, 0.7);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 12px;
+}
+.badge-risk {
+  font-size: 10px;
+  font-family: monospace;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.badge-risk.critical, .badge-risk.crítico {
+  background: rgba(216, 107, 117, 0.2);
+  color: #FF8F9C;
+  border: 1px solid rgba(216, 107, 117, 0.4);
+}
+.badge-risk.high, .badge-risk.alto {
+  background: rgba(213, 166, 91, 0.2);
+  color: #FFD182;
+  border: 1px solid rgba(213, 166, 91, 0.4);
+}
+.badge-risk.medium, .badge-risk.médio {
+  background: rgba(224, 182, 107, 0.15);
+  color: #E0B66B;
+  border: 1px solid rgba(224, 182, 107, 0.3);
+}
+.badge-risk.low, .badge-risk.baixo {
+  background: rgba(91, 191, 167, 0.15);
+  color: #5BBFA7;
+  border: 1px solid rgba(91, 191, 167, 0.3);
+}
+
+.badge-compliance {
+  font-size: 10px;
+  font-family: monospace;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.badge-compliance.compliant, .badge-compliance.conforme {
+  background: rgba(91, 191, 167, 0.18);
+  color: #5BBFA7;
+  border: 1px solid rgba(91, 191, 167, 0.4);
+}
+.badge-compliance.non_compliant, .badge-compliance.não_conforme {
+  background: rgba(216, 107, 117, 0.2);
+  color: #FF8F9C;
+  border: 1px solid rgba(216, 107, 117, 0.4);
+}
+.badge-compliance.partial, .badge-compliance.parcial {
+  background: rgba(213, 166, 91, 0.2);
+  color: #FFD182;
+  border: 1px solid rgba(213, 166, 91, 0.4);
+}
+.badge-compliance.unverified, .badge-compliance.não_verificado {
+  background: rgba(161, 161, 170, 0.12);
+  color: #A1A1AA;
+  border: 1px solid rgba(161, 161, 170, 0.25);
+}
+
+/* SVG 2D Board Styling */
+#forensicBoardSvg, #goBoardSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  user-select: none;
+}
+
 </style>
 </head>
 <body>
 
 <canvas id="space" aria-hidden="true"></canvas>
-<div class="planet p1" aria-hidden="true"></div>
-<div class="planet p2" aria-hidden="true"></div>
-<div class="planet p3" aria-hidden="true"></div>
+<div class="planet p1" style="display:none;" aria-hidden="true"></div>
+<div class="planet p2" style="display:none;" aria-hidden="true"></div>
+<div class="planet p3" style="display:none;" aria-hidden="true"></div>
+<svg id="globalSvgDefs" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Marker Arrowhead para Seta de Melhor Lance (estilo Chess.com) -->
+<marker id="arrow-best" markerheight="5" markerwidth="5" orient="auto-start-reverse" refx="5" refy="5" viewbox="0 0 10 10">
+<path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#5BBFA7"></path>
+</marker>
+<marker id="arrow-move" markerheight="5" markerwidth="5" orient="auto-start-reverse" refx="5" refy="5" viewbox="0 0 10 10">
+<path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#a78bfa"></path>
+</marker>
+<!-- White Pieces -->
+<g id="w-king">
+<path d="M50 20 L50 34 M43 27 L57 27 M38 42 C38 36 62 36 62 42 C62 48 56 50 56 54 L62 58 C66 61 68 66 68 73 L32 73 C32 66 34 61 38 58 L44 54 C44 50 38 48 38 42 Z" fill="#F3F3F6" stroke="#131316" stroke-linejoin="round" stroke-width="2"></path>
+<rect fill="#F3F3F6" height="6" rx="1" stroke="#131316" stroke-width="1.5" width="40" x="30" y="74"></rect>
+</g>
+<g id="w-queen">
+<path d="M30 40 L38 60 L62 60 L70 40 L58 48 L50 32 L42 48 Z" fill="#F3F3F6" stroke="#131316" stroke-linejoin="round" stroke-width="2"></path>
+<circle cx="30" cy="38" fill="#F3F3F6" r="3"></circle>
+<circle cx="50" cy="30" fill="#F3F3F6" r="3"></circle>
+<circle cx="70" cy="38" fill="#F3F3F6" r="3"></circle>
+<rect fill="#F3F3F6" height="16" rx="2" stroke="#131316" stroke-width="2" width="32" x="34" y="62"></rect>
+</g>
+<g id="w-rook">
+<path d="M34 32 L34 44 L40 44 L40 32 L46 32 L46 44 L54 44 L54 32 L60 32 L60 44 L66 44 L66 32 L68 50 L64 72 L36 72 L32 50 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
+<rect fill="#F3F3F6" height="7" rx="1" stroke="#131316" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</g>
+<g id="w-bishop">
+<path d="M50 25 C42 25 36 34 36 46 C36 56 42 62 44 68 L56 68 C58 62 64 56 64 46 C64 34 58 25 50 25 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
+<circle cx="50" cy="22" fill="#F3F3F6" r="3"></circle>
+<path d="M46 38 L54 46 M54 38 L46 46" stroke="#131316" stroke-width="2"></path>
+<rect fill="#F3F3F6" height="7" stroke="#131316" stroke-width="1.5" width="36" x="32" y="70"></rect>
+</g>
+<g id="w-knight">
+<path d="M35 72 L65 72 C65 65 62 60 58 56 C62 52 65 44 63 36 C61 28 53 28 50 31 C47 25 38 27 34 36 C30 44 32 52 35 56 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
+<circle cx="43" cy="38" fill="#131316" r="2"></circle>
+<rect fill="#F3F3F6" height="6" stroke="#131316" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</g>
+<g id="w-pawn">
+<circle cx="50" cy="36" fill="#F3F3F6" r="11" stroke="#131316" stroke-width="2"></circle>
+<path d="M42 49 L58 49 L62 70 L38 70 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
+<rect fill="#F3F3F6" height="6" rx="1" stroke="#131316" stroke-width="1.5" width="36" x="32" y="71"></rect>
+</g>
+<!-- Black Pieces (Obsidian with Crisp Outline) -->
+<g id="b-king">
+<path d="M50 20 L50 34 M43 27 L57 27 M38 42 C38 36 62 36 62 42 C62 48 56 50 56 54 L62 58 C66 61 68 66 68 73 L32 73 C32 66 34 61 38 58 L44 54 C44 50 38 48 38 42 Z" fill="#222228" stroke="#e4e1e6" stroke-linejoin="round" stroke-width="2"></path>
+<rect fill="#222228" height="6" rx="1" stroke="#e4e1e6" stroke-width="1.5" width="40" x="30" y="74"></rect>
+</g>
+<g id="b-queen">
+<path d="M30 40 L38 60 L62 60 L70 40 L58 48 L50 32 L42 48 Z" fill="#222228" stroke="#e4e1e6" stroke-linejoin="round" stroke-width="2"></path>
+<circle cx="30" cy="38" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
+<circle cx="50" cy="30" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
+<circle cx="70" cy="38" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
+<rect fill="#222228" height="16" rx="2" stroke="#e4e1e6" stroke-width="2" width="32" x="34" y="62"></rect>
+</g>
+<g id="b-rook">
+<path d="M34 32 L34 44 L40 44 L40 32 L46 32 L46 44 L54 44 L54 32 L60 32 L60 44 L66 44 L66 32 L68 50 L64 72 L36 72 L32 50 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
+<rect fill="#222228" height="7" rx="1" stroke="#e4e1e6" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</g>
+<g id="b-bishop">
+<path d="M50 25 C42 25 36 34 36 46 C36 56 42 62 44 68 L56 68 C58 62 64 56 64 46 C64 34 58 25 50 25 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
+<circle cx="50" cy="22" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
+<path d="M46 38 L54 46 M54 38 L46 46" stroke="#e4e1e6" stroke-width="2"></path>
+<rect fill="#222228" height="7" stroke="#e4e1e6" stroke-width="1.5" width="36" x="32" y="70"></rect>
+</g>
+<g id="b-knight">
+<path d="M35 72 L65 72 C65 65 62 60 58 56 C62 52 65 44 63 36 C61 28 53 28 50 31 C47 25 38 27 34 36 C30 44 32 52 35 56 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
+<circle cx="43" cy="38" fill="#a78bfa" r="2"></circle>
+<rect fill="#222228" height="6" stroke="#e4e1e6" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</g>
+<g id="b-pawn">
+<circle cx="50" cy="36" fill="#222228" r="11" stroke="#e4e1e6" stroke-width="2"></circle>
+<path d="M42 49 L58 49 L62 70 L38 70 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
+<rect fill="#222228" height="6" rx="1" stroke="#e4e1e6" stroke-width="1.5" width="36" x="32" y="71"></rect>
+</g>
+</defs>
+</svg>
 
 <div class="app">
   <!-- Barra Lateral Minimalista -->
@@ -1816,6 +2032,8 @@ body.star-motion-paused #space {
         </div>
       </div>
       <div class="topbar-actions">
+        <span class="pill" id="backendBadge" style="display:none;">● Conectando...</span>
+        <span class="pill" id="webCapBadge" style="display:none;">● Web...</span>
         <button class="btn sm secondary" id="btnDiagnostics" onclick="openDiagnosticsModal()" title="Diagnóstico de capacidades, IA, telemetria e Event Store">
           ⚙ Diagnóstico & Estado
         </button>
@@ -1824,47 +2042,61 @@ body.star-motion-paused #space {
 
     <!-- FASE 1: Home Conversacional -->
     <section class="home" id="home">
-      <div class="eyebrow">GAMBIT LAB NOCTURNE · R1.0</div>
-      <h1>Pergunte primeiro.<br><em>Audite cada movimento.</em></h1>
-      <p class="subtitle">Investigação multiagente guiada por motores determinísticos de Xadrez e Go, pesquisa web pública opt-in com proteção anti-SSRF e verificação literal de citações.</p>
+      <div class="eyebrow">GAMBIT LAB NOCTURNE</div>
+      <h1 class="home-title">Investigue com método.<br><em>Questione com evidências.</em></h1>
+      <p class="subtitle">Investigação multiagente orientada por motores determinísticos (Xadrez e Go), com auditoria rigorosa de cada movimento, checagem factual de fontes e separação estrita entre o vencedor lúdico e a verdade científica.</p>
+
+      <!-- Alternador de Modos Proeminente: Debater vs Auditar -->
+      <div class="mode-switcher-container">
+        <button type="button" class="mode-pill active" id="modeBtnDebate" onclick="setHomeMode('debate')" title="Investigar pergunta confrontando teses, oponentes e evidências">
+          <span class="mode-icon">⚖️</span>
+          <span class="mode-title">Debate de Evidências</span>
+        </button>
+        <button type="button" class="mode-pill" id="modeBtnAudit" onclick="setHomeMode('audit')" title="Auditar conformidade, controles, normas e relatórios de risco">
+          <span class="mode-icon">🔍</span>
+          <span class="mode-title">Auditoria de Controles</span>
+        </button>
+      </div>
 
       <div class="prompt-shell">
-        <textarea id="question" maxlength="1000" aria-label="Pergunta da investigação" placeholder="O que você deseja pesquisar, debater ou auditar? (Ex.: Quais os riscos e controles essenciais para agentes de IA em produção?)" spellcheck="true"></textarea>
+        <textarea id="question" maxlength="1000" aria-label="Pergunta da investigação ou objeto de auditoria" placeholder="Qual pergunta você deseja investigar com confronto de teses e evidências? (Ex.: O trabalho remoto reduziu ou aumentou a produtividade das equipes de engenharia?)" spellcheck="true"></textarea>
 
         <div class="composer-controls">
           <div class="selectors">
-            <div class="selectwrap">
-              <label for="modeSelect">Modo</label>
-              <select id="modeSelect">
-                <option value="research">Pesquisa estratégica</option>
-                <option value="debate">Debate de evidências</option>
-                <option value="audit">Auditoria de controles</option>
-              </select>
-            </div>
+            <!-- Select de modo mantido oculto para compatibilidade com APIs e scripts legados -->
+            <select id="modeSelect" style="display:none;">
+              <option value="debate" selected>Debate de evidências</option>
+              <option value="audit">Auditoria de controles</option>
+              <option value="research">Pesquisa estratégica</option>
+            </select>
+
             <div class="selectwrap">
               <label for="gameSelect">Jogo</label>
               <select id="gameSelect">
-                <option value="chess">♙ Xadrez (8×8)</option>
+                <option value="chess" selected>♙ Xadrez (8×8)</option>
                 <option value="go">◉ Go / Weiqi (9×9)</option>
               </select>
             </div>
             <div class="selectwrap">
               <label for="sourceSelect">Fontes</label>
               <select id="sourceSelect">
-                <option value="OWN_ONLY">Somente arquivos próprios (Cofre)</option>
+                <option value="OWN_ONLY" selected>Somente arquivos próprios (Cofre)</option>
                 <option value="HYBRID">Híbrido (Arquivos + Web pública)</option>
                 <option value="WEB_ONLY">Somente Pesquisa Web pública</option>
               </select>
             </div>
           </div>
-          <button class="round-send" id="goBtn" title="Iniciar investigação" aria-label="Iniciar investigação">Iniciar ↑</button>
+          <button class="round-send" id="goBtn" title="Iniciar investigação" aria-label="Iniciar investigação">Iniciar Investigação →</button>
         </div>
 
         <div class="prompt-opts">
           <label><input id="fusionCheck" type="checkbox" checked> FUSION (múltiplas estratégias)</label>
-          <label><input id="researchMatchCheck" type="checkbox" checked> <strong style="color:var(--accent)">Research Match v2 (Partida Completa + Dossiês)</strong></label>
-          <label><input id="forceDemoCheck" type="checkbox"> Modo DEMO_OFFLINE (sem cota Gemini)</label>
-          <label style="color:var(--accent)">＋ Anexar arquivo <input type="file" id="uploadFile" multiple accept=".pdf,.txt,.md,.csv,.json" hidden></label>
+          <label style="display:none;"><input id="researchMatchCheck" type="checkbox" checked></label>
+          <label style="display:none;"><input id="forceDemoCheck" type="checkbox"></label>
+          <label class="attach-label" style="color:var(--accent); cursor:pointer;">
+            ＋ Anexar documento ou evidência (.pdf, .txt, .md, .csv)
+            <input type="file" id="uploadFile" multiple accept=".pdf,.txt,.md,.csv,.json" hidden>
+          </label>
           <span class="mini-info" id="uploadsInfo">Nenhum arquivo local selecionado</span>
         </div>
       </div>
@@ -1874,14 +2106,14 @@ body.star-motion-paused #space {
       </div>
 
       <div class="suggestions" aria-label="Exemplos de investigação">
-        <button type="button" data-prompt="Qual a arquitetura mais segura para sistemas com IA autônoma?" data-mode="research" data-game="chess" data-policy="OWN_ONLY">♙ Arquitetura segura para IA autônoma (Cofre NIST)</button>
-        <button type="button" data-prompt="Governança e verificação formal de sistemas multiagente" data-mode="research" data-game="go" data-policy="WEB_ONLY">◉ Pesquisa Web pública em Go 9×9</button>
-        <button type="button" data-prompt="Quem vai ganhar as eleições presidenciais de 2030?" data-mode="debate" data-game="chess" data-policy="OWN_ONLY">♙ Projeção futura & incerteza (Eleições 2030)</button>
-        <button type="button" data-prompt="Auditoria de controles contra prompt injection e vazamento de segredos em LLMs" data-mode="audit" data-game="go" data-policy="HYBRID">◉ Auditoria Híbrida de Segurança em LLMs</button>
+        <button type="button" data-prompt="O trabalho remoto reduziu ou aumentou a produtividade das equipes de engenharia de software?" data-mode="debate" data-game="chess" data-policy="OWN_ONLY">⚖️ Produtividade e trabalho remoto em engenharia (Debate · Xadrez)</button>
+        <button type="button" data-prompt="Quais são os prós e contras no uso de modelos de linguagem abertos vs proprietários em produção?" data-mode="debate" data-game="go" data-policy="WEB_ONLY">⚖️ Modelos abertos vs proprietários em produção (Debate · Go 9×9)</button>
+        <button type="button" data-prompt="Auditoria de controles ISO 27001 para gerenciamento de chaves criptográficas (KMS) e rotação em Cloud" data-mode="audit" data-game="chess" data-policy="OWN_ONLY">🔍 Auditoria ISO 27001 em KMS e rotação de chaves (Auditoria · Xadrez)</button>
+        <button type="button" data-prompt="Auditoria de conformidade com a LGPD: retenção, eliminação e consentimento em pipelines de dados" data-mode="audit" data-game="go" data-policy="HYBRID">🔍 Auditoria LGPD e governança de dados sensíveis (Auditoria · Go 9×9)</button>
       </div>
 
       <p class="caption">
-        <strong>Compromisso de Honestidade Epistêmica:</strong> Nenhuma alegação recebe <code>SUPPORTED</code> sem fonte anexada e trecho literal verificado. Modos <code>LIVE</code> e <code>DEMO_OFFLINE</code> são sempre exibidos de forma explícita.
+        <strong>Compromisso de Honestidade Epistêmica:</strong> Nenhuma alegação recebe <code>SUPPORTED</code> sem fonte anexada e trecho literal verificado. O resultado lúdico do jogo nunca substitui o parecer factual independente.
       </p>
     </section>
 
@@ -1985,8 +2217,8 @@ body.star-motion-paused #space {
                 <span id="boardTitle">Tabuleiro de Xadrez · 8×8</span>
               </div>
               <div class="toggle-group">
-                <button class="toggle active" id="btn3D" onclick="setViewMode('3d')">3D Real (WebGL)</button>
-                <button class="toggle" id="btn2D" onclick="setViewMode('2d')">2D Acessível (WCAG)</button>
+                <button class="toggle active" id="btn2D" onclick="setViewMode('2d')">2D SVG Profissional</button>
+                <button class="toggle" id="btn3D" onclick="setViewMode('3d')">3D Real (WebGL)</button>
               </div>
             </div>
 
@@ -2000,6 +2232,8 @@ body.star-motion-paused #space {
               <div class="stage-container" id="stageContainer">
                 <canvas id="stage" aria-label="Tabuleiro 3D WebGL interativo de Xadrez e Go"></canvas>
                 <canvas id="stageCoordsOverlay" aria-hidden="true"></canvas>
+                <div id="boardFiles3D" style="display:none;" aria-hidden="true"></div>
+                <div id="boardRanks3D" style="display:none;" aria-hidden="true"></div>
               </div>
 
               <!-- Modo 2D acessível com grade matemática perfeita (C06 & v2.3.1) -->
@@ -2027,13 +2261,16 @@ body.star-motion-paused #space {
 
               <!-- Barra 2: Replay Determinístico (GET /replay?up_to_seq=... — ZERO chamadas ao Gemini) -->
               <div class="replay-bar" aria-label="Controles de replay histórico">
-                <span class="r-title">Replay histórico:</span>
-                <button class="btn sm secondary" id="repFirstBtn" onclick="navigateMoveReplay('first')" disabled>⏮ Início</button>
-                <button class="btn sm secondary" id="repPrevBtn" onclick="navigateMoveReplay('prev')" disabled>← Anterior</button>
-                <button class="btn sm secondary" id="repNextBtn" onclick="navigateMoveReplay('next')" disabled>Próximo →</button>
-                <button class="btn sm secondary" id="repLiveBtn" onclick="replayJumpLatest()" disabled>⏭ Atual</button>
+                <span class="r-title">Replay:</span>
+                <button class="btn sm secondary" id="repFirstBtn" onclick="navigateMoveReplay('first')" disabled title="Primeiro lance">⏮ Início</button>
+                <button class="btn sm secondary" id="repPrevBtn" onclick="navigateMoveReplay('prev')" disabled title="Lance anterior">← Anterior</button>
+                <button class="btn sm primary" id="repPlayPauseBtn" onclick="toggleReplayPlayPause()" title="Reproduzir timeline de lances com avanço automático a cada 1.5s">▶ Reproduzir</button>
+                <button class="btn sm secondary" id="repNextBtn" onclick="navigateMoveReplay('next')" disabled title="Próximo lance">Próximo →</button>
+                <button class="btn sm secondary" id="repLiveBtn" onclick="replayJumpLatest()" disabled title="Posição ao vivo">⏭ Atual</button>
+                <button class="btn sm secondary" id="flipBoardBtn" onclick="toggleBoardFlip()" title="Inverter perspectiva do tabuleiro (Brancas / Pretas)">⇄ Inverter</button>
                 <span id="replayCursorLabel" style="margin-left:auto">Posição ao vivo</span>
               </div>
+              <div class="replay-moves-strip" id="replayMovesStrip" aria-label="Notação e lances da partida"></div>
             </div>
 
             <div class="bottom-note">
@@ -2089,6 +2326,34 @@ body.star-motion-paused #space {
               </div>
 
               <!-- Seção 2: Tese & Evidência Documental -->
+              <!-- Seção de Auditoria de Controles (Exibida dinamicamente no modo audit) -->
+              <div class="smp-section smp-audit-box" id="smpAuditBox" style="display:none;">
+                <div class="smp-sec-title">🔍 AUDITORIA DE CONTROLE & CONFORMIDADE</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+                  <div style="font-size:12px;font-family:monospace;color:var(--accent);" id="smpAuditFrameworkReq">ISO 27001 - A.10</div>
+                  <div style="display:flex;gap:6px;">
+                    <span class="badge-risk" id="smpAuditRiskBadge">RISCO ALTO</span>
+                    <span class="badge-compliance" id="smpAuditComplianceBadge">NÃO CONFORME</span>
+                  </div>
+                </div>
+                <div style="margin-bottom:6px;">
+                  <small style="color:var(--muted)">Critério esperado:</small>
+                  <div id="smpAuditCriteria" style="font-size:12px;color:var(--text);margin-top:2px;">—</div>
+                </div>
+                <div style="margin-bottom:6px;">
+                  <small style="color:var(--muted)">Evidência coletada:</small>
+                  <div id="smpAuditEvidence" style="font-size:12px;color:var(--text);margin-top:2px;background:rgba(255,255,255,0.03);padding:6px;border-radius:4px;border:1px solid var(--border);">—</div>
+                </div>
+                <div style="margin-bottom:6px;">
+                  <small style="color:var(--muted)">Achado da auditoria:</small>
+                  <div id="smpAuditFinding" style="font-size:12.5px;color:#F2F2F4;margin-top:2px;line-height:1.4;">—</div>
+                </div>
+                <div>
+                  <small style="color:var(--muted)">Recomendação corretiva:</small>
+                  <div id="smpAuditRecommendation" style="font-size:12px;color:var(--success);margin-top:2px;font-family:monospace;">—</div>
+                </div>
+              </div>
+
               <div class="smp-section smp-thesis-box">
                 <div class="smp-sec-title">📖 TESE & PROVA DOCUMENTAL</div>
                 <p class="smp-claim-text" id="smpClaimText">Nenhum lance selecionado no momento.</p>
@@ -2350,7 +2615,9 @@ let serverCapabilities = {
 
 let mode = 'research';
 let game = 'chess';
-let viewMode = '3d';
+let viewMode = '2d';
+let isBoardFlipped = false;
+let replayTimer = null;
 let activeSession = null;
 let activeSessionId = null;
 let currentVersion = 1;
@@ -2833,55 +3100,204 @@ function parseFenToMap(fen) {
 function render2DBoard() {
   updateBoardCoordinatesLabels();
   const grid = document.getElementById('grid2D');
+  if (!grid) return;
   grid.innerHTML = '';
 
   if (game === 'chess') {
-    grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-    grid.style.gridTemplateRows = 'repeat(8, 1fr)';
-    const fenMap = parseFenToMap(boardState.chessFen);
+    grid.style.gridTemplateColumns = '1fr';
+    grid.style.gridTemplateRows = '1fr';
+    grid.style.background = '#18181C';
+    grid.style.position = 'relative';
 
+    const fenMap = parseFenToMap(boardState.chessFen);
+    const flipped = isBoardFlipped;
+
+    let svgHtml = `
+      <svg id="forensicBoardSvg" viewBox="0 0 800 800" width="100%" height="100%" style="display:block;border-radius:4px;user-select:none;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-move" markerHeight="5" markerWidth="5" orient="auto-start-reverse" refX="5" refY="5" viewBox="0 0 10 10">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#A78BFA"></path>
+          </marker>
+          <marker id="arrow-best" markerHeight="5" markerWidth="5" orient="auto-start-reverse" refX="5" refY="5" viewBox="0 0 10 10">
+            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#5BBFA7"></path>
+          </marker>
+        </defs>
+    `;
+
+    // 1. Squares & Highlights
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
-        const sq = 'abcdefgh'[c] + (8 - r);
-        const piece = fenMap[sq];
-        const isLight = (r + c) % 2 === 0;
-        const isHlOrigin = lastMoveOrigin && lastMoveOrigin[0] === c && lastMoveOrigin[1] === r;
-        const isHlDest = lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r;
+        const renderC = flipped ? (7 - c) : c;
+        const renderR = flipped ? (7 - r) : r;
+        const sq = 'abcdefgh'[renderC] + (8 - renderR);
+        const isLight = (renderR + renderC) % 2 === 0;
 
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `cell-2d ${isLight ? 'light' : 'dark'} ${isHlOrigin ? 'hl-origin' : ''} ${isHlDest ? 'hl-dest' : ''}`;
-        btn.setAttribute('aria-label', `Casa ${sq}: ${piece ? piece : 'vazia'}`);
-        btn.title = sq;
-        if (piece) btn.textContent = glyph[piece] || piece;
-        btn.onclick = () => inspectCell(c, r, sq);
-        grid.appendChild(btn);
+        const isHlOrigin = lastMoveOrigin && lastMoveOrigin[0] === renderC && lastMoveOrigin[1] === renderR;
+        const isHlDest = lastMoveDest && lastMoveDest[0] === renderC && lastMoveDest[1] === renderR;
+
+        const x = c * 100;
+        const y = r * 100;
+        const bgFill = isLight ? '#292931' : '#18181C';
+
+        svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="${bgFill}" class="cell-2d ${isLight ? 'light' : 'dark'}" style="cursor:pointer;" onclick="inspectCell(${renderC}, ${renderR}, '${sq}')" />`;
+
+        if (isHlOrigin) {
+          svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.28)" pointer-events="none" />`;
+        }
+        if (isHlDest) {
+          svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.42)" stroke="#A78BFA" stroke-width="2.5" pointer-events="none" />`;
+        }
+
+        // Labels nos cantos internos das casas de borda (Lichess/Chess.com style)
+        if (r === 7) {
+          const fileLetter = 'abcdefgh'[renderC];
+          svgHtml += `<text x="${x + 88}" y="${y + 92}" fill="${isLight ? '#71717A' : '#52525B'}" font-size="12" font-family="monospace" font-weight="600" text-anchor="end" pointer-events="none">${fileLetter}</text>`;
+        }
+        if (c === 0) {
+          const rankNum = (8 - renderR);
+          svgHtml += `<text x="${x + 8}" y="${y + 18}" fill="${isLight ? '#71717A' : '#52525B'}" font-size="12" font-family="monospace" font-weight="600" text-anchor="start" pointer-events="none">${rankNum}</text>`;
+        }
       }
     }
-  } else {
-    grid.style.gridTemplateColumns = 'repeat(9, 1fr)';
-    grid.style.gridTemplateRows = 'repeat(9, 1fr)';
 
+    // 2. Pieces
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const renderC = flipped ? (7 - c) : c;
+        const renderR = flipped ? (7 - r) : r;
+        const sq = 'abcdefgh'[renderC] + (8 - renderR);
+        const piece = fenMap[sq];
+        if (piece) {
+          const symbolMap = {
+            'P': '#w-pawn', 'N': '#w-knight', 'B': '#w-bishop', 'R': '#w-rook', 'Q': '#w-queen', 'K': '#w-king',
+            'p': '#b-pawn', 'n': '#b-knight', 'b': '#b-bishop', 'r': '#b-rook', 'q': '#b-queen', 'k': '#b-king'
+          };
+          const symId = symbolMap[piece];
+          if (symId) {
+            const x = c * 100;
+            const y = r * 100;
+            svgHtml += `<use href="${symId}" x="${x}" y="${y}" width="100" height="100" style="cursor:pointer;" onclick="inspectCell(${renderC}, ${renderR}, '${sq}')" />`;
+          }
+        }
+      }
+    }
+
+    // 3. Move Arrow
+    if (lastMoveOrigin && lastMoveDest) {
+      const oc = flipped ? (7 - lastMoveOrigin[0]) : lastMoveOrigin[0];
+      const or_ = flipped ? (7 - lastMoveOrigin[1]) : lastMoveOrigin[1];
+      const dc = flipped ? (7 - lastMoveDest[0]) : lastMoveDest[0];
+      const dr = flipped ? (7 - lastMoveDest[1]) : lastMoveDest[1];
+
+      const x1 = oc * 100 + 50;
+      const y1 = or_ * 100 + 50;
+      const x2 = dc * 100 + 50;
+      const y2 = dr * 100 + 50;
+
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 10) {
+        const shorten = 18;
+        const ax2 = x2 - (dx / dist) * shorten;
+        const ay2 = y2 - (dy / dist) * shorten;
+        svgHtml += `<line x1="${x1}" y1="${y1}" x2="${ax2}" y2="${ay2}" stroke="#A78BFA" stroke-width="7" stroke-linecap="round" marker-end="url(#arrow-move)" opacity="0.88" pointer-events="none" />`;
+      }
+    }
+
+    svgHtml += `</svg>`;
+    grid.innerHTML = svgHtml;
+  } else {
+    // Go 9x9 SVG Board
+    grid.style.gridTemplateColumns = '1fr';
+    grid.style.gridTemplateRows = '1fr';
+    grid.style.background = '#1B1B22';
+    grid.style.position = 'relative';
+
+    const flipped = isBoardFlipped;
+
+    let svgHtml = `
+      <svg id="goBoardSvg" viewBox="0 0 400 400" width="100%" height="100%" style="display:block;border-radius:4px;user-select:none;padding:8px;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="stoneShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.6"/>
+          </filter>
+          <radialGradient id="whiteStoneGrad" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="40%" stop-color="#EBEBF0"/>
+            <stop offset="100%" stop-color="#B0B0BA"/>
+          </radialGradient>
+          <radialGradient id="blackStoneGrad" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#40404C"/>
+            <stop offset="60%" stop-color="#1E1E26"/>
+            <stop offset="100%" stop-color="#0E0E12"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Board Grid Lines (9x9) -->
+        <g stroke="#33333F" stroke-width="1.2">
+    `;
+
+    for (let i = 0; i < 9; i++) {
+      const pos = 20 + i * 45;
+      svgHtml += `<line x1="20" y1="${pos}" x2="380" y2="${pos}" />`;
+      svgHtml += `<line x1="${pos}" y1="20" x2="${pos}" y2="380" />`;
+    }
+
+    svgHtml += `
+        </g>
+        <!-- Star Points (Hoshi) -->
+        <g fill="#8E8E9B">
+          <circle cx="110" cy="110" r="3" />
+          <circle cx="290" cy="110" r="3" />
+          <circle cx="110" cy="290" r="3" />
+          <circle cx="290" cy="290" r="3" />
+          <circle cx="200" cy="200" r="3.5" fill="#A78BFA" />
+        </g>
+    `;
+
+    // Interseções clicáveis
+    svgHtml += `<g class="go-intersections">`;
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
-        const coord = `${GO_COLS[c]}${9 - r}`;
-        const stone = (boardState.goStones || []).find(s => s.col === c && s.row === r);
-        const isHlDest = lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r;
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `cell-2d go-cell ${isHlDest ? 'hl-dest' : ''}`;
-        btn.setAttribute('aria-label', `Interseção ${coord}${stone ? (stone.color === 'B' ? ': pedra preta' : ': pedra branca') : ''}`);
-        btn.title = coord;
-        if (stone) {
-          const sEl = document.createElement('div');
-          sEl.className = `go-stone-2d ${stone.color === 'B' ? 'black' : 'white'}`;
-          btn.appendChild(sEl);
-        }
-        btn.onclick = () => inspectCell(c, r, coord);
-        grid.appendChild(btn);
+        const renderC = flipped ? (8 - c) : c;
+        const renderR = flipped ? (8 - r) : r;
+        const coord = `${GO_COLS[renderC]}${9 - renderR}`;
+        const cx = 20 + c * 45;
+        const cy = 20 + r * 45;
+        svgHtml += `<circle cx="${cx}" cy="${cy}" r="16" fill="transparent" class="cell-2d go-cell" style="cursor:pointer;" onclick="inspectCell(${renderC}, ${renderR}, '${coord}')" />`;
       }
     }
+    svgHtml += `</g>`;
+
+    // Pedras no tabuleiro
+    const stones = boardState.goStones || [];
+    svgHtml += `<g filter="url(#stoneShadow)">`;
+    for (const s of stones) {
+      const renderC = flipped ? (8 - s.col) : s.col;
+      const renderR = flipped ? (8 - s.row) : s.row;
+      const coord = `${GO_COLS[s.col]}${9 - s.row}`;
+      const cx = 20 + renderC * 45;
+      const cy = 20 + renderR * 45;
+      const grad = s.color === 'B' ? 'url(#blackStoneGrad)' : 'url(#whiteStoneGrad)';
+      svgHtml += `<circle cx="${cx}" cy="${cy}" r="17" fill="${grad}" class="cell-2d go-stone" style="cursor:pointer;" onclick="inspectCell(${s.col}, ${s.row}, '${coord}')" />`;
+    }
+    svgHtml += `</g>`;
+
+    // Pulso no último lance
+    if (lastMoveDest) {
+      const lmc = flipped ? (8 - lastMoveDest[0]) : lastMoveDest[0];
+      const lmr = flipped ? (8 - lastMoveDest[1]) : lastMoveDest[1];
+      const cx = 20 + lmc * 45;
+      const cy = 20 + lmr * 45;
+      svgHtml += `
+        <circle cx="${cx}" cy="${cy}" r="22" fill="none" stroke="#A78BFA" stroke-width="2.5" opacity="0.9" pointer-events="none" />
+        <circle cx="${cx}" cy="${cy}" r="4" fill="#A78BFA" pointer-events="none" />
+      `;
+    }
+
+    svgHtml += `</svg>`;
+    grid.innerHTML = svgHtml;
   }
 }
 
@@ -4312,8 +4728,13 @@ function toggleSidebar() {
 function updateBoardCoordinatesLabels() {
   const isChess = (game === 'chess');
   const size = isChess ? 8 : 9;
-  const ranks = isChess ? ['8','7','6','5','4','3','2','1'] : ['9','8','7','6','5','4','3','2','1'];
-  const files = isChess ? ['a','b','c','d','e','f','g','h'] : ['A','B','C','D','E','F','G','H','J']; // nunca I
+  let ranks = isChess ? ['8','7','6','5','4','3','2','1'] : ['9','8','7','6','5','4','3','2','1'];
+  let files = isChess ? ['a','b','c','d','e','f','g','h'] : ['A','B','C','D','E','F','G','H','J']; // nunca I
+
+  if (isBoardFlipped) {
+    ranks = [...ranks].reverse();
+    files = [...files].reverse();
+  }
 
   const ranks2D = document.getElementById('boardRanks2D');
   const files2D = document.getElementById('boardFiles2D');
@@ -4418,6 +4839,90 @@ async function selectMoveByPly(ply, syncReplay = true) {
 }
 
 // Atualização do Painel "LANCE SELECIONADO"
+
+/* --- NOCTURNE FOCUS V2.4 HELPERS --- */
+function setHomeMode(m) {
+  mode = m;
+  const sel = document.getElementById('modeSelect');
+  if (sel) sel.value = m;
+
+  const bDeb = document.getElementById('modeBtnDebate');
+  const bAud = document.getElementById('modeBtnAudit');
+  if (bDeb) bDeb.classList.toggle('active', m === 'debate');
+  if (bAud) bAud.classList.toggle('active', m === 'audit');
+
+  const qInput = document.getElementById('question');
+  const goBtn = document.getElementById('goBtn');
+
+  if (m === 'audit') {
+    if (qInput) qInput.placeholder = 'Qual sistema, processo ou documento você deseja auditar? (Ex.: Avaliar conformidade do pipeline de dados com a LGPD e controles de integridade ISO 27001)';
+    if (goBtn) goBtn.textContent = 'Iniciar Auditoria →';
+  } else {
+    if (qInput) qInput.placeholder = 'Qual pergunta você deseja investigar com confronto de teses e evidências? (Ex.: O trabalho remoto reduziu ou aumentou a produtividade das equipes de engenharia?)';
+    if (goBtn) goBtn.textContent = 'Iniciar Investigação →';
+  }
+}
+
+function toggleBoardFlip() {
+  isBoardFlipped = !isBoardFlipped;
+  if (viewMode === '2d') {
+    render2DBoard();
+  } else {
+    cameraAngle += Math.PI;
+    requestAnimationFrame(render3DScene);
+  }
+  const btn = document.getElementById('flipBoardBtn');
+  if (btn) btn.classList.toggle('active', isBoardFlipped);
+  notify(`Tabuleiro invertido (${isBoardFlipped ? 'Visão das Pretas' : 'Visão das Brancas'})`);
+}
+
+function toggleReplayPlayPause() {
+  const btn = document.getElementById('repPlayPauseBtn');
+  if (replayTimer) {
+    clearInterval(replayTimer);
+    replayTimer = null;
+    if (btn) btn.textContent = '▶ Reproduzir';
+  } else {
+    if (btn) btn.textContent = '⏸ Pausar';
+    replayTimer = setInterval(async () => {
+      const maxPlies = (activeMatchTimeline && activeMatchTimeline.length) || 0;
+      if (selectedMovePly >= maxPlies) {
+        clearInterval(replayTimer);
+        replayTimer = null;
+        if (btn) btn.textContent = '▶ Reproduzir';
+        return;
+      }
+      await selectMoveByPly(selectedMovePly + 1, true);
+    }, 1500);
+  }
+}
+
+function renderReplayMovesStrip() {
+  const container = document.getElementById('replayMovesStrip');
+  if (!container) return;
+  const timeline = activeMatchTimeline || [];
+  if (timeline.length === 0) {
+    container.innerHTML = '<span class="text-subtle" style="font-size:11px;color:var(--muted)">Aguardando lances da partida...</span>';
+    return;
+  }
+  let html = '';
+  for (let i = 0; i < timeline.length; i++) {
+    const rec = timeline[i];
+    const ply = rec.ply || (i + 1);
+    const san = rec.san || rec.move || `L${ply}`;
+    const isWhite = (rec.color === 'white' || rec.side === 'pro');
+    const moveNum = Math.floor((ply - 1) / 2) + 1;
+    const prefix = (ply % 2 !== 0) ? `<span style="color:var(--subtle);font-size:11px;margin-right:2px">${moveNum}.</span>` : '';
+    const isActive = (selectedMovePly === ply);
+    html += `
+      <button type="button" class="move-pill ${isActive ? 'active' : ''} ${isWhite ? 'white' : 'black'}" onclick="selectMoveByPly(${ply}, true)" title="Lance #${ply}: ${san}">
+        ${prefix}${san}
+      </button>
+    `;
+  }
+  container.innerHTML = html;
+}
+
 function updateSelectedMovePanel(record, state = 'MOVE_READY') {
   const stateContainer = document.getElementById('smpStateContainer');
   const content = document.getElementById('smpContent');
@@ -4436,6 +4941,7 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
     if (content) content.style.display = 'none';
     const wsPlyLbl = document.getElementById('wsCurrentPlyLabel');
     if (wsPlyLbl) wsPlyLbl.textContent = 'Lance: Inicial';
+    renderReplayMovesStrip();
     return;
   }
 
@@ -4453,6 +4959,7 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
     if (content) content.style.display = 'none';
     const wsPlyLbl = document.getElementById('wsCurrentPlyLabel');
     if (wsPlyLbl) wsPlyLbl.textContent = 'Posição Inicial (antes de #1)';
+    renderReplayMovesStrip();
     return;
   }
 
@@ -4481,6 +4988,16 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
   const verdictBadge = document.getElementById('smpVerdictBadge');
   const verdictReason = document.getElementById('smpVerdictReason');
 
+  // Audit elements
+  const auditBox = document.getElementById('smpAuditBox');
+  const auditFrameworkReq = document.getElementById('smpAuditFrameworkReq');
+  const auditRiskBadge = document.getElementById('smpAuditRiskBadge');
+  const auditComplianceBadge = document.getElementById('smpAuditComplianceBadge');
+  const auditCriteria = document.getElementById('smpAuditCriteria');
+  const auditEvidence = document.getElementById('smpAuditEvidence');
+  const auditFinding = document.getElementById('smpAuditFinding');
+  const auditRecommendation = document.getElementById('smpAuditRecommendation');
+
   const audit = record.audit_payload || {};
   const moveInfo = audit.move || {};
   const pieceInfo = audit.piece || {};
@@ -4499,15 +5016,47 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
   if (plyBadge) plyBadge.textContent = `Lance #${plyNum}`;
   if (sanLabel) sanLabel.textContent = san;
   if (sidePill) {
-    sidePill.textContent = (side === 'pro' ? '⚪ Pró' : '⚫ Contra');
-    sidePill.style.background = (side === 'pro' ? 'rgba(121, 134, 203, 0.2)' : 'rgba(239, 83, 80, 0.2)');
-    sidePill.style.color = (side === 'pro' ? '#9fa8da' : '#ef9a9a');
+    if (mode === 'audit') {
+      sidePill.textContent = (side === 'pro' ? '🛡️ Auditor Controles' : '⚠️ Auditor Riscos');
+      sidePill.style.background = (side === 'pro' ? 'rgba(91, 191, 167, 0.18)' : 'rgba(216, 107, 117, 0.18)');
+      sidePill.style.color = (side === 'pro' ? '#5BBFA7' : '#FF8F9C');
+    } else {
+      sidePill.textContent = (side === 'pro' ? '⚪ Pró' : '⚫ Contra');
+      sidePill.style.background = (side === 'pro' ? 'rgba(167, 139, 250, 0.18)' : 'rgba(239, 83, 80, 0.2)');
+      sidePill.style.color = (side === 'pro' ? '#A78BFA' : '#ef9a9a');
+    }
   }
 
   if (pieceLabel) pieceLabel.textContent = pieceInfo.label || record.piece_label || `${color} (${san})`;
   if (coordsLabel) coordsLabel.textContent = `${fromCoord} → ${toCoord}`;
-  if (pieceRole) pieceRole.textContent = pieceInfo.role || record.piece_role || 'Investigação tática';
+  if (pieceRole) pieceRole.textContent = pieceInfo.role || record.piece_role || (mode === 'audit' ? 'Verificação de Controle Normativo' : 'Investigação tática');
   if (claimText) claimText.textContent = pieceInfo.claim_statement || record.claim_statement || 'Tese em andamento.';
+
+  // Exibição e preenchimento de Auditoria de Controles
+  const ctrlAudit = record.control_audit || (audit && audit.control_audit);
+  if (auditBox) {
+    if (mode === 'audit' || ctrlAudit) {
+      auditBox.style.display = 'block';
+      const c = ctrlAudit || {};
+      if (auditFrameworkReq) auditFrameworkReq.textContent = c.framework_requirement ? `${c.framework_requirement} · ${c.control_id || ''}` : 'ISO 27001 / SOC 2 / NIST';
+      if (auditRiskBadge) {
+        const rk = (c.risk_level || 'MÉDIO').toUpperCase();
+        auditRiskBadge.textContent = `RISCO ${rk}`;
+        auditRiskBadge.className = `badge-risk ${rk.toLowerCase()}`;
+      }
+      if (auditComplianceBadge) {
+        const cs = (c.compliance_status || 'NÃO VERIFICADO').toUpperCase();
+        auditComplianceBadge.textContent = cs;
+        auditComplianceBadge.className = `badge-compliance ${cs.toLowerCase().replace(' ', '_')}`;
+      }
+      if (auditCriteria) auditCriteria.textContent = c.expected_criteria || 'Requisitos e controles de conformidade estabelecidos pela norma.';
+      if (auditEvidence) auditEvidence.textContent = c.evidence_found || (record.quote_text ? `"${record.quote_text}"` : 'Telemetria do sistema e logs de configuração auditados.');
+      if (auditFinding) auditFinding.textContent = c.finding || record.claim_statement || 'Análise de controles operacionais em andamento.';
+      if (auditRecommendation) auditRecommendation.textContent = c.recommendation || 'Garantir automação de políticas e revisão trimestral de evidências.';
+    } else {
+      auditBox.style.display = 'none';
+    }
+  }
 
   // Citação e Verificação Honesta
   const quote = (evidInfo.quotes && evidInfo.quotes[0]) || record.quote_text;
@@ -4522,7 +5071,7 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
     if (sourceMeta) {
       const vText = isVerified ? '✓ Citação verificada no arquivo' : '⚠️ Citação anexada; relevância semântica pendente';
       sourceMeta.textContent = `Fonte: ${record.artifact_title || 'Documento do cofre'} · ${vText}`;
-      sourceMeta.style.color = isVerified ? '#34d399' : '#fbbf24';
+      sourceMeta.style.color = isVerified ? '#5BBFA7' : '#D5A65B';
     }
   } else if (quoteBox) {
     quoteBox.style.display = 'none';
@@ -4547,17 +5096,17 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
   // Status físico
   if (captureBadge) {
     captureBadge.textContent = isCap ? 'SIM (Peça removida)' : 'NÃO';
-    captureBadge.style.color = isCap ? '#fbbf24' : 'var(--muted)';
+    captureBadge.style.color = isCap ? '#D5A65B' : 'var(--muted)';
   }
   if (checkBadge) {
     const isChk = outInfo.check != null ? outInfo.check : (boardState && boardState.isCheck);
     checkBadge.textContent = isChk ? 'SIM' : 'NÃO';
-    checkBadge.style.color = isChk ? '#f87171' : 'var(--muted)';
+    checkBadge.style.color = isChk ? '#D86B75' : 'var(--muted)';
   }
   if (mateBadge) {
     const isMate = outInfo.mate != null ? outInfo.mate : false;
     mateBadge.textContent = isMate ? 'SIM' : 'NÃO';
-    mateBadge.style.color = isMate ? '#f87171' : 'var(--muted)';
+    mateBadge.style.color = isMate ? '#D86B75' : 'var(--muted)';
   }
 
   // Avaliação factual do árbitro (não falsifica captura como REFUTED)
@@ -4576,6 +5125,8 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
 
   const wsPlyLbl = document.getElementById('wsCurrentPlyLabel');
   if (wsPlyLbl) wsPlyLbl.textContent = `Lance: #${plyNum} (${san})`;
+
+  renderReplayMovesStrip();
 }
 
 // Modal de diagnóstico

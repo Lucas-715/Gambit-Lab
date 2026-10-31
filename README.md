@@ -1,14 +1,48 @@
-# Gambit Lab Nocturne (v2.3.1 Focus) — Framework Multiagente Orientado por Jogos & Research Match
+# Gambit Lab Nocturne (v2.4 Redesign) — Framework Multiagente de Debate & Auditoria Orientado por Jogos
 
-> **Princípio Central**: *O LLM propõe, as regras do jogo restringem, as evidências sustentam e o sistema registra.*
+> **Princípio Central**: *O LLM propõe, as regras do jogo restringem, as evidências sustentam e o sistema audita.*
 
-O **Gambit Lab Nocturne** é um framework de raciocínio, debate e auditoria multiagente guiado por motores formais de jogos (*Game-Driven Multi-Agent Epistemic System*). A plataforma estrutura investigações auditáveis em sequências procedurais rigorosas:
+O **Gambit Lab Nocturne** é uma plataforma profissional de investigação, debate epistêmico e auditoria de controles orientada por motores formais de jogos (*Game-Driven Multi-Agent Epistemic & Audit System*). A plataforma estrutura análises rigorosas em sequências procedurais determinísticas:
 
-$$\text{Pergunta} \longrightarrow \text{Hipótese} \longrightarrow \text{Busca / Cofre} \longrightarrow \text{Citação Literal} \longrightarrow \text{Contestação} \longrightarrow \text{Arbitragem} \longrightarrow \text{Event Store SHA-256}$$
+$$\text{Pergunta / Objeto} \longrightarrow \text{Teses / Requisitos} \longrightarrow \text{Busca / Evidências} \longrightarrow \text{Citação Literal} \longrightarrow \text{Confronto} \longrightarrow \text{Arbitragem / Conformidade} \longrightarrow \text{Event Store SHA-256}$$
 
 ---
 
-## 1. Novidades da Reengenharia Nocturne Focus (`v2.3.1`)
+## 1. Novidades da Versão v2.4 (Redesign & Consolidação de Produto)
+
+- **Simplificação Radical em 2 Modalidades Principais**:
+  - **⚖️ Debate de Evidências** (`debate`): Confronto de teses e argumentos favoráveis e contrários com validação estrita de fontes. As capacidades da antiga "Pesquisa Estratégica" (busca Web pública anti-SSRF, cofre privado isolado e FUSION) foram integradas de forma limpa nesta modalidade.
+  - **🔍 Auditoria de Controles** (`audit`): Avaliação formal de requisitos de conformidade e governança (ISO 27001, SOC 2, NIST CSF, CIS, LGPD, OWASP), com critérios esperados, achados objetivos, classificação de riscos (`CRÍTICO`, `ALTO`, `MÉDIO`, `BAIXO`) e recomendações técnicas.
+- **Identidade Visual Única NOCTURNE**:
+  - Eliminação completa do tema azul Cosmic. Paleta estrita profissional: fundo `#08080A`, superfícies `#111114`, elevação `#18181D`, cartões `#202028`, bordas `#2B2B32`, texto `#F2F2F4`, violeta forense `#A78BFA`, sucesso `#5BBFA7`, alerta `#D5A65B`, erro `#D86B75`.
+  - Fundo estelar sutil em monocromático com drift suave e parallax proporcional, sem planetas ou nebulas chamativas.
+- **Xadrez 2D Profissional SVG como Padrão**:
+  - Visualização 2D definida como padrão de abertura (`viewMode = '2d'`).
+  - Grade SVG 800×800 matemática perfeita com 64 casas cinza-pedra claro (`#292931`) e grafite profundo (`#18181C`).
+  - Símbolos vetoriais de peças nítidos extraídos do Stitch (`#w-pawn`, `#b-king`, etc.), sem dependência de fontes tipográficas externas.
+  - Seta vetorial do lance suave em `#A78BFA` com marcador arrowhead.
+  - Coordenadas de canto internas (estilo Chess.com / Lichess) para `a..h` e `8..1`.
+  - Inversão de perspectiva do tabuleiro com um clique (`#flipBoardBtn` / `isBoardFlipped`).
+- **Go 9×9 2D SVG**:
+  - Tabuleiro em madeira escura `#1B1B22`, linhas `#33333F`, pontos Hoshi e Tengen.
+  - Pedras com gradiente radial e filtro de sombra projetada (`#stoneShadow`).
+  - Anel pulsante violeta no último lance jogado.
+  - Coordenadas clássicas `A..H, J` (sem a letra `I`) e `1..9`.
+- **Replay Bar com Reprodução Automática (Timer) e Notação Clicável**:
+  - Botão `#repPlayPauseBtn` reproduz automaticamente os lances da partida a cada 1.5s.
+  - Barra de notação clicável (`#replayMovesStrip`) exibindo todos os lances SAN com realce ativo do lance atual.
+- **Painel Contextual Adaptativo por Modo**:
+  - Modo Debate: Exibe peça, movimento, SAN, tese defendida, citação literal com badge `SOURCE_VERIFIED`, contestação e veredito do árbitro.
+  - Modo Auditoria: Exibe requisito normativo (ex.: `ISO 27001 - A.10 / SOC 2 CC6.1`), badge de risco, status de conformidade (`CONFORME`, `NÃO CONFORME`, `PARCIAL`), critério esperado, evidência encontrada, achado e recomendação técnica.
+- **Segurança e Higiene de Pacotes (CRÍTICO)**:
+  - Script de empacotamento `create_release_zip.py` filtra estritamente `.env` com validação de segurança automatizada, garantindo que credenciais permaneçam estritamente no ambiente local e apenas `.env.example` seja distribuído.
+- **Cobertura de Testes**:
+  - **90 testes aprovados no Pytest (`90 passed, 0 failed, 1 warning`)**.
+  - Suíte E2E via Chrome DevTools Protocol com 4 telas de alta fidelidade capturadas.
+
+---
+
+## 2. Novidades da Reengenharia Nocturne Focus (`v2.3.1`)
 
 - **Rastreabilidade Ponta a Ponta no Painel 'Lance Selecionado'**:
   - População automática do painel no término do carregamento da partida (`loadMatchAndPieces`) com o último lance do timeline, eliminando painéis em branco.
@@ -47,7 +81,19 @@ $$\text{Pergunta} \longrightarrow \text{Hipótese} \longrightarrow \text{Busca /
 
 ---
 
-## 2. Capturas Reais Verificadas (Chromium + WebGL)
+## 3. Capturas Reais Verificadas v2.4 (Nocturne Redesign)
+
+| Home Simplificada (2 Modos) | Debate de Evidências (Xadrez 2D SVG) | Auditoria de Controles (Go 9×9 SVG) |
+| :---: | :---: | :---: |
+| ![Home Redesign](docs/screenshots/nocturne_v24_home_redesign.png) | ![Debate 2D Xadrez](docs/screenshots/nocturne_v24_debate_2d_chess.png) | ![Auditoria Go 9x9](docs/screenshots/nocturne_v24_audit_2d_go.png) |
+
+| Perspectiva Invertida (Flip Board) | Replay com Rastreabilidade de Lances |
+| :---: | :---: |
+| ![Flip Board](docs/screenshots/nocturne_v24_debate_board_flipped.png) | ![Replay 10 Lances](docs/screenshots/nocturne_v23_1_replay_plies_1_to_10.png) |
+
+---
+
+## 4. Capturas Anteriores Verificadas (v2.3)
 
 | Home Conversacional Nocturne | Workspace Xadrez 3D (6+ Lances) | Workspace Go 9×9 + Auditoria 3 Camadas |
 | :---: | :---: | :---: |

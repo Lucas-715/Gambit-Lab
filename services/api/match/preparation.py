@@ -23,11 +23,15 @@ class PreparationMixin:
         sess["max_steps"] = mstate["plies_budget"]
         sess["budget"]["max_steps"] = mstate["plies_budget"]
         sess["budget"]["max_calls"] = max(sess["budget"].get("max_calls", 24), 24)
-        mstate["pro_thesis"] = f"Tese Favorável (Lado Pró · {pro_c.upper()}): investigação de viabilidade e sustentação para '{topic}'."
-        mstate["contra_thesis"] = f"Tese Crítica (Lado Contra · {contra_c.upper()}): investigação de riscos, limites e contraprovas para '{topic}'."
+        if sess.get("mode") == "audit":
+            mstate["pro_thesis"] = f"Controles e Conformidade (Lado Auditor · {pro_c.upper()}): verificação de controles normativos, evidências de conformidade e garantias técnicas para '{topic}'."
+            mstate["contra_thesis"] = f"Riscos e Superfícies de Falha (Lado Auditado · {contra_c.upper()}): identificação de vulnerabilidades, lacunas, exceções operacionais e riscos residuais em '{topic}'."
+        else:
+            mstate["pro_thesis"] = f"Tese Favorável (Lado Pró · {pro_c.upper()}): investigação de viabilidade e sustentação para '{topic}'."
+            mstate["contra_thesis"] = f"Tese Crítica (Lado Contra · {contra_c.upper()}): investigação de riscos, limites e contraprovas para '{topic}'."
         return (
-            f"Lados configurados com cofres isolados: Lado Pró ({pro_c.upper()}) vs "
-            f"Lado Contra ({contra_c.upper()}) · Profundidade {mstate['depth']} (orçamento: {mstate['plies_budget']} lances)."
+            f"Lados configurados com cofres isolados: {'Auditor vs Auditado' if sess.get('mode') == 'audit' else 'Lado Pró vs Lado Contra'} "
+            f"({pro_c.upper()} vs {contra_c.upper()}) · Profundidade {mstate['depth']} (orçamento: {mstate['plies_budget']} lances)."
         )
 
     def _stage_2_research_side(self, sess: Dict[str, Any], mstate: Dict[str, Any], side: str) -> str:
@@ -40,12 +44,19 @@ class PreparationMixin:
         # 1. Pesquisa Web isolada por lado quando WEB_ONLY ou HYBRID
         web_added = 0
         if norm_policy in ("WEB_ONLY", "HYBRID"):
-            # Cada lado usa a PERGUNTA REAL como âncora; apenas o viés de busca difere (a favor vs. contra).
-            query_focus = (
-                f"{topic} benefícios vantagens evidências"
-                if side == "pro"
-                else f"{topic} riscos limitações críticas"
-            )
+            # Cada lado usa a PERGUNTA REAL como âncora; viés difere por modalidade e lado.
+            if sess.get("mode") == "audit":
+                query_focus = (
+                    f"{topic} controles requisitos conformidade auditoria"
+                    if side == "pro"
+                    else f"{topic} riscos vulnerabilidades falhas brechas"
+                )
+            else:
+                query_focus = (
+                    f"{topic} benefícios vantagens evidências"
+                    if side == "pro"
+                    else f"{topic} riscos limitações críticas"
+                )
             existing_urls = {
                 a.get("canonical_url") or a.get("url")
                 for a in sess["artifacts"]

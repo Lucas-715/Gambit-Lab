@@ -31,11 +31,116 @@ RESIGN_DEFICIT_CP = 800        # ≈ uma Dama de desvantagem
 RESIGN_STREAK = 3              # turnos consecutivos do próprio lado nessa condição
 RESIGN_MIN_PLY = 24
 
+AUDIT_FRAMEWORK_CONTROLS = [
+    {
+        "control_id": "ISO 27001 § A.10.1",
+        "name": "Gestão de Chaves Criptográficas (KMS)",
+        "requirement": "Políticas e controles técnicos devem ser implementados para geração, rotação, armazenamento e destruição de chaves criptográficas.",
+        "expected_criteria": "Auto-rotação de chaves ativada com período máximo de 90 dias e segregação de privilégios de custódia.",
+        "risk_level": "CRÍTICO",
+        "recommendation": "Habilitar rotação automática via IaC e auditar logs de decriptação no CloudTrail/CloudAudit."
+    },
+    {
+        "control_id": "SOC 2 CC6.1",
+        "name": "Controle de Acesso Lógico e Perímetro",
+        "requirement": "A infraestrutura deve restringir o acesso lógico somente a usuários autorizados por MFA resistente a phishing.",
+        "expected_criteria": "MFA obrigatório para 100% dos acessos administrativos e princípio do menor privilégio (PoLP).",
+        "risk_level": "ALTO",
+        "recommendation": "Revogar credenciais estáticas não rotacionadas e implementar WebAuthn/FIDO2."
+    },
+    {
+        "control_id": "NIST SP 800-53 AC-3",
+        "name": "Fiscalização de Acesso Baseada em Atributos (ABAC)",
+        "requirement": "O sistema deve aplicar decisões de autorização com base em atributos de identidade, recurso e contexto operacional.",
+        "expected_criteria": "Políticas contextuais validadas dinamicamente com negação por padrão (deny-by-default).",
+        "risk_level": "ALTO",
+        "recommendation": "Implementar validação contínua de postura de segurança de endpoints antes da concessão de sessão."
+    },
+    {
+        "control_id": "CIS Control 4.1",
+        "name": "Configuração Segura de Ativos Corporativos",
+        "requirement": "Estabelecer e manter processos de baseline e configuração segura para servidores, contêineres e bancos de dados.",
+        "expected_criteria": "Imagens de contêiner assinadas criptograficamente e bloqueio de execução com privilégios de root.",
+        "risk_level": "MÉDIO",
+        "recommendation": "Impor verificação Sigstore/Cosign no admission controller do Kubernetes."
+    },
+    {
+        "control_id": "LGPD Art. 46 / GDPR Art. 32",
+        "name": "Segurança e Criptografia de Dados Pessoais",
+        "requirement": "Adoção de medidas de segurança técnicas e administrativas aptas a proteger dados pessoais de acessos não autorizados.",
+        "expected_criteria": "Criptografia em trânsito (TLS 1.3) e em repouso (AES-256-GCM) em todos os armazenamentos com PII.",
+        "risk_level": "CRÍTICO",
+        "recommendation": "Classificar dados pessoais automaticamente e aplicar pseudonimização em ambientes de homologação."
+    },
+    {
+        "control_id": "OWASP Top 10 A01:2021",
+        "name": "Prevenção de Quebra de Controle de Acesso (BOLA/IDOR)",
+        "requirement": "Validação rigorosa de propriedade de recursos no backend em todas as rotas e métodos REST/GraphQL.",
+        "expected_criteria": "Zero exposição de chaves primárias sequenciais e verificação de tenant em cada consulta SQL.",
+        "risk_level": "CRÍTICO",
+        "recommendation": "Adicionar testes automatizados de controle de acesso horizontal e vertical no pipeline de CI/CD."
+    },
+    {
+        "control_id": "ISO 27001 § A.12.4",
+        "name": "Registro e Monitoramento de Eventos (Audit Logging)",
+        "requirement": "Registros de log registrando atividades do usuário, exceções, falhas e eventos de segurança devem ser gerados e mantidos íntegros.",
+        "expected_criteria": "Encaminhamento síncrono para SIEM imutável com retenção mínima de 365 dias e hash chain SHA-256.",
+        "risk_level": "MÉDIO",
+        "recommendation": "Habilitar proteção de Bucket Lock e criptografia com chave gerenciada pelo cliente (CMEK) nos logs."
+    },
+    {
+        "control_id": "NIST SP 800-53 IA-5",
+        "name": "Gestão de Autenticadores e Segredos",
+        "requirement": "O sistema gerencia autenticadores do sistema da informação estabelecendo requisitos para controle administrativo.",
+        "expected_criteria": "Segredos externalizados em cofre seguro (Vault/Secret Manager), sem armazenamento em texto claro em código ou repositório.",
+        "risk_level": "CRÍTICO",
+        "recommendation": "Adicionar pre-commit hook de detecção de segredos (trufflehog/gitleaks) em todos os repositórios."
+    }
+]
+
 
 class PlayMixin:
     DEFAULT_AUTO_RESIGN: bool = False
     enable_auto_resignation: bool = False
     epistemic_gating_enabled: bool = False
+
+    def _build_control_audit(
+        self,
+        sess: Dict[str, Any],
+        ply_idx: int,
+        acting_color: str,
+        att: Optional[Dict[str, Any]],
+        cap: Optional[Dict[str, Any]],
+        quote_txt: Optional[str],
+        is_cap: bool,
+    ) -> Dict[str, Any]:
+        ctrl = AUDIT_FRAMEWORK_CONTROLS[(ply_idx - 1) % len(AUDIT_FRAMEWORK_CONTROLS)]
+        is_auditor = acting_color == "white" if sess.get("game") == "chess" else acting_color == "black"
+        if is_auditor:
+            status = "CONFORME" if quote_txt else "PARCIAL"
+            finding = (
+                f"Controle '{ctrl['name']}' verificado com conformidade satisfatória e evidência localizada."
+                if quote_txt
+                else f"Controle '{ctrl['name']}' em verificação ativa; garantia preliminar sem citação formal."
+            )
+        else:
+            status = "NAO_CONFORME" if is_cap else "PARCIAL"
+            finding = (
+                f"Lacuna/Risco identificado em '{ctrl['name']}': contestação adversarial revelou exceção ou fragilidade no controle."
+                if is_cap
+                else f"Superfície de risco analisada para '{ctrl['name']}': recomendada validação contínua."
+            )
+        return {
+            "control_id": ctrl["control_id"],
+            "name": ctrl["name"],
+            "requirement": ctrl["requirement"],
+            "expected_criteria": ctrl["expected_criteria"],
+            "finding": finding,
+            "risk_level": ctrl["risk_level"],
+            "compliance_status": status,
+            "recommendation": ctrl["recommendation"],
+            "evidence_quote": quote_txt or "",
+        }
     # ------------------------------------------------------------------ schemas de tabuleiro
     @staticmethod
     def _chess_board_schema(engine: EpistemicChessEngine) -> BoardPositionSchema:
@@ -312,6 +417,11 @@ class PlayMixin:
         diff_white = material_diff_white_cp(engine.board)
         diff_pro = diff_white if mstate["pro_color"] == "white" else -diff_white
         momentum = round(1.0 / (1.0 + 10 ** (-diff_pro / 400.0)), 3)
+        ctrl_audit = (
+            self._build_control_audit(sess, ply_idx, acting_color, att, cap, quote_txt, is_cap)
+            if sess.get("mode") == "audit"
+            else None
+        )
         # v2.3 C11: Construção do payload auditável completo
         audit_payload = MoveAuditPayloadSchema(
             session_id=sess["id"],
@@ -364,6 +474,7 @@ class PlayMixin:
             event_seq=ev.get("seq", ply_idx),
             event_hash=ev.get("hash") or ev.get("event_hash"),
             move_event_seq=ev.get("move_seq", ply_idx),
+            control_audit=ctrl_audit,
         )
 
         mstate["timeline"].append(
@@ -382,6 +493,7 @@ class PlayMixin:
                 confrontation_summary=note, pro_momentum=momentum, board_snapshot=board_schema,
                 piece_coords_snapshot={p["piece_id"]: p["current_coord"] for p in mstate["pieces"]},
                 audit_payload=audit_payload,
+                control_audit=ctrl_audit,
             ).model_dump()
         )
 
@@ -468,6 +580,11 @@ class PlayMixin:
             b_sc, w_sc = engine.calculate_area_score()
             pro_sc, con_sc = (b_sc, w_sc) if mstate["pro_color"] == "black" else (w_sc, b_sc)
             momentum = round(min(0.97, max(0.03, pro_sc / max(1.0, pro_sc + con_sc))), 3)
+            go_ctrl_audit = (
+                self._build_control_audit(sess, ply_idx, acting_color, active, None, quote_txt, res.is_capture)
+                if sess.get("mode") == "audit"
+                else None
+            )
             go_audit_payload = MoveAuditPayloadSchema(
                 session_id=sess["id"],
                 ply=ply_idx,
@@ -520,6 +637,7 @@ class PlayMixin:
                 event_seq=ev.get("seq", ply_idx),
                 event_hash=ev.get("hash") or ev.get("event_hash"),
                 move_event_seq=ev.get("move_seq", ply_idx),
+                control_audit=go_ctrl_audit,
             )
 
             mstate["timeline"].append(
@@ -534,6 +652,7 @@ class PlayMixin:
                     piece_coords_snapshot={p["piece_id"]: p["current_coord"] for p in mstate["pieces"]},
                     piece_stones_snapshot={p["piece_id"]: list(p["stones"]) for p in mstate["pieces"]},
                     audit_payload=go_audit_payload,
+                    control_audit=go_ctrl_audit,
                 ).model_dump()
             )
 

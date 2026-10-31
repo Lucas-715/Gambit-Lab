@@ -405,6 +405,7 @@ class MoveAuditPayloadSchema(BaseModel):
     event_seq: Optional[int] = None
     event_hash: Optional[str] = None
     move_event_seq: Optional[int] = None
+    control_audit: Optional[Dict[str, Any]] = None
 
 
 class MatchPlyRecordSchema(BaseModel):
@@ -434,7 +435,7 @@ class MatchPlyRecordSchema(BaseModel):
     pro_momentum: float = 0.5
     board_snapshot: BoardPositionSchema
     audit_payload: Optional[MoveAuditPayloadSchema] = None
-    audit_payload: Optional[MoveAuditPayloadSchema] = None
+    control_audit: Optional[Dict[str, Any]] = None
     piece_coords_snapshot: Dict[str, Optional[str]] = Field(default_factory=dict)
     piece_stones_snapshot: Dict[str, List[str]] = Field(default_factory=dict)
 

@@ -131,3 +131,23 @@ Este documento estabelece o mapeamento formal de rastreabilidade entre os requis
 | **T05** | Overlay 3D projeta coordenadas com perspectiva exata sobre o WebGL | Browser / CDP | `docs/screenshots/nocturne_v23_1_3d_perspective_coords.png` | **PASS** |
 | **T06** | Coordenadas do Go 9x9 com A-J (sem I) e honestidade de citações/capturas | Browser / CDP | `docs/screenshots/nocturne_v23_1_go_coords_no_i.png` | **PASS** |
 
+---
+
+## 8. Suíte de Redesign Nocturne Focus v2.4 (`R01` a `R07` e `UX08` a `UX12`)
+
+| ID | Cenário / Critério | Tipo | Arquivo de Teste / Evidência | Resultado |
+|---|---|---|---|:---:|
+| **R01** | Simplificação para 2 Modos: Debate de Evidências e Auditoria de Controles | UI / Functional | `scratch/verify_v24_nocturne_cdp.py` | **PASS** |
+| **R02** | Tema Único NOCTURNE: remoção do tema azul Cosmic, paleta estrita (#08080A) | UI / CSS | `scratch/verify_v24_nocturne_cdp.py` | **PASS** |
+| **R03** | Xadrez 2D SVG como padrão com 64 casas, peças vetoriais e seta de lance | Browser / SVG | `docs/screenshots/nocturne_v24_debate_2d_chess.png` | **PASS** |
+| **R04** | Go 9×9 2D SVG em madeira escura, pedras com sombra e anel pulsante | Browser / SVG | `docs/screenshots/nocturne_v24_audit_2d_go.png` | **PASS** |
+| **R05** | Replay Bar com Reprodução Automática (Timer 1.5s) e barra SAN clicável | Browser / CDP | `scratch/verify_v24_nocturne_cdp.py` | **PASS** |
+| **R06** | Painel de Auditoria de Controles com requisitos normativos e riscos | Integration / UI | `docs/screenshots/nocturne_v24_audit_2d_go.png` | **PASS** |
+| **R07** | Segurança de Pacotes: exclusão estrita de `.env` nos ZIPs de release | Script / Security | `scratch/create_release_zip.py` | **PASS** |
+| **UX08** | Home minimalista com alternador de modos proeminente e placeholders dinâmicos | Browser / CDP | `docs/screenshots/nocturne_v24_home_redesign.png` | **PASS** |
+| **UX09** | Inversão de perspectiva do tabuleiro com um clique (`flip board`) | Browser / CDP | `docs/screenshots/nocturne_v24_debate_board_flipped.png` | **PASS** |
+| **UX10** | Coordenadas de canto internas (estilo Chess.com / Lichess) | Browser / CDP | `docs/screenshots/nocturne_v24_debate_2d_chess.png` | **PASS** |
+| **UX11** | Notação de lances compacta e clicável com realce ativo do lance atual | Browser / CDP | `scratch/verify_v24_nocturne_cdp.py` | **PASS** |
+| **UX12** | Integridade da suíte completa de testes de regressão (90 testes unitários/integração) | Pytest Suite | `pytest tests/ -q` (90 passed) | **PASS** |
+
+

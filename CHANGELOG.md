@@ -2,6 +2,40 @@
 
 Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 
+## [2.4.0-redesign] — 2026-10-31
+
+### Adicionado
+- **Simplificação Radical de Produto (2 Modalidades Principais)**:
+  - **Debate de Evidências** (`debate`): Investigação de perguntas com confronto de teses favoráveis, contrárias e verificação rigorosa de fontes. As ferramentas da antiga "Pesquisa Estratégica" (busca Web, cofre isolado e FUSION) foram integradas diretamente neste modo.
+  - **Auditoria de Controles** (`audit`): Avaliação sistemática de conformidade e riscos em sistemas e processos (ISO 27001, SOC 2, NIST CSF, CIS, LGPD, OWASP), gerando achados estruturados, avaliação de riscos e recomendações acionáveis.
+  - Sessões legadas `research` continuam 100% retrocompatíveis.
+- **Identidade Visual Única NOCTURNE**:
+  - Eliminação completa do tema azul Cosmic. Paleta estrita: fundo `#08080A`, superfícies `#111114`, elevação `#18181D`, cartões `#202028`, bordas `#2B2B32`, texto `#F2F2F4`, violeta forense `#A78BFA`, sucesso `#5BBFA7`, alerta `#D5A65B`, erro `#D86B75`.
+  - Fundo estelar sutil monocromático com drift suave e parallax proporcional, sem planetas coloridos ou nebulas chamativas.
+- **Xadrez 2D Profissional SVG como Padrão**:
+  - Modo 2D definido como padrão inicial (`viewMode = '2d'`).
+  - Grade SVG 800×800 matemática perfeita com 64 casas cinza-pedra claro (`#292931`) e grafite profundo (`#18181C`).
+  - Símbolos vetoriais de peças nítidos extraídos do Stitch (`#w-pawn`, `#w-knight`, `#w-bishop`, `#w-rook`, `#w-queen`, `#w-king` e equivalentes pretos `#b-*`), eliminando dependência de fontes unicode externas.
+  - Seta vetorial do lance com marcador roxo suave (`marker-end="url(#arrow-move)"`).
+  - Coordenadas de canto internas (estilo Chess.com / Lichess) para `a..h` e `8..1`.
+  - Inversão de perspectiva do tabuleiro com um clique (`#flipBoardBtn` / `isBoardFlipped`).
+- **Go 9×9 2D SVG**:
+  - Madeira escura `#1B1B22`, linhas `#33333F`, pontos Hoshi e Tengen.
+  - Pedras com gradiente radial e filtro de sombra projetada (`#stoneShadow`).
+  - Anel pulsante no último lance jogado.
+  - Coordenadas clássicas `A..H, J` (sem a letra `I`) e `1..9`.
+- **Replay Bar com Reprodução Automática (Timer) e Notação Clicável**:
+  - Botão `#repPlayPauseBtn` reproduz automaticamente os lances da partida com avanço a cada 1.5s.
+  - Barra de notação clicável (`#replayMovesStrip`) exibindo todos os lances SAN com destaque do lance ativo.
+- **Painel Lateral Contextual por Modo**:
+  - Em Debate: Movimento, peça, SAN, tese, citação literal com badge `SOURCE_VERIFIED`, contestação e veredito factual do árbitro.
+  - Em Auditoria: Requisito normativo (ex.: `ISO 27001 - A.10 / SOC 2 CC6.1`), badge de risco (`CRÍTICO`, `ALTO`, `MÉDIO`, `BAIXO`), status de conformidade (`CONFORME`, `NÃO CONFORME`, `PARCIAL`), critério esperado, evidência coletada, achado da auditoria e recomendação corretiva.
+- **Segurança e Higiene de Pacotes (CRÍTICO)**:
+  - Script de empacotamento `create_release_zip.py` filtra estritamente `.env` com validação de segurança automatizada, garantindo que credenciais permaneçam estritamente no ambiente local e apenas `.env.example` seja distribuído.
+- **Suíte de Testes e Validação CDP**:
+  - Todos os 90 testes automatizados aprovados (`90 PASSED, 0 FAILED`).
+  - Testes ponta a ponta via Chrome DevTools Protocol (`verify_v24_nocturne_cdp.py`) validando Home, Debate 2D, Inversão, Replay Timer e Auditoria Go 9×9 com geração de telas comprobatórias.
+
 ## [2.3.1-traceability] — 2026-10-31
 
 ### Adicionado
