@@ -2,6 +2,35 @@
 
 Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 
+## [2.4.1-polish] — 2026-10-31
+
+### Adicionado e Aprimorado
+- **3D Real (WebGL) como Apresentação Primária**:
+  - `viewMode = '3d'` restaurado como modo padrão da plataforma, atendendo à preferência estética superior validada pelo usuário (8.2/10).
+  - Enquadramento aproximado (`radius = 11.2`, `phi = 0.82`) para preencher o palco visual com elegância e foco.
+  - Botão `↺ Câmera` (`#resetCamBtn`) com função `resetCamera()` restaurando instantaneamente o ângulo e zoom ideais.
+- **2D SVG Profissional Reconstruído com Peças Cburnett**:
+  - Eliminação da coluna externa que causava a margem morta à esquerda; centralização matemática 1:1 (`.board-2d-inner` flex, max-width 500px, aspect-ratio 1).
+  - Substituição dos polígonos simplificados pelos 24 símbolos vetoriais clássicos SVG Cburnett (padrão mundial Lichess/Chess.com de `python-chess`), estilizados na paleta Nocturne (marfim `#F8F8FA` e obsidiana `#22232B`).
+  - Rótulos de coordenadas integrados nos cantos das casas periféricas.
+  - Orientação correta mantida para cima (upright) na inversão de perspectiva (`⇄ Inverter`).
+- **Simplificação Radical do Painel "Lance Selecionado" (Narrativa Única)**:
+  - Eliminação da fragmentação em múltiplos cartões técnicos dispersos, estruturando em uma única narrativa humanizada:
+    1. *Cabeçalho Minimalista*: `MOVIMENTO SELECIONADO · #[ply] [san]` · Lado · Peça · de → para.
+    2. *Bloco 1*: O que este movimento representa? (tese defendida de forma direta).
+    3. *Bloco 2*: Qual evidência foi utilizada? (citação literal + fonte + badge de status).
+    4. *Bloco 3*: Avaliação do Árbitro (veredito em linguagem natural sem jargões).
+    5. *Bloco 4*: Auditoria técnica completa e telemetria colapsadas em `<details class="smp-details-fold">`.
+- **Barra de Replay em Pares Numerados (1. e4 e5 ...)**:
+  - Exibição de lances em pares numerados no estilo oficial de planilha de xadrez (`1. e4 e5   2. Nf3 Nc6 ...`).
+  - Auto-scroll suave mantendo o lance selecionado sempre visível e centralizado.
+- **Conclusão Honesta por Esgotamento de Orçamento**:
+  - Quando a partida atinge o teto de 60 lances sem encerramento formal por regras, o resultado é explicitamente rotulado como `"⏳ Partida não concluída — Orçamento esgotado"`, mantendo o botão `[ ▶ Retomar Partida ]` visível sem forçar empate ou vencedor artificial.
+- **Validação E2E com Partidas Reais Longas (60 lances)**:
+  - Execução e aprovação completa de partidas de 60 lances em Xadrez (Debate) e Go 9x9 (Auditoria).
+  - 8/8 passos E2E CDP aprovados com geração de 6 novas telas comprobatórias em `docs/screenshots/`.
+  - Suíte completa de 90 testes unitários e de integração aprovada sem falhas.
+
 ## [2.4.0-redesign] — 2026-10-31
 
 ### Adicionado

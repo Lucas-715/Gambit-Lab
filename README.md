@@ -1,4 +1,4 @@
-# Gambit Lab Nocturne (v2.4 Redesign) — Framework Multiagente de Debate & Auditoria Orientado por Jogos
+# Gambit Lab Nocturne (v2.4.1 Polish) — Framework Multiagente de Debate & Auditoria Orientado por Jogos
 
 > **Princípio Central**: *O LLM propõe, as regras do jogo restringem, as evidências sustentam e o sistema audita.*
 
@@ -10,6 +10,16 @@ $$\text{Pergunta / Objeto} \longrightarrow \text{Teses / Requisitos} \longrighta
 
 ## 1. Novidades da Versão v2.4 (Redesign & Consolidação de Produto)
 
+- **3D Real (WebGL) como Apresentação Primária**:
+  - 3D definido como modo padrão com enquadramento aproximado (`radius = 11.2`, `phi = 0.82`) e botão `↺ Câmera` para restaurar o ponto de vista ideal com um clique.
+- **2D SVG Profissional Reconstruído com Peças Cburnett**:
+  - Eliminação completa da área morta à esquerda; centralização matemática 1:1; 24 símbolos vetoriais clássicos SVG Cburnett (padrão mundial Lichess/Chess.com) em marfim `#F8F8FA` e obsidiana `#22232B`; rótulos de coordenadas nos cantos periféricos.
+- **Painel "Lance Selecionado" Simplificado (Narrativa Única)**:
+  - Unificação em narrativa contínua: *O que este movimento representa?*, *Qual evidência foi utilizada?*, *Avaliação do Árbitro*, além de auditoria de controles e telemetria colapsável.
+- **Barra de Replay em Pares Numerados (1. e4 e5 ...)**:
+  - Formatação oficial de planilha de xadrez com auto-scroll e sincronização instantânea de evidências e tabuleiro.
+- **Conclusão Honesta por Esgotamento de Orçamento**:
+  - Rotulação explícita `"⏳ Partida não concluída — Orçamento esgotado"` sem inventar vencedor artificial, mantendo o botão de extensão disponível.
 - **Simplificação Radical em 2 Modalidades Principais**:
   - **⚖️ Debate de Evidências** (`debate`): Confronto de teses e argumentos favoráveis e contrários com validação estrita de fontes. As capacidades da antiga "Pesquisa Estratégica" (busca Web pública anti-SSRF, cofre privado isolado e FUSION) foram integradas de forma limpa nesta modalidade.
   - **🔍 Auditoria de Controles** (`audit`): Avaliação formal de requisitos de conformidade e governança (ISO 27001, SOC 2, NIST CSF, CIS, LGPD, OWASP), com critérios esperados, achados objetivos, classificação de riscos (`CRÍTICO`, `ALTO`, `MÉDIO`, `BAIXO`) e recomendações técnicas.

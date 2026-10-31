@@ -151,3 +151,22 @@ Este documento estabelece o mapeamento formal de rastreabilidade entre os requis
 | **UX12** | Integridade da suíte completa de testes de regressão (90 testes unitários/integração) | Pytest Suite | `pytest tests/ -q` (90 passed) | **PASS** |
 
 
+
+---
+
+## 9. Suíte de Refinamento e Partidas Longas v2.4.1 (`P01` a `P06` e `UX13` a `UX18`)
+
+| ID | Cenário / Critério | Tipo | Arquivo de Teste / Evidência | Resultado |
+|---|---|---|---|:---:|
+| **P01** | 3D Real (WebGL) como modo padrão com enquadramento aproximado (`radius=11.2`) e `resetCamBtn` | Browser / CDP | `docs/screenshots/nocturne_v24_1_3d_close_framed.png` | **PASS** |
+| **P02** | 2D SVG reconstruído perfeitamente centralizado com 24 peças vetoriais Cburnett | Browser / CDP | `docs/screenshots/nocturne_v24_1_2d_cburnett_centered.png` | **PASS** |
+| **P03** | Painel Narrativo Simplificado com Cabeçalho, Tese, Evidência e Veredito do Árbitro | Browser / CDP | `docs/screenshots/nocturne_v24_1_narrative_panel.png` | **PASS** |
+| **P04** | Barra de Replay com lances formatados em pares numerados (`1. e4 e5 ...`) e auto-scroll | Browser / CDP | `docs/screenshots/nocturne_v24_1_replay_pairs_strip.png` | **PASS** |
+| **P05** | Conclusão honesta de orçamento esgotado sem inventar vencedor artificial | Browser / CDP | `docs/screenshots/nocturne_v24_1_budget_exhausted_honest.png` | **PASS** |
+| **P06** | Partida longa de 60 lances em Xadrez e Go 9x9 com inspeção de múltiplos lances | Browser / CDP | `docs/screenshots/nocturne_v24_1_audit_go_cburnett.png` | **PASS** |
+| **UX13** | Botão `↺ Câmera` restaura perspectiva neutra (`theta=0, phi=0.82, radius=11.2`) | Browser / CDP | `scratch/verify_v24_1_full_run_cdp.py` | **PASS** |
+| **UX14** | Eliminação da área morta à esquerda no 2D (`display: none` em #boardRanks2D) | Browser / CSS | `scratch/verify_v24_1_full_run_cdp.py` | **PASS** |
+| **UX15** | Inversão do tabuleiro 2D preserva orientação vertical correta dos símbolos Cburnett | Browser / SVG | `scratch/verify_v24_1_full_run_cdp.py` | **PASS** |
+| **UX16** | Sincronia instantânea de dossiê ao clicar em qualquer lance da barra em pares | Browser / CDP | `scratch/verify_v24_1_full_run_cdp.py` | **PASS** |
+| **UX17** | Bloco de Auditoria de Controles exibindo Requisito, Risco e Conformidade no modo Audit | Browser / CDP | `docs/screenshots/nocturne_v24_1_audit_go_cburnett.png` | **PASS** |
+| **UX18** | Coordenadas oficiais de Go 9x9 sem a letra `I` (colunas A..H, J) | Browser / CDP | `scratch/verify_v24_1_full_run_cdp.py` | **PASS** |

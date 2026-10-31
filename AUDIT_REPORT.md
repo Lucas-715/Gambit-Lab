@@ -196,3 +196,22 @@ A versão **v2.4.0** implementou a reformulação completa de experiência e sim
 - **Pacote de Distribuição**: `Gambit_Lab_v2.4_Nocturne_Redesign.zip` verificado e livre de segredos.
 
 
+
+---
+
+## 10. Refinamento de Apresentação, Peças Cburnett e Partidas Longas v2.4.1 (Resoluções P01–P06)
+
+Em atendimento à avaliação de interface e rigor funcional solicitada pelo usuário, a versão **v2.4.1** implementou o refinamento cirúrgico de apresentação:
+
+| ID | Item Refinado | Causa / Requisito | Resolução Implementada | Evidência / Screenshot |
+|---|---|---|---|---|
+| **P01** | 3D Real (WebGL) como Apresentação Principal | 3D visualmente superior e mais elegante para o tema Nocturne | 3D restaurado como modo padrão (`viewMode = '3d'`); enquadramento aproximado (`radius = 11.2`, `phi = 0.82`); botão `#resetCamBtn` (`↺ Câmera`) restaurando o enquadramento ideal. | `nocturne_v24_1_3d_close_framed.png` (**PASS**) |
+| **P02** | Reconstrução do 2D SVG com Peças Cburnett | Grade anterior deslocada à direita com área morta e peças simplificadas | Grade centralizada 1:1 sem coluna externa morta (`max-width: 500px`); 24 símbolos vetoriais clássicos SVG Cburnett de `python-chess` em marfim `#F8F8FA` e obsidiana `#22232B`; rótulos de coordenadas nos cantos periféricos; peças mantidas em pé na inversão. | `nocturne_v24_1_2d_cburnett_centered.png` (**PASS**) |
+| **P03** | Painel Narrativo Simplificado de Lance | Múltiplos cartões técnicos dispersos prejudicando o fluxo investigativo | Painel unificado em narrativa contínua: 1. Cabeçalho minimalista; 2. O que este movimento representa?; 3. Qual evidência foi utilizada?; 4. Avaliação do Árbitro; 5. Auditoria de Controles; 6. Auditoria técnica e telemetria colapsadas em `<details>`. | `nocturne_v24_1_narrative_panel.png` (**PASS**) |
+| **P04** | Barra de Replay em Pares Numerados | Lances exibidos em lista corrida sem padrão oficial de notação | Notação oficial em pares numerados (`1. e4 e5   2. Nf3 Nc6 ...`) estilo planilha oficial com auto-scroll suave. | `nocturne_v24_1_replay_pairs_strip.png` (**PASS**) |
+| **P05** | Honestidade Epistemológica no Encerramento | Teto de lances não deve inventar vencedor nem forçar empate | Esgotamento de orçamento (60 lances) explicitamente rotulado como `"⏳ Partida não concluída — Orçamento esgotado"`, com botão `[ ▶ Retomar Partida ]` sem forçar término falso. | `nocturne_v24_1_budget_exhausted_honest.png` (**PASS**) |
+| **P06** | Partidas Reais Longas (60 Lances) | Necessidade de testar estabilidade e sincronia em partidas de 30 a 60 lances | Execução e validação de partidas completas de 60 lances em Xadrez e Go, comprovando sincronia de dossiês, evidências e tabuleiro em cada lance. | `nocturne_v24_1_audit_go_cburnett.png` (**PASS**) |
+
+### Resultados Consolidados v2.4.1
+- **Suíte Pytest Completa**: **90 passed, 0 failed, 1 warning**.
+- **Suíte E2E CDP Real (v2.4.1)**: Todos os 8 passos aprovados com 6 telas comprobatórias capturadas em alta definição.

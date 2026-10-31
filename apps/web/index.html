@@ -1529,51 +1529,34 @@ body.star-motion-paused #space {
 .board-frame-2d {
   display: none;
   width: 100%;
-  min-height: 468px;
+  min-height: 480px;
   align-items: center;
   justify-content: center;
-  padding: 12px;
+  padding: 16px;
 }
-
 .board-2d-inner {
-  display: grid;
-  grid-template-columns: 26px 1fr;
-  grid-template-rows: 1fr 26px;
-  max-width: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  max-width: 500px;
   aspect-ratio: 1;
   margin: 0 auto;
+  position: relative;
 }
-
-.board-corner-spacer {
-  grid-column: 1;
-  grid-row: 2;
+.grid-2d {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.95);
+  border: 1px solid var(--border);
+  background: #14151B;
+  position: relative;
 }
-
-.board-ranks-col {
-  grid-column: 1;
-  grid-row: 1;
-  display: grid;
-  align-items: center;
-  justify-items: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  user-select: none;
-  padding-right: 6px;
-}
-
-.board-files-row {
-  grid-column: 2;
-  grid-row: 2;
-  display: grid;
-  align-items: center;
-  justify-items: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  user-select: none;
-  padding-top: 6px;
+.board-ranks-col, .board-files-row, .board-corner-spacer {
+  display: none !important;
 }
 
 .stage-container {
@@ -1923,6 +1906,183 @@ body.star-motion-paused #space {
   user-select: none;
 }
 
+
+/* --- NARRATIVA SIMPLIFICADA DO LANCE SELECIONADO --- */
+.smp-narrative-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.smp-move-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.smp-move-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.smp-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.smp-ply-badge {
+  font-size: 12px;
+  font-family: monospace;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(167, 139, 250, 0.16);
+  color: var(--accent);
+  border: 1px solid rgba(167, 139, 250, 0.35);
+}
+.smp-san-badge {
+  font-size: 19px;
+  font-weight: 700;
+  color: #FFFFFF;
+  font-family: monospace;
+}
+.smp-side-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+.smp-piece-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.smp-piece-name {
+  color: var(--text);
+  font-weight: 600;
+}
+.smp-coords-text {
+  color: var(--accent);
+  font-family: monospace;
+  font-weight: 600;
+}
+.smp-role-text {
+  color: var(--muted);
+  font-style: italic;
+}
+.smp-sep {
+  color: var(--subtle);
+}
+
+.smp-narrative-card {
+  background: rgba(22, 23, 29, 0.65);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.smp-card-question {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.smp-claim-text {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text);
+  margin: 0;
+}
+
+.smp-quote-box {
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-top: 4px;
+}
+.smp-quote-content {
+  font-size: 12.5px;
+  font-style: italic;
+  line-height: 1.4;
+  color: #F0F0F4;
+  margin: 0 0 6px 0;
+}
+.smp-source-meta {
+  font-size: 11px;
+  color: var(--success);
+  font-weight: 500;
+}
+.smp-source-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.smp-verdict-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.smp-verdict-reason {
+  font-size: 12.5px;
+  color: var(--text);
+  line-height: 1.4;
+  margin: 4px 0 0 0;
+}
+
+.smp-details-fold {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(15, 16, 20, 0.5);
+  overflow: hidden;
+  margin-top: 4px;
+}
+.smp-details-summary {
+  font-size: 11.5px;
+  color: var(--muted);
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+}
+.smp-details-summary:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+.smp-details-body {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+}
+
+/* Replay Pairs Table */
+.replay-pairs-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+}
+.move-pair-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.move-pair-num {
+  font-size: 11.5px;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--subtle);
+  min-width: 18px;
+}
+
 </style>
 </head>
 <body>
@@ -1933,77 +2093,133 @@ body.star-motion-paused #space {
 <div class="planet p3" style="display:none;" aria-hidden="true"></div>
 <svg id="globalSvgDefs" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
 <defs>
-<!-- Marker Arrowhead para Seta de Melhor Lance (estilo Chess.com) -->
-<marker id="arrow-best" markerheight="5" markerwidth="5" orient="auto-start-reverse" refx="5" refy="5" viewbox="0 0 10 10">
-<path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#5BBFA7"></path>
+<!-- Marker Arrowhead para Seta de Lance -->
+<marker id="arrow-move" markerHeight="5" markerWidth="5" orient="auto-start-reverse" refX="5" refY="5" viewBox="0 0 10 10">
+  <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#A78BFA"></path>
 </marker>
-<marker id="arrow-move" markerheight="5" markerwidth="5" orient="auto-start-reverse" refx="5" refy="5" viewbox="0 0 10 10">
-<path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#a78bfa"></path>
+<marker id="arrow-best" markerHeight="5" markerWidth="5" orient="auto-start-reverse" refX="5" refY="5" viewBox="0 0 10 10">
+  <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#5BBFA7"></path>
 </marker>
-<!-- White Pieces -->
-<g id="w-king">
-<path d="M50 20 L50 34 M43 27 L57 27 M38 42 C38 36 62 36 62 42 C62 48 56 50 56 54 L62 58 C66 61 68 66 68 73 L32 73 C32 66 34 61 38 58 L44 54 C44 50 38 48 38 42 Z" fill="#F3F3F6" stroke="#131316" stroke-linejoin="round" stroke-width="2"></path>
-<rect fill="#F3F3F6" height="6" rx="1" stroke="#131316" stroke-width="1.5" width="40" x="30" y="74"></rect>
+<symbol id="white-pawn" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#F8F8FA" stroke="#141418" stroke-width="1.5" stroke-linecap="round"/>
 </g>
-<g id="w-queen">
-<path d="M30 40 L38 60 L62 60 L70 40 L58 48 L50 32 L42 48 Z" fill="#F3F3F6" stroke="#131316" stroke-linejoin="round" stroke-width="2"></path>
-<circle cx="30" cy="38" fill="#F3F3F6" r="3"></circle>
-<circle cx="50" cy="30" fill="#F3F3F6" r="3"></circle>
-<circle cx="70" cy="38" fill="#F3F3F6" r="3"></circle>
-<rect fill="#F3F3F6" height="16" rx="2" stroke="#131316" stroke-width="2" width="32" x="34" y="62"></rect>
+</symbol>
+<symbol id="w-pawn" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#F8F8FA" stroke="#141418" stroke-width="1.5" stroke-linecap="round"/>
 </g>
-<g id="w-rook">
-<path d="M34 32 L34 44 L40 44 L40 32 L46 32 L46 44 L54 44 L54 32 L60 32 L60 44 L66 44 L66 32 L68 50 L64 72 L36 72 L32 50 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
-<rect fill="#F3F3F6" height="7" rx="1" stroke="#131316" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</symbol>
+<symbol id="white-knight" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" style="fill:#F8F8FA; stroke:#141418;"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" style="fill:#F8F8FA; stroke:#141418;"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" style="fill:#141418; stroke:#141418;"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" style="fill:#141418; stroke:#141418;"/>
 </g>
-<g id="w-bishop">
-<path d="M50 25 C42 25 36 34 36 46 C36 56 42 62 44 68 L56 68 C58 62 64 56 64 46 C64 34 58 25 50 25 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
-<circle cx="50" cy="22" fill="#F3F3F6" r="3"></circle>
-<path d="M46 38 L54 46 M54 38 L46 46" stroke="#131316" stroke-width="2"></path>
-<rect fill="#F3F3F6" height="7" stroke="#131316" stroke-width="1.5" width="36" x="32" y="70"></rect>
+</symbol>
+<symbol id="w-knight" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" style="fill:#F8F8FA; stroke:#141418;"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" style="fill:#F8F8FA; stroke:#141418;"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" style="fill:#141418; stroke:#141418;"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" style="fill:#141418; stroke:#141418;"/>
 </g>
-<g id="w-knight">
-<path d="M35 72 L65 72 C65 65 62 60 58 56 C62 52 65 44 63 36 C61 28 53 28 50 31 C47 25 38 27 34 36 C30 44 32 52 35 56 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
-<circle cx="43" cy="38" fill="#131316" r="2"></circle>
-<rect fill="#F3F3F6" height="6" stroke="#131316" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</symbol>
+<symbol id="white-bishop" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<g fill="#F8F8FA" stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2zM15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2zM25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/>
 </g>
-<g id="w-pawn">
-<circle cx="50" cy="36" fill="#F3F3F6" r="11" stroke="#131316" stroke-width="2"></circle>
-<path d="M42 49 L58 49 L62 70 L38 70 Z" fill="#F3F3F6" stroke="#131316" stroke-width="2"></path>
-<rect fill="#F3F3F6" height="6" rx="1" stroke="#131316" stroke-width="1.5" width="36" x="32" y="71"></rect>
+</symbol>
+<symbol id="w-bishop" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<g fill="#F8F8FA" stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2zM15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2zM25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/>
 </g>
-<!-- Black Pieces (Obsidian with Crisp Outline) -->
-<g id="b-king">
-<path d="M50 20 L50 34 M43 27 L57 27 M38 42 C38 36 62 36 62 42 C62 48 56 50 56 54 L62 58 C66 61 68 66 68 73 L32 73 C32 66 34 61 38 58 L44 54 C44 50 38 48 38 42 Z" fill="#222228" stroke="#e4e1e6" stroke-linejoin="round" stroke-width="2"></path>
-<rect fill="#222228" height="6" rx="1" stroke="#e4e1e6" stroke-width="1.5" width="40" x="30" y="74"></rect>
+</symbol>
+<symbol id="white-rook" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9 39h27v-3H9v3zM12 36v-4h21v4H12zM11 14V9h4v2h5V9h5v2h5V9h4v5" stroke-linecap="butt"/><path d="M34 14l-3 3H14l-3-3"/><path d="M31 17v12.5H14V17" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M31 29.5l1.5 2.5h-20l1.5-2.5"/><path d="M11 14h23" fill="none" stroke-linejoin="miter"/>
 </g>
-<g id="b-queen">
-<path d="M30 40 L38 60 L62 60 L70 40 L58 48 L50 32 L42 48 Z" fill="#222228" stroke="#e4e1e6" stroke-linejoin="round" stroke-width="2"></path>
-<circle cx="30" cy="38" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
-<circle cx="50" cy="30" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
-<circle cx="70" cy="38" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
-<rect fill="#222228" height="16" rx="2" stroke="#e4e1e6" stroke-width="2" width="32" x="34" y="62"></rect>
+</symbol>
+<symbol id="w-rook" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9 39h27v-3H9v3zM12 36v-4h21v4H12zM11 14V9h4v2h5V9h5v2h5V9h4v5" stroke-linecap="butt"/><path d="M34 14l-3 3H14l-3-3"/><path d="M31 17v12.5H14V17" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M31 29.5l1.5 2.5h-20l1.5-2.5"/><path d="M11 14h23" fill="none" stroke-linejoin="miter"/>
 </g>
-<g id="b-rook">
-<path d="M34 32 L34 44 L40 44 L40 32 L46 32 L46 44 L54 44 L54 32 L60 32 L60 44 L66 44 L66 32 L68 50 L64 72 L36 72 L32 50 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
-<rect fill="#222228" height="7" rx="1" stroke="#e4e1e6" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</symbol>
+<symbol id="white-queen" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z"/><path d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0" fill="none"/>
 </g>
-<g id="b-bishop">
-<path d="M50 25 C42 25 36 34 36 46 C36 56 42 62 44 68 L56 68 C58 62 64 56 64 46 C64 34 58 25 50 25 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
-<circle cx="50" cy="22" fill="#222228" r="3" stroke="#e4e1e6" stroke-width="1"></circle>
-<path d="M46 38 L54 46 M54 38 L46 46" stroke="#e4e1e6" stroke-width="2"></path>
-<rect fill="#222228" height="7" stroke="#e4e1e6" stroke-width="1.5" width="36" x="32" y="70"></rect>
+</symbol>
+<symbol id="w-queen" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z"/><path d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0" fill="none"/>
 </g>
-<g id="b-knight">
-<path d="M35 72 L65 72 C65 65 62 60 58 56 C62 52 65 44 63 36 C61 28 53 28 50 31 C47 25 38 27 34 36 C30 44 32 52 35 56 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
-<circle cx="43" cy="38" fill="#a78bfa" r="2"></circle>
-<rect fill="#222228" height="6" stroke="#e4e1e6" stroke-width="1.5" width="40" x="30" y="72"></rect>
+</symbol>
+<symbol id="white-king" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 11.63V6M20 8h5" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#F8F8FA" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#F8F8FA"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/>
 </g>
-<g id="b-pawn">
-<circle cx="50" cy="36" fill="#222228" r="11" stroke="#e4e1e6" stroke-width="2"></circle>
-<path d="M42 49 L58 49 L62 70 L38 70 Z" fill="#222228" stroke="#e4e1e6" stroke-width="2"></path>
-<rect fill="#222228" height="6" rx="1" stroke="#e4e1e6" stroke-width="1.5" width="36" x="32" y="71"></rect>
+</symbol>
+<symbol id="w-king" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 11.63V6M20 8h5" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#F8F8FA" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#F8F8FA"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/>
 </g>
+</symbol>
+<symbol id="black-pawn" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#22232B" stroke="#D8D8E5" stroke-width="1.5" stroke-linecap="round"/>
+</g>
+</symbol>
+<symbol id="b-pawn" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#22232B" stroke="#D8D8E5" stroke-width="1.5" stroke-linecap="round"/>
+</g>
+</symbol>
+<symbol id="black-knight" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" style="fill:#22232B; stroke:#22232B;"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" style="fill:#22232B; stroke:#22232B;"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" style="fill:#ececec; stroke:#ececec;"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" style="fill:#ececec; stroke:#ececec;"/><path d="M 24.55,10.4 L 24.1,11.85 L 24.6,12 C 27.75,13 30.25,14.49 32.5,18.75 C 34.75,23.01 35.75,29.06 35.25,39 L 35.2,39.5 L 37.45,39.5 L 37.5,39 C 38,28.94 36.62,22.15 34.25,17.66 C 31.88,13.17 28.46,11.02 25.06,10.5 L 24.55,10.4 z " style="fill:#ececec; stroke:none;"/>
+</g>
+</symbol>
+<symbol id="b-knight" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" style="fill:#22232B; stroke:#22232B;"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" style="fill:#22232B; stroke:#22232B;"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" style="fill:#ececec; stroke:#ececec;"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" style="fill:#ececec; stroke:#ececec;"/><path d="M 24.55,10.4 L 24.1,11.85 L 24.6,12 C 27.75,13 30.25,14.49 32.5,18.75 C 34.75,23.01 35.75,29.06 35.25,39 L 35.2,39.5 L 37.45,39.5 L 37.5,39 C 38,28.94 36.62,22.15 34.25,17.66 C 31.88,13.17 28.46,11.02 25.06,10.5 L 24.55,10.4 z " style="fill:#ececec; stroke:none;"/>
+</g>
+</symbol>
+<symbol id="black-bishop" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2zm6-4c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2zM25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z" fill="#22232B" stroke-linecap="butt"/><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" stroke="#fff" stroke-linejoin="miter"/>
+</g>
+</symbol>
+<symbol id="b-bishop" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2zm6-4c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2zM25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z" fill="#22232B" stroke-linecap="butt"/><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" stroke="#fff" stroke-linejoin="miter"/>
+</g>
+</symbol>
+<symbol id="black-rook" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9 39h27v-3H9v3zM12.5 32l1.5-2.5h17l1.5 2.5h-20zM12 36v-4h21v4H12z" stroke-linecap="butt"/><path d="M14 29.5v-13h17v13H14z" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M14 16.5L11 14h23l-3 2.5H14zM11 14V9h4v2h5V9h5v2h5V9h4v5H11z" stroke-linecap="butt"/><path d="M12 35.5h21M13 31.5h19M14 29.5h17M14 16.5h17M11 14h23" fill="none" stroke="#fff" stroke-width="1" stroke-linejoin="miter"/>
+</g>
+</symbol>
+<symbol id="b-rook" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9 39h27v-3H9v3zM12.5 32l1.5-2.5h17l1.5 2.5h-20zM12 36v-4h21v4H12z" stroke-linecap="butt"/><path d="M14 29.5v-13h17v13H14z" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M14 16.5L11 14h23l-3 2.5H14zM11 14V9h4v2h5V9h5v2h5V9h4v5H11z" stroke-linecap="butt"/><path d="M12 35.5h21M13 31.5h19M14 29.5h17M14 16.5h17M11 14h23" fill="none" stroke="#fff" stroke-width="1" stroke-linejoin="miter"/>
+</g>
+</symbol>
+<symbol id="black-queen" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<g fill="#22232B" stroke="none"><circle cx="6" cy="12" r="2.75"/><circle cx="14" cy="9" r="2.75"/><circle cx="22.5" cy="8" r="2.75"/><circle cx="31" cy="9" r="2.75"/><circle cx="39" cy="12" r="2.75"/>
+</g>
+</symbol>
+<symbol id="b-queen" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<g fill="#22232B" stroke="none"><circle cx="6" cy="12" r="2.75"/><circle cx="14" cy="9" r="2.75"/><circle cx="22.5" cy="8" r="2.75"/><circle cx="31" cy="9" r="2.75"/><circle cx="39" cy="12" r="2.75"/>
+</g>
+</symbol>
+<symbol id="black-king" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 11.63V6" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#22232B" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#22232B"/><path d="M20 8h5" stroke-linejoin="miter"/><path d="M32 29.5s8.5-4 6.03-9.65C34.15 14 25 18 22.5 24.5l.01 2.1-.01-2.1C20 18 9.906 14 6.997 19.85c-2.497 5.65 4.853 9 4.853 9M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" stroke="#fff"/>
+</g>
+</symbol>
+<symbol id="b-king" viewBox="0 0 45 45">
+<g fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22.5 11.63V6" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#22232B" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#22232B"/><path d="M20 8h5" stroke-linejoin="miter"/><path d="M32 29.5s8.5-4 6.03-9.65C34.15 14 25 18 22.5 24.5l.01 2.1-.01-2.1C20 18 9.906 14 6.997 19.85c-2.497 5.65 4.853 9 4.853 9M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" stroke="#fff"/>
+</g>
+</symbol>
 </defs>
 </svg>
 
@@ -2217,8 +2433,8 @@ body.star-motion-paused #space {
                 <span id="boardTitle">Tabuleiro de Xadrez · 8×8</span>
               </div>
               <div class="toggle-group">
-                <button class="toggle active" id="btn2D" onclick="setViewMode('2d')">2D SVG Profissional</button>
-                <button class="toggle" id="btn3D" onclick="setViewMode('3d')">3D Real (WebGL)</button>
+                <button class="toggle active" id="btn3D" onclick="setViewMode('3d')">3D Real (WebGL)</button>
+                <button class="toggle" id="btn2D" onclick="setViewMode('2d')">2D SVG Profissional</button>
               </div>
             </div>
 
@@ -2267,6 +2483,7 @@ body.star-motion-paused #space {
                 <button class="btn sm primary" id="repPlayPauseBtn" onclick="toggleReplayPlayPause()" title="Reproduzir timeline de lances com avanço automático a cada 1.5s">▶ Reproduzir</button>
                 <button class="btn sm secondary" id="repNextBtn" onclick="navigateMoveReplay('next')" disabled title="Próximo lance">Próximo →</button>
                 <button class="btn sm secondary" id="repLiveBtn" onclick="replayJumpLatest()" disabled title="Posição ao vivo">⏭ Atual</button>
+                <button class="btn sm secondary" id="resetCamBtn" onclick="resetCamera()" title="Centralizar e redefinir visão do tabuleiro 3D">↺ Câmera</button>
                 <button class="btn sm secondary" id="flipBoardBtn" onclick="toggleBoardFlip()" title="Inverter perspectiva do tabuleiro (Brancas / Pretas)">⇄ Inverter</button>
                 <span id="replayCursorLabel" style="margin-left:auto">Posição ao vivo</span>
               </div>
@@ -2307,30 +2524,57 @@ body.star-motion-paused #space {
                     <!-- ABA PRIMÁRIA: Lance Selecionado (UI Nocturne Focus C07 & v2.3.1) -->
           <div class="tab-panel active" role="tabpanel" id="tabPanelMove" aria-labelledby="tabBtnMove">
             <div class="selected-move-panel" id="selectedMovePanel">
-              <div id="smpStateContainer"></div>
-              <div id="smpContent" style="display:flex;flex-direction:column;gap:12px;">
-                <div class="move-panel-head">
-                <div class="move-ply-badge" id="smpPlyBadge">Lance #—</div>
-                <div class="move-san-highlight" id="smpSanLabel">Aguardando lance</div>
-                <div class="move-side-pill" id="smpSidePill">—</div>
-              </div>
-
-              <!-- Seção 1: Identificação & Movimento -->
-              <div class="smp-section">
-                <div class="smp-sec-title">📍 MOVIMENTO & PEÇA ATIVA</div>
-                <div class="smp-grid-2">
-                  <div><small style="color:var(--muted)">Peça ativa:</small><br><strong id="smpPieceLabel">—</strong></div>
-                  <div><small style="color:var(--muted)">Origem → Destino:</small><br><strong id="smpCoordsLabel">—</strong></div>
+            <div id="smpStateContainer"></div>
+            <div id="smpContent" class="smp-narrative-container">
+              <!-- 1. Cabeçalho Minimalista do Lance -->
+              <div class="smp-move-header">
+                <div class="smp-move-topline">
+                  <div class="smp-badge-group">
+                    <span class="smp-ply-badge" id="smpPlyBadge">Lance #—</span>
+                    <span class="smp-san-badge" id="smpSanLabel">Aguardando lance</span>
+                  </div>
+                  <span class="smp-side-tag" id="smpSidePill">—</span>
                 </div>
-                <div style="margin-top:6px"><small style="color:var(--muted)">Papel tático:</small> <span id="smpPieceRole" style="color:var(--text)">—</span></div>
+                <div class="smp-piece-row">
+                  <span class="smp-piece-name" id="smpPieceLabel">—</span>
+                  <span class="smp-sep">·</span>
+                  <span class="smp-coords-text" id="smpCoordsLabel">—</span>
+                  <span class="smp-sep">·</span>
+                  <span class="smp-role-text" id="smpPieceRole">—</span>
+                </div>
               </div>
 
-              <!-- Seção 2: Tese & Evidência Documental -->
-              <!-- Seção de Auditoria de Controles (Exibida dinamicamente no modo audit) -->
-              <div class="smp-section smp-audit-box" id="smpAuditBox" style="display:none;">
-                <div class="smp-sec-title">🔍 AUDITORIA DE CONTROLE & CONFORMIDADE</div>
+              <!-- 2. O que este movimento representa? -->
+              <div class="smp-narrative-card" id="smpThesisBlock">
+                <div class="smp-card-question">O QUE ESTE MOVIMENTO REPRESENTA?</div>
+                <p class="smp-claim-text" id="smpClaimText">Nenhum lance selecionado no momento.</p>
+              </div>
+
+              <!-- 3. Qual evidência foi utilizada? -->
+              <div class="smp-narrative-card" id="smpEvidenceBlock">
+                <div class="smp-card-question">QUAL EVIDÊNCIA FOI UTILIZADA?</div>
+                <div class="smp-quote-box" id="smpQuoteBox" style="display:none;">
+                  <blockquote class="smp-quote-content" id="smpQuoteText"></blockquote>
+                  <div class="smp-source-meta" id="smpSourceMeta"></div>
+                </div>
+                <div class="smp-source-status-row">
+                  <small style="color:var(--muted)">Status da fonte:</small>
+                  <span class="badge-status" id="smpSourceStatusBadge">UNVERIFIED</span>
+                </div>
+              </div>
+
+              <!-- 4. Contestação (apenas se houver captura) -->
+              <div class="smp-narrative-card smp-contest-card" id="smpContestBox" style="display:none;">
+                <div class="smp-card-question">CONTESTAÇÃO DE TESE OPOSITORA</div>
+                <div style="font-size:12px;color:var(--muted)">Peça confrontada: <strong id="smpOpponentLabel" style="color:var(--text)">—</strong></div>
+                <p class="smp-claim-text" id="smpOpponentClaimText" style="margin-top:4px;">—</p>
+              </div>
+
+              <!-- 5. Seção de Auditoria de Controles (Modo Audit) -->
+              <div class="smp-narrative-card smp-audit-card" id="smpAuditBox" style="display:none;">
+                <div class="smp-card-question">CONTROLE NORMATIVO AUDITADO</div>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-                  <div style="font-size:12px;font-family:monospace;color:var(--accent);" id="smpAuditFrameworkReq">ISO 27001 - A.10</div>
+                  <span style="font-size:12px;font-family:monospace;color:var(--accent);font-weight:700;" id="smpAuditFrameworkReq">ISO 27001 - A.10</span>
                   <div style="display:flex;gap:6px;">
                     <span class="badge-risk" id="smpAuditRiskBadge">RISCO ALTO</span>
                     <span class="badge-compliance" id="smpAuditComplianceBadge">NÃO CONFORME</span>
@@ -2354,51 +2598,33 @@ body.star-motion-paused #space {
                 </div>
               </div>
 
-              <div class="smp-section smp-thesis-box">
-                <div class="smp-sec-title">📖 TESE & PROVA DOCUMENTAL</div>
-                <p class="smp-claim-text" id="smpClaimText">Nenhum lance selecionado no momento.</p>
-                <div class="smp-quote-box" id="smpQuoteBox" style="display:none">
-                  <div class="smp-quote-content" id="smpQuoteText"></div>
-                  <div class="smp-source-meta" id="smpSourceMeta"></div>
+              <!-- 6. Avaliação do Árbitro -->
+              <div class="smp-narrative-card" id="smpVerdictBlock">
+                <div class="smp-card-question">AVALIAÇÃO DO ÁRBITRO</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span class="badge-verdict" id="smpVerdictBadge">NOT_ASSESSED</span>
                 </div>
-                <div style="font-size:11px;margin-top:4px;">
-                  Status da fonte: <span class="badge-status" id="smpSourceStatusBadge">UNVERIFIED</span>
-                </div>
+                <p class="smp-verdict-reason" id="smpVerdictReason">Parecer em linguagem natural sobre a validade do argumento.</p>
               </div>
 
-              <!-- Seção 3: Contestação / Oponente (em capturas) -->
-              <div class="smp-section smp-contest-box" id="smpContestBox" style="display:none">
-                <div class="smp-sec-title">⚔️ CONTESTAÇÃO / OPONENTE</div>
-                <div><small style="color:var(--muted)">Peça oponente:</small> <strong id="smpOpponentLabel">—</strong></div>
-                <p class="smp-claim-text" id="smpOpponentClaimText" style="margin-top:4px;">—</p>
-              </div>
-
-              <!-- Seção 4: Status Físico no Tabuleiro -->
-              <div class="smp-section">
-                <div class="smp-sec-title">♟️ TABULEIRO FÍSICO</div>
-                <div class="smp-grid-3">
-                  <div><small style="color:var(--muted)">Captura:</small><br><b id="smpPhysicalCaptureBadge">NÃO</b></div>
-                  <div><small style="color:var(--muted)">Xeque:</small><br><b id="smpCheckBadge">NÃO</b></div>
-                  <div><small style="color:var(--muted)">Xeque-mate:</small><br><b id="smpMateBadge">NÃO</b></div>
+              <!-- 7. Detalhes Técnicos e Forenses (Colapsável) -->
+              <details class="smp-details-fold" id="smpDetailsFold">
+                <summary class="smp-details-summary">Ver auditoria técnica completa</summary>
+                <div class="smp-details-body">
+                  <div class="smp-grid-3">
+                    <div><small style="color:var(--muted)">Captura física:</small><br><b id="smpPhysicalCaptureBadge">NÃO</b></div>
+                    <div><small style="color:var(--muted)">Xeque:</small><br><b id="smpCheckBadge">NÃO</b></div>
+                    <div><small style="color:var(--muted)">Xeque-mate:</small><br><b id="smpMateBadge">NÃO</b></div>
+                  </div>
+                  <div class="epistemic-disclaimer" style="margin-top:8px;">
+                    <small>⚠️ <em>Rigor científico:</em> A captura física no jogo nunca equivale automaticamente à refutação factual da tese sem contraprova semântica demonstrada.</small>
+                  </div>
                 </div>
-              </div>
-
-              <!-- Seção 5: Avaliação Epistêmica Factual -->
-              <div class="smp-section">
-                <div class="smp-sec-title">⚖️ AVALIAÇÃO FACTUAL DO ÁRBITRO</div>
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-                  <span style="font-size:12px;">Veredito:</span>
-                  <span class="badge-verdict inconclusive" id="smpVerdictBadge">NOT_ASSESSED</span>
-                </div>
-                <p class="smp-verdict-reason" id="smpVerdictReason">Aguardando movimento ou inspeção de jogada.</p>
-                <div class="epistemic-disclaimer">
-                  <small>⚠️ <em>Rigor científico:</em> A captura física no jogo nunca equivale automaticamente à refutação factual da tese sem contraprova semântica demonstrada.</small>
-                </div>
-              </div>
-              </div>
+              </details>
             </div>
           </div>
-          <!-- ABA 2: Conversa entre Agentes -->
+        </div>
+        <!-- ABA 2: Conversa entre Agentes -->
           <div class="tab-panel" role="tabpanel" id="tabPanelChat" aria-labelledby="tabBtnChat">
             <div class="chat-stream" id="chatStream">
               <div class="message user">
@@ -2615,7 +2841,7 @@ let serverCapabilities = {
 
 let mode = 'research';
 let game = 'chess';
-let viewMode = '2d';
+let viewMode = '3d';
 let isBoardFlipped = false;
 let replayTimer = null;
 let activeSession = null;
@@ -2769,7 +2995,13 @@ try {
    ========================================================================= */
 const canvas3D = document.getElementById('stage');
 const gl = canvas3D.getContext('webgl', { antialias: true });
-let theta = 0, phi = 0.86, radius = 13.4, camTarget = [0, 0, 0];
+let theta = 0, phi = 0.82, radius = 11.2, camTarget = [0, 0, 0];
+
+function resetCamera() {
+  theta = 0; phi = 0.82; radius = 11.2; camTarget = [0, 0, 0];
+  if (viewMode === '3d') requestAnimationFrame(render3DScene);
+  notify('Câmera 3D centralizada no tabuleiro.');
+}
 
 const VERT = `
 attribute vec3 p;
@@ -3104,27 +3336,17 @@ function render2DBoard() {
   grid.innerHTML = '';
 
   if (game === 'chess') {
-    grid.style.gridTemplateColumns = '1fr';
-    grid.style.gridTemplateRows = '1fr';
-    grid.style.background = '#18181C';
+    grid.style.background = '#14151B';
     grid.style.position = 'relative';
 
     const fenMap = parseFenToMap(boardState.chessFen);
     const flipped = isBoardFlipped;
 
     let svgHtml = `
-      <svg id="forensicBoardSvg" viewBox="0 0 800 800" width="100%" height="100%" style="display:block;border-radius:4px;user-select:none;" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <marker id="arrow-move" markerHeight="5" markerWidth="5" orient="auto-start-reverse" refX="5" refY="5" viewBox="0 0 10 10">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#A78BFA"></path>
-          </marker>
-          <marker id="arrow-best" markerHeight="5" markerWidth="5" orient="auto-start-reverse" refX="5" refY="5" viewBox="0 0 10 10">
-            <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#5BBFA7"></path>
-          </marker>
-        </defs>
+      <svg id="forensicBoardSvg" viewBox="0 0 800 800" width="100%" height="100%" style="display:block;border-radius:6px;user-select:none;" xmlns="http://www.w3.org/2000/svg">
     `;
 
-    // 1. Squares & Highlights
+    // 1. Casas e Realces (Cores profissionais de alto contraste Nocturne)
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const renderC = flipped ? (7 - c) : c;
@@ -3137,30 +3359,31 @@ function render2DBoard() {
 
         const x = c * 100;
         const y = r * 100;
-        const bgFill = isLight ? '#292931' : '#18181C';
+        // Casas de xadrez profissionais: clara pedra-cinza fosco #2E303B, escura grafite profundo #18181E
+        const bgFill = isLight ? '#2E303B' : '#18181E';
 
         svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="${bgFill}" class="cell-2d ${isLight ? 'light' : 'dark'}" style="cursor:pointer;" onclick="inspectCell(${renderC}, ${renderR}, '${sq}')" />`;
 
         if (isHlOrigin) {
-          svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.28)" pointer-events="none" />`;
+          svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.30)" pointer-events="none" />`;
         }
         if (isHlDest) {
-          svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.42)" stroke="#A78BFA" stroke-width="2.5" pointer-events="none" />`;
+          svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.48)" stroke="#A78BFA" stroke-width="3" pointer-events="none" />`;
         }
 
-        // Labels nos cantos internos das casas de borda (Lichess/Chess.com style)
+        // Rótulos de coordenadas integrados nos cantos das casas de borda (Lichess/Chess.com)
         if (r === 7) {
           const fileLetter = 'abcdefgh'[renderC];
-          svgHtml += `<text x="${x + 88}" y="${y + 92}" fill="${isLight ? '#71717A' : '#52525B'}" font-size="12" font-family="monospace" font-weight="600" text-anchor="end" pointer-events="none">${fileLetter}</text>`;
+          svgHtml += `<text x="${x + 88}" y="${y + 92}" fill="${isLight ? '#7A7B85' : '#555660'}" font-size="12" font-family="monospace" font-weight="700" text-anchor="end" pointer-events="none">${fileLetter}</text>`;
         }
         if (c === 0) {
           const rankNum = (8 - renderR);
-          svgHtml += `<text x="${x + 8}" y="${y + 18}" fill="${isLight ? '#71717A' : '#52525B'}" font-size="12" font-family="monospace" font-weight="600" text-anchor="start" pointer-events="none">${rankNum}</text>`;
+          svgHtml += `<text x="${x + 8}" y="${y + 18}" fill="${isLight ? '#7A7B85' : '#555660'}" font-size="12" font-family="monospace" font-weight="700" text-anchor="start" pointer-events="none">${rankNum}</text>`;
         }
       }
     }
 
-    // 2. Pieces
+    // 2. Peças Cburnett Clássicas (Símbolos vetoriais profissionais sempre orientados para cima)
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const renderC = flipped ? (7 - c) : c;
@@ -3169,8 +3392,8 @@ function render2DBoard() {
         const piece = fenMap[sq];
         if (piece) {
           const symbolMap = {
-            'P': '#w-pawn', 'N': '#w-knight', 'B': '#w-bishop', 'R': '#w-rook', 'Q': '#w-queen', 'K': '#w-king',
-            'p': '#b-pawn', 'n': '#b-knight', 'b': '#b-bishop', 'r': '#b-rook', 'q': '#b-queen', 'k': '#b-king'
+            'P': '#white-pawn', 'N': '#white-knight', 'B': '#white-bishop', 'R': '#white-rook', 'Q': '#white-queen', 'K': '#white-king',
+            'p': '#black-pawn', 'n': '#black-knight', 'b': '#black-bishop', 'r': '#black-rook', 'q': '#black-queen', 'k': '#black-king'
           };
           const symId = symbolMap[piece];
           if (symId) {
@@ -3182,7 +3405,7 @@ function render2DBoard() {
       }
     }
 
-    // 3. Move Arrow
+    // 3. Seta Vetorial do Lance Suave
     if (lastMoveOrigin && lastMoveDest) {
       const oc = flipped ? (7 - lastMoveOrigin[0]) : lastMoveOrigin[0];
       const or_ = flipped ? (7 - lastMoveOrigin[1]) : lastMoveOrigin[1];
@@ -3198,7 +3421,7 @@ function render2DBoard() {
       const dy = y2 - y1;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist > 10) {
-        const shorten = 18;
+        const shorten = 20;
         const ax2 = x2 - (dx / dist) * shorten;
         const ay2 = y2 - (dy / dist) * shorten;
         svgHtml += `<line x1="${x1}" y1="${y1}" x2="${ax2}" y2="${ay2}" stroke="#A78BFA" stroke-width="7" stroke-linecap="round" marker-end="url(#arrow-move)" opacity="0.88" pointer-events="none" />`;
@@ -3209,33 +3432,30 @@ function render2DBoard() {
     grid.innerHTML = svgHtml;
   } else {
     // Go 9x9 SVG Board
-    grid.style.gridTemplateColumns = '1fr';
-    grid.style.gridTemplateRows = '1fr';
     grid.style.background = '#1B1B22';
     grid.style.position = 'relative';
 
     const flipped = isBoardFlipped;
 
     let svgHtml = `
-      <svg id="goBoardSvg" viewBox="0 0 400 400" width="100%" height="100%" style="display:block;border-radius:4px;user-select:none;padding:8px;" xmlns="http://www.w3.org/2000/svg">
+      <svg id="goBoardSvg" viewBox="0 0 400 400" width="100%" height="100%" style="display:block;border-radius:6px;user-select:none;padding:12px;" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="stoneShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.6"/>
+            <feDropShadow dx="0" dy="2.5" stdDeviation="3" flood-color="#000" flood-opacity="0.65"/>
           </filter>
           <radialGradient id="whiteStoneGrad" cx="35%" cy="35%" r="65%">
             <stop offset="0%" stop-color="#FFFFFF"/>
-            <stop offset="40%" stop-color="#EBEBF0"/>
-            <stop offset="100%" stop-color="#B0B0BA"/>
+            <stop offset="45%" stop-color="#EDEDF2"/>
+            <stop offset="100%" stop-color="#B2B2BC"/>
           </radialGradient>
           <radialGradient id="blackStoneGrad" cx="35%" cy="35%" r="65%">
-            <stop offset="0%" stop-color="#40404C"/>
-            <stop offset="60%" stop-color="#1E1E26"/>
+            <stop offset="0%" stop-color="#444450"/>
+            <stop offset="60%" stop-color="#202026"/>
             <stop offset="100%" stop-color="#0E0E12"/>
           </radialGradient>
         </defs>
 
-        <!-- Board Grid Lines (9x9) -->
-        <g stroke="#33333F" stroke-width="1.2">
+        <g stroke="#353542" stroke-width="1.3">
     `;
 
     for (let i = 0; i < 9; i++) {
@@ -3246,17 +3466,15 @@ function render2DBoard() {
 
     svgHtml += `
         </g>
-        <!-- Star Points (Hoshi) -->
         <g fill="#8E8E9B">
-          <circle cx="110" cy="110" r="3" />
-          <circle cx="290" cy="110" r="3" />
-          <circle cx="110" cy="290" r="3" />
-          <circle cx="290" cy="290" r="3" />
+          <circle cx="110" cy="110" r="3.2" />
+          <circle cx="290" cy="110" r="3.2" />
+          <circle cx="110" cy="290" r="3.2" />
+          <circle cx="290" cy="290" r="3.2" />
           <circle cx="200" cy="200" r="3.5" fill="#A78BFA" />
         </g>
     `;
 
-    // Interseções clicáveis
     svgHtml += `<g class="go-intersections">`;
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
@@ -3270,7 +3488,6 @@ function render2DBoard() {
     }
     svgHtml += `</g>`;
 
-    // Pedras no tabuleiro
     const stones = boardState.goStones || [];
     svgHtml += `<g filter="url(#stoneShadow)">`;
     for (const s of stones) {
@@ -3280,11 +3497,10 @@ function render2DBoard() {
       const cx = 20 + renderC * 45;
       const cy = 20 + renderR * 45;
       const grad = s.color === 'B' ? 'url(#blackStoneGrad)' : 'url(#whiteStoneGrad)';
-      svgHtml += `<circle cx="${cx}" cy="${cy}" r="17" fill="${grad}" class="cell-2d go-stone" style="cursor:pointer;" onclick="inspectCell(${s.col}, ${s.row}, '${coord}')" />`;
+      svgHtml += `<circle cx="${cx}" cy="${cy}" r="17.5" fill="${grad}" class="cell-2d go-stone" style="cursor:pointer;" onclick="inspectCell(${s.col}, ${s.row}, '${coord}')" />`;
     }
     svgHtml += `</g>`;
 
-    // Pulso no último lance
     if (lastMoveDest) {
       const lmc = flipped ? (8 - lastMoveDest[0]) : lastMoveDest[0];
       const lmr = flipped ? (8 - lastMoveDest[1]) : lastMoveDest[1];
@@ -3562,7 +3778,7 @@ function applyBoardFromBackend(boardObj) {
     lastMoveOrigin = null;
     lastMoveDest = parseGoCoord(boardObj.last_move);
   }
-  if (viewMode === '2d') render2DBoard();
+  if (viewMode === '3d') requestAnimationFrame(render3DScene); else render2DBoard();
 }
 
 function applySessionStateToUI(sess) {
@@ -4472,7 +4688,13 @@ function renderDualConclusionCard(conc, matchState) {
   const crit = (conc && conc.termination_criterion) || (matchState && matchState.termination_criterion) || 'BUDGET_EXHAUSTED';
   const pliesSim = matchState ? (matchState.plies_played != null ? matchState.plies_played : (matchState.total_plies_simulated || (matchState.timeline ? matchState.timeline.length : 0))) : 0;
 
-  if (lWinner) lWinner.textContent = winnerMap[ludicResult] || ludicResult;
+  if (crit === 'BUDGET_EXHAUSTED' || ludicResult === 'UNDECIDED') {
+    if (lWinner) lWinner.textContent = '⏳ Partida não concluída — Orçamento esgotado';
+    if (lCrit) lCrit.textContent = 'Orçamento de lances atingido';
+    if (lDesc) lDesc.textContent = 'A partida atingiu o limite de lances estipulado sem término formal por regras do jogo. É possível retomar a partida com orçamento adicional.';
+  } else {
+    if (lWinner) lWinner.textContent = winnerMap[ludicResult] || ludicResult;
+  }
   if (lCrit) lCrit.textContent = `Critério: ${critMap[crit] || crit}`;
   if (lPlies) lPlies.textContent = `${pliesSim} lances simulados`;
   if (lDesc) {
@@ -4687,8 +4909,7 @@ function highlightPieceSquare(sq) {
     if (col >= 0 && row >= 0) {
       selectedCell = [col, row];
       lastMoveDest = [col, row];
-      if (viewMode === '2d') render2DBoard();
-      else requestAnimationFrame(render3DScene);
+      if (viewMode === '3d') requestAnimationFrame(render3DScene); else render2DBoard();
     }
   }
 }
@@ -4902,25 +5123,49 @@ function renderReplayMovesStrip() {
   if (!container) return;
   const timeline = activeMatchTimeline || [];
   if (timeline.length === 0) {
-    container.innerHTML = '<span class="text-subtle" style="font-size:11px;color:var(--muted)">Aguardando lances da partida...</span>';
+    container.innerHTML = '<span class="text-subtle" style="font-size:12px;color:var(--muted);padding:4px;">Aguardando lances da partida...</span>';
     return;
   }
-  let html = '';
-  for (let i = 0; i < timeline.length; i++) {
-    const rec = timeline[i];
-    const ply = rec.ply || (i + 1);
-    const san = rec.san || rec.move || `L${ply}`;
-    const isWhite = (rec.color === 'white' || rec.side === 'pro');
-    const moveNum = Math.floor((ply - 1) / 2) + 1;
-    const prefix = (ply % 2 !== 0) ? `<span style="color:var(--subtle);font-size:11px;margin-right:2px">${moveNum}.</span>` : '';
-    const isActive = (selectedMovePly === ply);
+
+  let html = '<div class="replay-pairs-container">';
+  const totalPlies = timeline.length;
+  const numPairs = Math.ceil(totalPlies / 2);
+
+  for (let pairIdx = 0; pairIdx < numPairs; pairIdx++) {
+    const moveNum = pairIdx + 1;
+    const whiteIdx = pairIdx * 2;
+    const blackIdx = pairIdx * 2 + 1;
+
+    const wRec = timeline[whiteIdx];
+    const bRec = blackIdx < totalPlies ? timeline[blackIdx] : null;
+
+    const wPly = wRec.ply || (whiteIdx + 1);
+    const wSan = wRec.san || wRec.move || `L${wPly}`;
+    const isWActive = (selectedMovePly === wPly);
+
+    let bHtml = '';
+    if (bRec) {
+      const bPly = bRec.ply || (blackIdx + 1);
+      const bSan = bRec.san || bRec.move || `L${bPly}`;
+      const isBActive = (selectedMovePly === bPly);
+      bHtml = `<button type="button" class="move-pill black ${isBActive ? 'active' : ''}" onclick="selectMoveByPly(${bPly}, true)" title="Lance #${bPly} (Pretas): ${bSan}">${bSan}</button>`;
+    }
+
     html += `
-      <button type="button" class="move-pill ${isActive ? 'active' : ''} ${isWhite ? 'white' : 'black'}" onclick="selectMoveByPly(${ply}, true)" title="Lance #${ply}: ${san}">
-        ${prefix}${san}
-      </button>
+      <div class="move-pair-row">
+        <span class="move-pair-num">${moveNum}.</span>
+        <button type="button" class="move-pill white ${isWActive ? 'active' : ''}" onclick="selectMoveByPly(${wPly}, true)" title="Lance #${wPly} (Brancas): ${wSan}">${wSan}</button>
+        ${bHtml}
+      </div>
     `;
   }
+  html += '</div>';
   container.innerHTML = html;
+
+  const activeEl = container.querySelector('.move-pill.active');
+  if (activeEl) {
+    activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
 }
 
 function updateSelectedMovePanel(record, state = 'MOVE_READY') {
