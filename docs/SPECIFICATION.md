@@ -103,3 +103,4 @@ A **Pesquisa FUSION** permite investigar uma pergunta complexa a partir de 1 a 3
 - **Gemini API**: Provedor sugerido via adaptador server-side com suporte a BYOK (*Bring Your Own Key*). A chave de API nunca é exposta no frontend.
 - **Modo Demo Offline**: Execução integral sem chave e sem rede, utilizando cenários simulados pré-validados e explicitamente rotulados (`[DEMO / SIMULAÇÃO]`).
 - **Defesa Contra Prompt Injection**: Documentos ingeridos são processados estritamente como dados não confiáveis, isolados das instruções operacionais dos agentes.
+

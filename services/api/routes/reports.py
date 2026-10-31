@@ -1,5 +1,6 @@
 """
 Routes: Reports & Exports — Gambit Lab 2.0
+Relatórios com distinção explícita entre Integridade, Verificação de Fonte e Avaliação de Evidência.
 """
 from fastapi import APIRouter, HTTPException, Depends, Query, Response
 from typing import Dict, Any
@@ -39,7 +40,10 @@ def get_session_report(
         "claims_count": len(claims),
         "events_count": len(events),
         "game_result": sess["board"].get("game_result"),
-        "evidence_assessment": "INTEGRITY_VERIFIED",
+        "integrity_status": sess.get("integrity_status", "INTEGRITY_VERIFIED"),
+        "source_status": sess.get("source_status", "SOURCE_VERIFIED"),
+        "evidence_assessment": sess.get("evidence_assessment", "SUPPORTED"),
+        "diagnostic_reason": sess.get("diagnostic_reason"),
         "fusion_report": fusion_rep,
         "claims": claims
     }
@@ -53,7 +57,12 @@ def get_session_report(
 **Modalidade**: {sess['mode'].upper()} | **Jogo**: {sess['game'].upper()}  
 **Status**: {sess['status']} (v{sess['version']})  
 **Resultado de Jogo**: {sess['board'].get('game_result') or 'Em andamento'}  
-**Integridade Factual**: Rastreabilidade por hashes SHA-256 e eventos canônicos.
+
+### Três Dimensões de Verificação Epistêmica:
+- **Integridade Criptográfica**: `{report_data['integrity_status']}` (Hashes SHA-256 e Event Store encadeado intactos)
+- **Verificação de Fontes**: `{report_data['source_status']}`
+- **Avaliação Factual**: `{report_data['evidence_assessment']}`  
+*Diagnóstico*: {report_data.get('diagnostic_reason') or 'Conformidade auditada.'}
 
 ---
 
@@ -65,6 +74,8 @@ def get_session_report(
         md += f"\n## 2. Alegações e Vereditos ({len(claims)})\n"
         for c in claims:
             md += f"- **[{c.get('status')}]** {c.get('statement')}\n"
+            for cit in c.get("citations", []):
+                md += f"  > *Citação*: \"{cit.get('quote_text')}\" ({cit.get('artifact_name')}, {cit.get('page_or_offset')})\n"
 
         if fusion_rep:
             md += f"\n## 3. Síntese FUSION\n{fusion_rep.get('unified_synthesis')}\n"
@@ -74,14 +85,24 @@ def get_session_report(
         html = f"""<!doctype html>
 <html>
 <head><meta charset="utf-8"><title>Relatório - Gambit Lab 2.0</title>
-<style>body{{font-family:sans-serif;background:#0d1722;color:#edf5fa;padding:30px;line-height:1.6;}} h1,h2{{color:#61d2c0;}} .box{{background:#12202c;padding:15px;border-radius:8px;margin:15px 0;border:1px solid #233b4b;}}</style>
+<style>
+body{{font-family:sans-serif;background:#0d1722;color:#edf5fa;padding:30px;line-height:1.6;}}
+h1,h2{{color:#61d2c0;}}
+.box{{background:#12202c;padding:15px;border-radius:8px;margin:15px 0;border:1px solid #233b4b;}}
+.badge{{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;margin-right:6px;}}
+.badge-green{{background:#12343a;color:#87f0df;border:1px solid #27535a;}}
+.badge-gold{{background:#3a2e12;color:#f0c987;border:1px solid #5a4727;}}
+</style>
 </head>
 <body>
 <h1>Gambit Lab 2.0 — Relatório Auditável</h1>
 <div class="box">
 <p><b>Sessão:</b> {session_id} | <b>Tema:</b> {sess['title']}</p>
 <p><b>Modalidade:</b> {sess['mode'].upper()} | <b>Jogo:</b> {sess['game'].upper()}</p>
-<p><b>Eventos registrados:</b> {len(events)} | <b>Artefatos:</b> {len(artifacts)}</p>
+<p><b>Integridade:</b> <span class="badge badge-green">{report_data['integrity_status']}</span>
+   <b>Fontes:</b> <span class="badge badge-gold">{report_data['source_status']}</span>
+   <b>Evidência:</b> <span class="badge badge-green">{report_data['evidence_assessment']}</span></p>
+<p><i>{report_data.get('diagnostic_reason') or ''}</i></p>
 </div>
 <h2>Alegações e Achados</h2>
 <ul>

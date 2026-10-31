@@ -98,3 +98,4 @@
 - **AC-13**: Lance ilegal em Xadrez ou violação de ko em Go não altera versão nem estado.
 - **AC-16**: Modo offline demo inicia sem chave, sem rede e com identificação sintética clara.
 - **AC-18**: Replay recarrega e reproduz exatamente o mesmo estado a partir dos eventos.
+

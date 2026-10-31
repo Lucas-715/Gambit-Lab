@@ -127,3 +127,4 @@ pytest tests/ -v
 
 ## 7. Licença
 Projeto acadêmico e de engenharia de software distribuído sob a licença MIT.
+

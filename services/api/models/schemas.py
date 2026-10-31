@@ -1,6 +1,10 @@
 """
 Pydantic Schemas — Gambit Lab 2.0
 Definição estrita de contratos de dados para API, Event Store e Agentes.
+Inclui distinção rigorosa de três camadas:
+1. Integridade (SHA-256 e Event Store)
+2. Verificação de Fonte (Quote e Localizador)
+3. Avaliação Epistêmica (Sustentação/Refutação da Alegação)
 """
 from typing import Optional, List, Dict, Any, Literal
 from pydantic import BaseModel, Field
@@ -13,12 +17,12 @@ SessionStatus = Literal[
     "DRAFT", "PREPARING", "LOCKED", "RUNNING", "PAUSED", "FINISHED", "FAILED_CONTROLLED"
 ]
 SourcePolicy = Literal["own_only", "web_opt_in"]
-ClaimStatus = Literal[
-    "HYPOTHESIS", "SUPPORTED", "REFUTED", "CONTESTED", "INCONCLUSIVE", "NOT_COMPARABLE"
-]
-AdjudicationVerdict = Literal[
-    "SUPPORTED", "REFUTED", "INCONCLUSIVE", "NOT_COMPARABLE", "SOURCE_INVALID"
-]
+
+# Três níveis formais e separados de verificação (Problema 1 da Auditoria)
+IntegrityStatus = Literal["INTEGRITY_VERIFIED", "INTEGRITY_COMPROMISED", "NOT_CALCULATED"]
+SourceStatus = Literal["SOURCE_VERIFIED", "SOURCE_UNRESOLVED", "QUOTE_MISMATCH", "NO_SOURCES_ATTACHED"]
+EvidenceVerdict = Literal["SUPPORTED", "REFUTED", "INSUFFICIENT", "NOT_COMPARABLE", "HYPOTHESIS"]
+ClaimStatus = Literal["HYPOTHESIS", "SUPPORTED", "REFUTED", "CONTESTED", "INSUFFICIENT", "NOT_COMPARABLE"]
 
 
 class SessionBudget(BaseModel):
@@ -48,6 +52,8 @@ class BoardPositionSchema(BaseModel):
     komi: Optional[float] = 6.5
     is_game_over: bool = False
     game_result: Optional[str] = None
+    is_check: bool = False
+    diagnostic_reason: Optional[str] = None
 
 
 class ArtifactSchema(BaseModel):
@@ -69,6 +75,7 @@ class CitationSchema(BaseModel):
     artifact_hash: str
     quote_text: str
     page_or_offset: str = "p.1"
+    quote_verified: bool = False
     created_at: str = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
 
@@ -83,14 +90,15 @@ class ClaimSchema(BaseModel):
     author_agent: str = "agent_pesquisador"
     created_at: str = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
     binding_coord: Optional[str] = None
+    uncertainty_level: Literal["CERTAIN", "PROJECTION", "UNCERTAIN"] = "UNCERTAIN"
 
 
 class RubricEvaluation(BaseModel):
     claim_identity_score: float = 1.0
     comparability_score: float = 1.0
     provenance_score: float = 1.0
-    excerpt_verification: bool = True
-    support_or_refutation_match: bool = True
+    excerpt_verification: bool = False
+    support_or_refutation_match: bool = False
     uncertainty_recognized: bool = True
     role_conflict_free: bool = True
 
@@ -99,7 +107,7 @@ class JudgmentSchema(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     session_id: str
     claim_id: str
-    verdict: AdjudicationVerdict
+    verdict: EvidenceVerdict
     rubric: RubricEvaluation
     rationale: str
     evaluator_agent: str = "agent_arbitro"
@@ -187,5 +195,9 @@ class SessionResponseSchema(BaseModel):
     branches: List[FusionBranchSchema] = Field(default_factory=list)
     claims: List[ClaimSchema] = Field(default_factory=list)
     artifacts: List[ArtifactSchema] = Field(default_factory=list)
+    integrity_status: IntegrityStatus = "NOT_CALCULATED"
+    source_status: SourceStatus = "NO_SOURCES_ATTACHED"
+    evidence_assessment: EvidenceVerdict = "HYPOTHESIS"
+    diagnostic_reason: Optional[str] = None
     created_at: str
     updated_at: str

@@ -369,3 +369,4 @@ class GoEngine9x9:
             "game_result": self.game_result,
             "consecutive_passes": self.consecutive_passes
         }
+

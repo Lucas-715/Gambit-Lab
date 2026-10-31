@@ -33,3 +33,4 @@ def replay_session(session_id: str, manager=Depends(get_manager)):
         return manager.event_store.replay_session(session_id, game_type=sess["game"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+

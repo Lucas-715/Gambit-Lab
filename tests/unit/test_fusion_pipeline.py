@@ -75,3 +75,4 @@ def test_fusion_multi_strategy_go():
     stones0 = [s["coord"] for s in branches[0]["board"]["stones"]]
     stones1 = [s["coord"] for s in branches[1]["board"]["stones"]]
     assert stones0 != stones1
+

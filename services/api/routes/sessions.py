@@ -79,3 +79,4 @@ def get_budget(session_id: str, manager=Depends(get_manager)):
     if not sess:
         raise HTTPException(status_code=404, detail="Sessão não encontrada.")
     return sess["budget"]
+

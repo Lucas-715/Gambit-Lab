@@ -57,3 +57,4 @@ def run_fusion(
         return fusion_res
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+

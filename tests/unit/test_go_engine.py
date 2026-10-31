@@ -123,3 +123,4 @@ def test_go_two_consecutive_passes_ends_game():
     assert engine.is_game_over
     assert engine.game_result is not None
     assert "W+" in engine.game_result or "B+" in engine.game_result
+

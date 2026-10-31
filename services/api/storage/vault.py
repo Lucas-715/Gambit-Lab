@@ -113,3 +113,4 @@ class DocumentVault:
             del item["content"]
             results.append(item)
         return results
+

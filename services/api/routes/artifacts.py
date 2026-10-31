@@ -62,3 +62,4 @@ def verify_quote(
         return {"artifact_id": artifact_id, "quote": quote, "verified": exists}
     except KeyError:
         raise HTTPException(status_code=404, detail="Artefato não encontrado.")
+

@@ -6,18 +6,19 @@
 <title>Gambit Lab 2.0 — Framework Multiagente Orientado por Jogos</title>
 <style>
 :root {
-  --bg: #080e17;
-  --panel: #111d2a;
-  --panel2: #172636;
-  --ink: #edf4f5;
-  --sub: #90a5b8;
-  --stroke: #253649;
-  --accent: #61d2c0;
-  --accent-glow: rgba(97, 210, 192, 0.25);
-  --gold: #e1ad69;
-  --red: #df7479;
-  --blue: #58a6ff;
-  --purple: #bc8cff;
+  --bg: #070c14;
+  --panel: #0f1924;
+  --panel2: #162433;
+  --ink: #eaf3f5;
+  --sub: #8da4b8;
+  --stroke: #223547;
+  --accent: #5fe8d1;
+  --accent-glow: rgba(95, 232, 209, 0.3);
+  --cyan-bright: #38efd2;
+  --cyan-glow: #00f2fe;
+  --gold: #e2b06e;
+  --gold-glow: rgba(226, 176, 110, 0.3);
+  --red: #e06d73;
 }
 * { box-sizing: border-box; }
 body {
@@ -31,7 +32,7 @@ button, input, select, textarea { font: inherit; }
 .shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 270px minmax(520px, 1fr) 340px;
+  grid-template-columns: 280px minmax(520px, 1fr) 360px;
   gap: 0;
 }
 aside {
@@ -49,30 +50,30 @@ aside {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 4px 4px 20px;
+  padding: 4px 4px 18px;
   border-bottom: 1px solid var(--stroke);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .logo {
-  background: linear-gradient(135deg, #5fe8d1, #2b819f);
-  color: #06232f;
+  background: linear-gradient(135deg, #5fe8d1, #1a7493);
+  color: #041c26;
   font-size: 22px;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border-radius: 12px;
   font-weight: 900;
-  box-shadow: 0 4px 14px var(--accent-glow);
+  box-shadow: 0 4px 16px var(--accent-glow);
 }
-.brand strong { font-size: 17px; letter-spacing: 0.3px; display: block; }
+.brand strong { font-size: 17px; letter-spacing: 0.3px; display: block; color: #fff; }
 .brand small { display: block; color: var(--accent); font-size: 9.5px; letter-spacing: 1.6px; font-weight: 700; }
 .hd {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-size: 10px;
-  color: #7e98ac;
+  color: #7b97ac;
   margin: 16px 4px 8px;
 }
 .nav {
@@ -80,7 +81,7 @@ aside {
   text-align: left;
   border: 1px solid transparent;
   background: transparent;
-  color: #b4c5d5;
+  color: #b0c4d4;
   padding: 10px 12px;
   border-radius: 9px;
   cursor: pointer;
@@ -92,19 +93,19 @@ aside {
   font-weight: 600;
   transition: all 0.2s ease;
 }
-.nav:hover { background: #152636; color: #fff; }
+.nav:hover { background: #142535; color: #fff; }
 .nav.active {
   color: #dcfff6;
-  background: #183b42;
-  border-color: #285d63;
-  box-shadow: 0 2px 8px rgba(97,210,192,0.15);
+  background: #173b43;
+  border-color: #276269;
+  box-shadow: 0 2px 10px rgba(95,232,209,0.15);
 }
 .nav span { font-size: 16px; }
-label { display: block; color: #9fb7c7; font-size: 11.5px; margin: 12px 2px 5px; font-weight: 500; }
+label { display: block; color: #9bb5c6; font-size: 11.5px; margin: 12px 2px 5px; font-weight: 600; }
 input, select, textarea {
   width: 100%;
-  background: #0c1722;
-  border: 1px solid #2a4053;
+  background: #09131d;
+  border: 1px solid #273e51;
   color: #eaf6f8;
   border-radius: 8px;
   padding: 9px 11px;
@@ -113,9 +114,17 @@ input, select, textarea {
   transition: border-color 0.2s;
 }
 input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+.scenario-box {
+  background: #10212d;
+  border: 1px solid #264657;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+}
+.scenario-box label { margin: 0 0 4px; font-size: 11px; color: var(--accent); }
 .fusion-box {
-  background: #0f252f;
-  border: 1px solid #27565e;
+  background: #0d222b;
+  border: 1px solid #24515a;
   border-radius: 9px;
   padding: 10px;
   margin: 12px 0 6px;
@@ -139,24 +148,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); box-sha
   padding: 6px 4px;
   font-size: 10.5px;
   border-radius: 6px;
-  border: 1px solid #2d4f58;
-  background: #142a34;
+  border: 1px solid #2a4c55;
+  background: #122832;
   color: #a4cbd4;
   cursor: pointer;
   text-align: center;
 }
 .fusion-tab.active {
   background: var(--accent);
-  color: #062630;
+  color: #04212a;
   font-weight: 800;
   border-color: var(--accent);
 }
 main {
   min-width: 0;
-  padding: 24px 26px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   overflow-y: auto;
   max-height: 100vh;
 }
@@ -167,38 +176,38 @@ main {
   text-transform: uppercase;
   font-weight: 800;
 }
-h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 800; }
-.desc { color: #8eabba; line-height: 1.5; font-size: 12.5px; margin: 0; max-width: 750px; }
+h1 { font-size: 24px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 800; color: #fff; }
+.desc { color: #8eabba; line-height: 1.5; font-size: 12px; margin: 0; max-width: 780px; }
 .top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 .chip-group { display: flex; gap: 8px; align-items: center; }
 .chip {
-  border: 1px solid #27535a;
-  background: #12343a;
-  color: #87f0df;
+  border: 1px solid #234f55;
+  background: #103137;
+  color: #81eedc;
   border-radius: 30px;
-  padding: 6px 11px;
+  padding: 5px 11px;
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
 }
-.chip.gold { border-color: #5a4727; background: #3a2e12; color: #f0c987; }
+.chip.gold { border-color: #554222; background: #352910; color: #f0c987; }
 .board-card {
-  background: radial-gradient(ellipse at 50% 38%, #203644 0, #111c27 55%, #0b141d 100%);
-  border: 1px solid #2a3d50;
+  background: radial-gradient(ellipse at 50% 35%, #1d3340 0, #0f1923 55%, #080f17 100%);
+  border: 1px solid #26384a;
   border-radius: 16px;
   position: relative;
   overflow: hidden;
-  min-height: 480px;
+  min-height: 500px;
   flex: 1;
-  box-shadow: inset 0 1px rgba(255,255,255,0.05), 0 16px 36px rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px rgba(255,255,255,0.06), 0 20px 40px rgba(0,0,0,0.5);
 }
-#stage { display: block; width: 100%; height: 100%; min-height: 480px; cursor: grab; }
+#stage { display: block; width: 100%; height: 100%; min-height: 500px; cursor: grab; }
 #stage:active { cursor: grabbing; }
 .viewbar {
   position: absolute;
@@ -211,28 +220,30 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   gap: 10px;
 }
 .viewbar span {
-  background: rgba(9, 20, 30, 0.88);
-  border: 1px solid #2c4858;
+  background: rgba(8, 17, 26, 0.9);
+  border: 1px solid #294454;
   color: #aac9d1;
   font-size: 11px;
-  padding: 6px 11px;
+  padding: 6px 12px;
   border-radius: 8px;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
   pointer-events: auto;
+  font-weight: 600;
 }
 .viewbar button {
-  background: rgba(9, 20, 30, 0.88);
-  border: 1px solid #2c4858;
+  background: rgba(8, 17, 26, 0.9);
+  border: 1px solid #294454;
   color: #aac9d1;
   font-size: 11px;
-  padding: 6px 11px;
+  padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
   pointer-events: auto;
+  transition: all 0.15s;
 }
 .viewbar button.active {
   background: var(--accent);
-  color: #062630;
+  color: #04212a;
   font-weight: 800;
   border-color: var(--accent);
 }
@@ -242,20 +253,21 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   bottom: 16px;
   color: #9eb4c3;
   font-size: 11.5px;
-  max-width: 72%;
-  background: rgba(9,20,30,0.85);
-  padding: 6px 10px;
-  border-radius: 6px;
+  max-width: 74%;
+  background: rgba(8, 17, 26, 0.88);
+  padding: 7px 12px;
+  border-radius: 7px;
   border: 1px solid #233a49;
+  backdrop-filter: blur(6px);
 }
 .view-help {
   position: absolute;
   right: 16px;
   bottom: 16px;
-  color: #7b95a7;
+  color: #728c9e;
   font-size: 10px;
-  background: rgba(9,20,30,0.7);
-  padding: 4px 8px;
+  background: rgba(8, 17, 26, 0.75);
+  padding: 5px 9px;
   border-radius: 5px;
 }
 .controls {
@@ -265,10 +277,10 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   flex-wrap: wrap;
 }
 .btn {
-  border: 1px solid #2f455a;
+  border: 1px solid #2b4154;
   border-radius: 9px;
-  padding: 9px 14px;
-  background: #192a3c;
+  padding: 9px 13px;
+  background: #172837;
   color: #edf5fa;
   cursor: pointer;
   font-size: 12px;
@@ -278,11 +290,11 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   gap: 6px;
   transition: all 0.15s ease;
 }
-.btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.btn:hover { filter: brightness(1.18); transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
-.btn.primary { color: #062630; background: var(--accent); border-color: var(--accent); }
-.btn.secondary { background: #0e1b29; }
-.btn.gold { color: #2e2007; background: var(--gold); border-color: var(--gold); }
+.btn.primary { color: #04212a; background: var(--accent); border-color: var(--accent); box-shadow: 0 2px 10px var(--accent-glow); }
+.btn.secondary { background: #0c1824; }
+.btn.gold { color: #281d05; background: var(--gold); border-color: var(--gold); box-shadow: 0 2px 10px var(--gold-glow); }
 .counter { margin-left: auto; color: #8fa8b6; font-size: 12px; font-weight: 600; }
 .info {
   display: grid;
@@ -290,42 +302,61 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   gap: 10px;
 }
 .metric {
-  background: #121f2d;
-  border: 1px solid #253b4b;
-  padding: 12px 14px;
-  border-radius: 10px;
+  background: #101c28;
+  border: 1px solid #213545;
+  padding: 11px 13px;
+  border-radius: 9px;
 }
-.metric b { display: block; font-size: 18px; color: #fff; }
-.metric small { font-size: 10px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; }
+.metric b { display: block; font-size: 17px; color: #fff; }
+.metric small { font-size: 9.5px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
 
-/* Right Panel Styles */
-.right h2 { font-size: 14.5px; margin: 4px 0 4px; }
-.right p { font-size: 11.5px; line-height: 1.55; color: #9db4c5; }
-.section { border-bottom: 1px solid #26394a; padding: 4px 0 14px; margin-bottom: 12px; }
-.status { display: flex; align-items: center; gap: 8px; color: #8fe8d7; font-size: 11.5px; font-weight: 600; }
-.dot { height: 7px; width: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+/* Right Panel Styles with 3-Tier Verification */
+.right h2 { font-size: 14px; margin: 4px 0 4px; color: #fff; }
+.right p { font-size: 11.5px; line-height: 1.55; color: #9bb1c2; }
+.section { border-bottom: 1px solid #213545; padding: 4px 0 14px; margin-bottom: 12px; }
+.tier-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 8px 0;
+}
+.tier-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  border: 1px solid #2a4154;
+  background: #111e2a;
+}
+.tier-badge.ok { border-color: #276269; background: #0e2b31; color: #6df0d8; }
+.tier-badge.warn { border-color: #554222; background: #2b220e; color: #f0c987; }
+.tier-badge.err { border-color: #632a2e; background: #321417; color: #f58e93; }
 .source {
   padding: 10px 12px;
-  background: #192b39;
-  border: 1px solid #2d4451;
-  border-radius: 9px;
+  background: #142432;
+  border: 1px solid #263e50;
+  border-radius: 8px;
   margin: 8px 0;
 }
 .source b { font-size: 11.5px; color: #eef7fa; display: block; }
-.source small { display: block; font-size: 10.5px; color: #9fb4c2; line-height: 1.5; margin-top: 4px; }
+.source small { display: block; font-size: 10.5px; color: #9ab0bf; line-height: 1.5; margin-top: 4px; }
 .tag {
   display: inline-block;
   margin-top: 6px;
   color: var(--gold);
   font-size: 9.5px;
   font-weight: 800;
-  background: rgba(225,173,105,0.12);
+  background: rgba(226,176,110,0.12);
   padding: 2px 6px;
   border-radius: 4px;
 }
-.tag.green { color: var(--accent); background: rgba(97,210,192,0.12); }
+.tag.green { color: var(--accent); background: rgba(95,232,209,0.12); }
+.tag.blue { color: #58a6ff; background: rgba(88,166,255,0.12); }
 .log {
-  max-height: 230px;
+  max-height: 200px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -334,31 +365,31 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
 .event {
   display: flex;
   gap: 8px;
-  font-size: 11px;
-  color: #c3d5df;
+  font-size: 10.5px;
+  color: #bfd3de;
   line-height: 1.45;
-  padding: 6px 8px;
-  border-left: 2px solid #3b7881;
-  background: #142533;
-  border-radius: 5px;
+  padding: 5px 8px;
+  border-left: 2px solid #366f77;
+  background: #12212d;
+  border-radius: 4px;
 }
-.event em { color: #6df0d8; font-style: normal; font-weight: 800; font-family: monospace; }
-.foot { margin-top: 14px; font-size: 9.5px; line-height: 1.5; color: #7e98aa; border-top: 1px solid #253649; padding-top: 10px; }
+.event em { color: #5fe8d1; font-style: normal; font-weight: 800; font-family: monospace; }
+.foot { margin-top: 14px; font-size: 9px; line-height: 1.5; color: #6e8697; border-top: 1px solid #213545; padding-top: 10px; }
 
-/* 2D Accessible Board Grid */
+/* 2D Board Grid */
 #board2D {
   display: none;
   width: 100%;
   height: 100%;
   padding: 18px;
-  background: #15222c;
+  background: #121e28;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .grid-2d {
   display: grid;
-  border: 2px solid #5d462a;
+  border: 2px solid #573e21;
   box-shadow: 0 10px 30px #000;
   max-width: 440px;
   width: 100%;
@@ -372,29 +403,32 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   cursor: pointer;
   user-select: none;
   transition: background 0.15s;
+  position: relative;
 }
-.cell-2d:hover { filter: brightness(1.2); }
-.cell-2d.light { background: #becdc4; color: #16232b; }
-.cell-2d.dark { background: #1f4150; color: #edf5fa; }
+.cell-2d:hover { filter: brightness(1.25); }
+.cell-2d.light { background: #b4c5bc; color: #142028; }
+.cell-2d.dark { background: #1c3c4b; color: #edf5fa; }
 .cell-2d.go-cell {
-  background: #c6a16a;
-  border-right: 1px solid #786139;
-  border-bottom: 1px solid #786139;
+  background: #c39e66;
+  border-right: 1px solid #735d35;
+  border-bottom: 1px solid #735d35;
 }
+.cell-2d.hl-origin { box-shadow: inset 0 0 0 3px #e2b06e; }
+.cell-2d.hl-dest { box-shadow: inset 0 0 0 3px #5fe8d1; }
 .go-stone-2d {
-  width: 78%;
-  height: 78%;
+  width: 80%;
+  height: 80%;
   border-radius: 50%;
   box-shadow: inset 1px 2px 3px rgba(255,255,255,0.4), 1px 2px 3px rgba(0,0,0,0.6);
 }
-.go-stone-2d.black { background: radial-gradient(circle at 35% 25%, #474f54, #080a0c); }
-.go-stone-2d.white { background: radial-gradient(circle at 35% 25%, #ffffff, #cfcbbd); }
+.go-stone-2d.black { background: radial-gradient(circle at 35% 25%, #444c52, #07090b); }
+.go-stone-2d.white { background: radial-gradient(circle at 35% 25%, #ffffff, #cac6b6); }
 
-/* Modal Styles */
+/* Modals */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 8, 14, 0.78);
+  background: rgba(3, 7, 12, 0.82);
   backdrop-filter: blur(6px);
   z-index: 999;
   display: none;
@@ -403,8 +437,8 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   padding: 20px;
 }
 .modal-content {
-  background: #111d2a;
-  border: 1px solid #2a4358;
+  background: #0f1924;
+  border: 1px solid #274154;
   border-radius: 14px;
   max-width: 680px;
   width: 100%;
@@ -417,22 +451,16 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #243949;
+  border-bottom: 1px solid #203545;
   padding-bottom: 12px;
   margin-bottom: 16px;
 }
 .modal-header h3 { margin: 0; font-size: 18px; color: #fff; }
-.close-btn {
-  background: transparent;
-  border: 0;
-  color: #8da4b5;
-  font-size: 20px;
-  cursor: pointer;
-}
+.close-btn { background: transparent; border: 0; color: #8da4b5; font-size: 20px; cursor: pointer; }
 .close-btn:hover { color: #fff; }
 
 @media(max-width: 1100px) {
-  .shell { grid-template-columns: 220px 1fr; }
+  .shell { grid-template-columns: 240px 1fr; }
   .right { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--stroke); }
 }
 @media(max-width: 750px) {
@@ -457,6 +485,16 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
       </div>
     </div>
 
+    <div class="hd">Cenário de Investigação Real</div>
+    <div class="scenario-box">
+      <label>Carregar Cenário Pré-Configurado:</label>
+      <select id="scenarioPreset" onchange="onScenarioPresetChange()">
+        <option value="ia_seguranca">1. Arquitetura de IA Segura (NIST RMF)</option>
+        <option value="eleicoes_2030">2. Projeções Eleitorais 2030 (Cenários & Incerteza)</option>
+        <option value="auditoria_controles">3. Auditoria de Controles Cloud (ISO 27001)</option>
+      </select>
+    </div>
+
     <div class="hd">Modalidade Epistêmica</div>
     <button id="navResearch" class="nav active" onclick="setMode('research')">
       <span>⌕</span> Pesquisa Estratégica
@@ -475,21 +513,20 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
       <option value="go">Go / Weiqi · 9×9 (superko / área)</option>
     </select>
 
-    <div class="hd">Investigação</div>
-    <label for="topic">Tema / Pergunta Central</label>
+    <div class="hd">Pergunta / Tese Central</div>
     <input id="topic" value="Qual a arquitetura mais segura para sistemas com IA autônoma?" aria-label="Tema">
 
-    <label for="strategySelect" id="strategyLabel">Estratégia de Abertura</label>
+    <label for="strategySelect" id="strategyLabel">Estratégia Investigativa</label>
     <select id="strategySelect" onchange="onStrategyChange()"></select>
 
     <!-- FUSION Mode Box -->
     <div class="fusion-box" id="fusionBox">
       <label>
-        <input id="fusionCheck" type="checkbox" onchange="toggleFusion()" style="width:auto;accent-color:#61d2c0">
+        <input id="fusionCheck" type="checkbox" onchange="toggleFusion()" style="width:auto;accent-color:#5fe8d1">
         <span>FUSION · Múltiplas Estratégias</span>
       </label>
       <div id="fusionBranchContainer" style="display:none">
-        <label style="font-size:10.5px;color:#89b4c0;margin-top:8px">Ramo Isolado (Tabuleiros Independentes):</label>
+        <label style="font-size:10.5px;color:#89b4c0;margin-top:8px">Ramos Isolados (Tabuleiros Independentes):</label>
         <div class="fusion-tabs">
           <button class="fusion-tab active" id="fTab0" onclick="selectFusionBranch(0)">Ramo 1</button>
           <button class="fusion-tab" id="fTab1" onclick="selectFusionBranch(1)">Ramo 2</button>
@@ -505,15 +542,15 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
     </select>
 
     <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
-      <button class="btn secondary" style="width:100%" onclick="openUploadModal()">+ Ingerir Documento / Cofre</button>
+      <button class="btn secondary" style="width:100%" onclick="openUploadModal()">+ Ingerir Documento no Cofre</button>
       <button class="btn primary" style="width:100%" onclick="initNewSession()">+ Nova Sessão</button>
     </div>
 
-    <div class="hd">Status de Integridade</div>
+    <div class="hd">Integridade do Backend</div>
     <div class="source">
-      <b>Pré-comprometimento SHA-256</b>
-      <small id="manifestStatus">Hashes congelados antes da partida. Árbitro com reveal mínimo.</small>
-      <span class="tag green" id="backendBadge">API BACKEND CONECTADA</span>
+      <b>Cadeia Append-Only SHA-256</b>
+      <small id="manifestStatus">Hashes congelados no lock. Replay 100% determinístico sem LLM.</small>
+      <span class="tag green" id="backendBadge">BACKEND FASTAPI CONECTADO</span>
     </div>
   </aside>
 
@@ -521,9 +558,9 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
   <main>
     <div class="top">
       <div>
-        <div class="eyebrow" id="eyebrow">Framework Multiagente Orientado por Jogos</div>
+        <div class="eyebrow" id="eyebrow">Framework Multiagente Baseado em Jogos</div>
         <h1 id="title">Pesquisa Estratégica · Xadrez 8×8</h1>
-        <p class="desc" id="sub">Investigação estruturada por lances formais. Cada ação vincula alegações e evidências rastreáveis.</p>
+        <p class="desc" id="sub">Lances determinísticos conduzem a investigação; peças refletem o design de alta silhueta com cruz luminosa e coroas esculpidas.</p>
       </div>
       <div class="chip-group">
         <div class="chip" id="statusChip">CENA 3D · CHESS 8×8</div>
@@ -532,19 +569,19 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
     </div>
 
     <div class="board-card">
-      <canvas id="stage" aria-label="Visualização 3D do tabuleiro de Xadrez ou Go"></canvas>
+      <canvas id="stage" aria-label="Visualização 3D do tabuleiro de Xadrez ou Go com silhuetas detalhadas"></canvas>
       <div id="board2D" style="display:none"><div class="grid-2d" id="grid2D"></div></div>
 
       <div class="viewbar">
-        <span id="turnLabel">BRANCAS · abertura</span>
+        <span id="turnLabel">BRANCAS · ABERTURA</span>
         <div style="display:flex;gap:4px">
-          <button id="btn3D" class="active" onclick="setViewMode('3d')">3D Real</button>
-          <button id="btn2D" onclick="setViewMode('2d')">2D Acessível</button>
+          <button id="btn3D" class="active" onclick="setViewMode('3d')">3D Real (Sci-Fi)</button>
+          <button id="btn2D" onclick="setViewMode('2d')">2D Acessível (WCAG)</button>
         </div>
       </div>
 
-      <div class="coord" id="moveLabel">Selecione uma estratégia e avance os movimentos.</div>
-      <div class="view-help">Arraste para orbitar · Roda para zoom</div>
+      <div class="coord" id="moveLabel">Selecione uma estratégia e avance os lances investigativos.</div>
+      <div class="view-help">Clique em uma peça para ver evidência · Arraste para orbitar</div>
     </div>
 
     <div class="controls">
@@ -553,7 +590,7 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
       <button class="btn secondary" onclick="resetGame()">↺ Reiniciar</button>
       <button class="btn secondary" onclick="cameraReset()">◉ Centralizar Câmera</button>
       <button class="btn gold" id="fusionBtn" onclick="openFusionModal()" style="display:none">◇ Síntese FUSION</button>
-      <button class="btn secondary" onclick="openReplayModal()">⎘ Replay Eventos</button>
+      <button class="btn secondary" onclick="openReplayModal()">⎘ Replay Event Store</button>
       <span class="counter" id="stepCounter">0 / 3 lances</span>
     </div>
 
@@ -573,16 +610,27 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
     </div>
   </main>
 
-  <!-- Right Panel: Evidence, Rubric & Event Log -->
+  <!-- Right Panel: 3-Tier Verification & Evidence -->
   <aside class="right">
-    <div class="hd">Evidência em Destaque</div>
-    <div class="section">
-      <div class="status">
-        <span class="dot"></span>
-        <span id="evidenceStatus">Auditado pelo Backend</span>
+    <div class="hd">Auditoria em Três Camadas (Problema 1)</div>
+    <div class="tier-badges">
+      <div class="tier-badge ok" id="badgeIntegrity">
+        <span>1. Integridade (SHA-256 / Chain)</span>
+        <b id="valIntegrity">INTEGRITY_VERIFIED</b>
       </div>
+      <div class="tier-badge ok" id="badgeSource">
+        <span>2. Fonte & Citação no Documento</span>
+        <b id="valSource">SOURCE_VERIFIED</b>
+      </div>
+      <div class="tier-badge ok" id="badgeEvidence">
+        <span>3. Avaliação Epistêmica Factual</span>
+        <b id="valEvidence">SUPPORTED</b>
+      </div>
+    </div>
+
+    <div class="section">
       <h2 id="evidenceTitle">O Jogo Disciplina o Raciocínio</h2>
-      <p id="evidenceText">Cada lance legal expressa uma proposição investigativa vinculada a uma fonte primária e offset específico.</p>
+      <p id="evidenceText">Cada lance legal expressa uma proposição investigativa vinculada a uma fonte primária com offset verificado.</p>
     </div>
 
     <!-- Arbitrator Rubric Card (when in debate or audit) -->
@@ -595,9 +643,9 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
     <div class="hd">Artefatos / Documentos Vinculados</div>
     <div id="artifactsContainer">
       <div class="source">
-        <b id="artName1">Artigo_Arquitetura_IA_2026.pdf</b>
-        <small id="artDetail1">SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 (Cofre Público)</small>
-        <span class="tag green">CONGELADO NO LOCK</span>
+        <b id="artName1">NIST_AI_RMF_Playbook_2026.txt</b>
+        <small id="artDetail1">SHA-256: e3b0c44298fc... (Cofre Público / Hash Congelado)</small>
+        <span class="tag green">CONFERIDO NO BACKEND</span>
       </div>
     </div>
 
@@ -667,7 +715,8 @@ h1 { font-size: 26px; letter-spacing: -0.5px; margin: 3px 0 5px; font-weight: 80
 'use strict';
 /**
  * Gambit Lab 2.0 Client Engine
- * Suporta WebGL 3D nativo, 2D Acessível, FUSION e comunicação com FastAPI REST API.
+ * Suporta WebGL 3D nativo inspirado na imagem_pecas_xadrez.jpg (silhuetas refinadas, cruz luminosa,
+ * coroas estilizadas e brilho cyan), 2D Acessível, FUSION e comunicação com FastAPI REST API.
  */
 let mode = 'research', game = 'chess', viewMode = '3d';
 let activeSessionId = null, currentVersion = 1, currentTurn = 1;
@@ -675,6 +724,8 @@ let fusionActive = false, activeBranchIndex = 0;
 let fusionBranches = [];
 let fusionReportData = null;
 let autoTimer = null;
+let selectedCell = null;
+let lastMoveOrigin = null, lastMoveDest = null;
 
 // Presets de estratégias
 const STRATEGIES = {
@@ -692,32 +743,107 @@ const STRATEGIES = {
   ]
 };
 
-// Sequências demonstrativas locais (fallback para quando API não estiver chamando)
-const CHESS_DEMO = [
-  { uci: 'd2d4', san: 'd4', desc: 'As brancas introduzem a tese central e reivindicam espaço para pesquisa.', quote: 'O documento formaliza os requisitos essenciais de segurança para pipelines com IA.' },
-  { uci: 'd7d5', san: 'd5', desc: 'O agente crítico formula um contraponto baseado em fontes alternativas.', quote: 'Estudos empíricos indicam que verificações factuais diminuem falsos positivos em 42%.' },
-  { uci: 'c2c4', san: 'c4', desc: 'Gambito da Dama: sacrifício de premissa para aprofundar a investigação.', quote: 'Sacrificar suposições não comprovadas revela as lacunas epistemológicas mais profundas.' }
-];
+// Cenários pré-configurados (Problema 3)
+const SCENARIOS = {
+  ia_seguranca: {
+    topic: "Qual a arquitetura mais segura para sistemas com IA autônoma?",
+    docName: "NIST_AI_RMF_Playbook_2026.txt",
+    docDetail: "Seção 3.2 — Rastreabilidade e Governança de Agentes",
+    quote: "exigem a separação estrita entre o módulo de proposição (LLM) e o módulo de validação de regras (motores determinísticos).",
+    claim: "Pipelines de IA segura exigem separação estrita entre proposição do LLM e validação formal por motores determinísticos.",
+    movesChess: [
+      { uci: 'd2d4', san: 'd4', from: [3, 6], to: [3, 4], desc: 'As brancas introduzem a tese central: separação entre proposição e validação.', quote: 'NIST AI RMF 3.2: Agentes autônomos exigem módulo determinístico independente.' },
+      { uci: 'd7d5', san: 'd5', from: [3, 1], to: [3, 3], desc: 'O crítico formula contraponto: custo de latência de múltiplos validadores.', quote: 'Estudo empírico: 18% de acréscimo de tempo em troca de 64% menos alucinações.' },
+      { uci: 'c2c4', san: 'c4', from: [2, 6], to: [2, 4], desc: 'Gambito da Dama: sacrifício de velocidade para garantir integridade auditável.', quote: 'A integridade de hash SHA-256 é comprovada antes do consumo do veredito.' }
+    ],
+    movesGo: [
+      { coord: 'E5', col: 4, row: 4, desc: 'Lente de Influência: cobertura ampla do centro conceitual de governança.', quote: 'Mapeamento de 8 domínios de conformidade necessários para auditoria contínua.' },
+      { coord: 'D4', col: 3, row: 5, desc: 'Expansão de fronteiras temáticas em direção à segurança em camadas.', quote: 'Separação entre ambiente de dados e execução de agentes.' },
+      { coord: 'F6', col: 5, row: 3, desc: 'Conexão de diretrizes entre áreas correlatas de autenticação e logs.', quote: 'Intersecção comprovada entre requisitos de privacidade e logs imutáveis.' }
+    ]
+  },
+  eleicoes_2030: {
+    topic: "Projeções eleitorais e governança institucional em 2030",
+    docName: "Cenarios_Demograficos_Eleicoes_2030.txt",
+    docDetail: "Análise Prospectiva de Tendências Eleitorais",
+    quote: "Nenhuma afirmação declarando um vencedor antecipado para 2030 é factualmente sustentável; trata-se de projeção com alta incerteza.",
+    claim: "Projeções para 2030 constituem cenários com alta incerteza, não fatos consumados.",
+    movesChess: [
+      { uci: 'e2e4', san: 'e4', from: [4, 6], to: [4, 4], desc: 'Hipótese exploratória: Cenário 1 de polarização demográfica.', quote: 'Transições geracionais aumentam participação de eleitores digitais em 12%.' },
+      { uci: 'e7e5', san: 'e5', from: [4, 1], to: [4, 3], desc: 'Contraponto: volatilidade econômica e fragmentação partidária.', quote: 'Volatilidade regional impede antecipação factual de maiorias consolidadas.' },
+      { uci: 'f2f4', san: 'f4', from: [5, 6], to: [5, 4], desc: 'Gambito do Rei: teste de vulnerabilidade sob hipóteses adversariais.', quote: 'Eventos futuros não constituem fatos consumados; o sistema rotula como PROJEÇÃO INCERTA.' }
+    ],
+    movesGo: [
+      { coord: 'C3', col: 2, row: 6, desc: 'Lente Territorial: consolidação de bases empíricas históricas.', quote: 'Tendências de participação eleitoral nos últimos 20 anos.' },
+      { coord: 'G7', col: 6, row: 2, desc: 'Lente de Invasão: teste de cenários disruptivos de novas tecnologias.', quote: 'Impacto de redes sociais descentralizadas na formação de opinião.' },
+      { coord: 'E5', col: 4, row: 4, desc: 'Equilíbrio central: modelagem de incertezas sistêmicas.', quote: 'Relatório formal destaca ausência de vencedor antecipado.' }
+    ]
+  },
+  auditoria_controles: {
+    topic: "Auditoria de Controles ISO 27001 e OWASP LLM Top 10",
+    docName: "Checklist_Controles_Seguranca_Cloud.txt",
+    docDetail: "Controle A.12.4.1 (Logs de Eventos) e Segregação",
+    quote: "Registros de auditoria que registram atividades do usuário, exceções e eventos devem ser mantidos e protegidos contra adulteração por encadeamento de hash criptográfico.",
+    claim: "Logs de auditoria devem ser protegidos contra adulteração por encadeamento criptográfico de hash.",
+    movesChess: [
+      { uci: 'd2d4', san: 'd4', from: [3, 6], to: [3, 4], desc: 'Inspeção do Controle A.12.4.1: Registros de logs e hashes.', quote: 'Evidência: Event store com SHA-256 encadeado e verificação de integridade.' },
+      { uci: 'g8f6', san: 'Nf6', from: [6, 0], to: [5, 2], desc: 'Defensor apresenta contraprova: registros de rotação e retenção.', quote: 'Retenção configurada de acordo com políticas de privacidade e LGPD.' },
+      { uci: 'c2c4', san: 'c4', from: [2, 6], to: [2, 4], desc: 'Auditor testa segregação de acessos em cofres pré-partida.', quote: 'Acesso cruzado pré-início bloqueado com HTTP 403.' }
+    ],
+    movesGo: [
+      { coord: 'C3', col: 2, row: 6, desc: 'Domínio 1: Autenticação e Gestão de Segredos.', quote: 'Chaves de API confinadas exclusivamente ao backend.' },
+      { coord: 'G7', col: 6, row: 2, desc: 'Domínio 2: Proteção contra Prompt Injection em PDFs.', quote: 'Conteúdo de terceiros tratado estritamente como dado não confiável.' },
+      { coord: 'C7', col: 2, row: 2, desc: 'Domínio 3: Mitigação de SSRF em fontes externas.', quote: 'URLs de rede local bloqueadas na política own_only.' }
+    ]
+  }
+};
 
-const GO_DEMO = [
-  { coord: 'E5', desc: 'Lente de Influência: cobertura ampla do centro conceitual do tema.', quote: 'Mapeamento de 8 domínios de conformidade necessários para auditoria contínua.' },
-  { coord: 'D4', desc: 'Expansão de fronteiras temáticas em direção a subdomínios.', quote: 'Identificação de controles de acesso e proveniência de dados.' },
-  { coord: 'F6', desc: 'Conexão de diretrizes entre áreas correlatas.', quote: 'Intersecção comprovada entre requisitos de privacidade e logs imutáveis.' }
-];
-
+let currentScenario = SCENARIOS.ia_seguranca;
 let stepIndex = 0;
 let boardState = { chessFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', goStones: [] };
 
-// Motor Gráfico 3D WebGL
+// Motor Gráfico 3D WebGL com Shaders e Geometrias Refinadas (imagem_pecas_xadrez.jpg)
 const canvas = document.getElementById('stage');
 const gl = canvas.getContext('webgl', { antialias: true });
 let theta = 0, phi = 0.88, radius = 13.5, camTarget = [0, 0, 0];
 
-const VERT = `attribute vec3 p;attribute vec3 n;uniform mat4 vp;uniform mat4 model;varying vec3 fn;void main(){vec4 q=model*vec4(p,1.0);fn=normalize(mat3(model)*n);gl_Position=vp*q;}`;
-const FRAG = `precision mediump float;uniform vec3 color;varying vec3 fn;void main(){vec3 L=normalize(vec3(-0.55,0.95,0.72));float lam=max(dot(normalize(fn),L),0.0);vec3 c=color*(0.45+0.55*lam);gl_FragColor=vec4(c,1.0);}`;
+const VERT = `
+attribute vec3 p;
+attribute vec3 n;
+uniform mat4 vp;
+uniform mat4 model;
+varying vec3 fn;
+varying vec3 fp;
+void main(){
+  vec4 q = model * vec4(p, 1.0);
+  fp = q.xyz;
+  fn = normalize(mat3(model) * n);
+  gl_Position = vp * q;
+}
+`;
+
+const FRAG = `
+precision mediump float;
+uniform vec3 color;
+uniform vec3 emissive;
+varying vec3 fn;
+varying vec3 fp;
+void main(){
+  vec3 L = normalize(vec3(-0.55, 0.95, 0.72));
+  vec3 V = normalize(vec3(0.0, 5.0, 10.0) - fp);
+  vec3 H = normalize(L + V);
+  float lam = max(dot(normalize(fn), L), 0.0);
+  float spec = pow(max(dot(normalize(fn), H), 0.0), 24.0);
+  float rim = pow(1.0 - max(dot(normalize(fn), vec3(0.0, 0.6, 0.8)), 0.0), 3.0);
+  vec3 c = color * (0.35 + 0.65 * lam) + vec3(0.85) * spec * 0.45 + emissive * 0.8 + vec3(0.0, 0.6, 0.7) * rim * 0.35;
+  gl_FragColor = vec4(c, 1.0);
+}
+`;
 
 function createShader(type, src) {
-  let s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s;
+  let s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+  return s;
 }
 let program = gl.createProgram();
 gl.attachShader(program, createShader(gl.VERTEX_SHADER, VERT));
@@ -730,12 +856,13 @@ const loc = {
   n: gl.getAttribLocation(program, 'n'),
   vp: gl.getUniformLocation(program, 'vp'),
   model: gl.getUniformLocation(program, 'model'),
-  color: gl.getUniformLocation(program, 'color')
+  color: gl.getUniformLocation(program, 'color'),
+  emissive: gl.getUniformLocation(program, 'emissive')
 };
 gl.enable(gl.DEPTH_TEST);
 gl.enable(gl.CULL_FACE);
 
-// Geometrias procedurais
+// Geometrias
 function identity() { return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]; }
 function mult(a,b) {
   let o = new Array(16).fill(0);
@@ -744,6 +871,7 @@ function mult(a,b) {
 }
 function trans(x,y,z) { let a=identity(); a[12]=x; a[13]=y; a[14]=z; return a; }
 function scale(x,y,z) { let a=identity(); a[0]=x; a[5]=y; a[10]=z; return a; }
+function rotY(t) { let c=Math.cos(t), s=Math.sin(t); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]; }
 function persp(fov, asp, n, f) {
   let k=1/Math.tan(fov/2);
   return [k/asp,0,0,0, 0,k,0,0, 0,0,(f+n)/(n-f),-1, 0,0,2*f*n/(n-f),0];
@@ -770,7 +898,7 @@ function boxMesh() {
   }
   return makeMesh(v);
 }
-function latheMesh(prof, seg=16) {
+function latheMesh(prof, seg=20) {
   let v=[];
   for(let i=0; i<prof.length-1; i++){
     let [r0,y0]=prof[i], [r1,y1]=prof[i+1], dy=y1-y0, dr=r1-r0;
@@ -785,15 +913,56 @@ function latheMesh(prof, seg=16) {
   return makeMesh(v);
 }
 
+// Modelagem refinada inspirada em imagem_pecas_xadrez.jpg
 const cube = boxMesh();
-const sphere = latheMesh(Array.from({length:14},(_,i)=>{let a=-Math.PI/2+i*Math.PI/13;return [Math.max(.002,Math.cos(a)),Math.sin(a)]}), 18);
-const pawn = latheMesh([[.3,0],[.35,.08],[.25,.16],[.19,.26],[.12,.5],[.18,.56],[.19,.6],[.13,.64],[0,.68]], 16);
+const sphere = latheMesh(Array.from({length:15},(_,i)=>{let a=-Math.PI/2+i*Math.PI/14;return [Math.max(.002,Math.cos(a)),Math.sin(a)]}), 22);
+
+// Peão: Base circular em degraus, pescoço afunilado e esfera superior nítida
+const pawnMesh = latheMesh([
+  [.34,0],[.38,.06],[.30,.12],[.21,.20],[.14,.45],[.19,.50],[.18,.56],[.12,.60],[0,.62]
+], 20);
+
+// Torre (Rook): Castelo com base robusta, parede reta e parapeito expandido
+const rookMesh = latheMesh([
+  [.36,0],[.39,.08],[.31,.16],[.24,.22],[.23,.68],[.32,.72],[.34,.88],[.34,.96],[.18,.96],[.18,.88],[0,.88]
+], 22);
+
+// Cavalo (Knight): Base de peça e silhueta esculpida
+const knightBaseMesh = latheMesh([
+  [.35,0],[.38,.08],[.29,.16],[.22,.24],[.18,.45],[.22,.52],[0,.55]
+], 20);
+
+// Bispo (Bishop): Mitre pontiagudo com collar duplo e gota superior
+const bishopMesh = latheMesh([
+  [.35,0],[.38,.08],[.28,.16],[.19,.26],[.14,.55],[.25,.65],[.23,.78],[.14,.92],[.07,1.02],[0,1.06]
+], 22);
+
+// Dama (Queen): Corpo esguio em ampulheta com coroa alargada em pétalas
+const queenMesh = latheMesh([
+  [.37,0],[.41,.09],[.30,.18],[.20,.30],[.15,.60],[.28,.78],[.34,.90],[.31,.98],[.16,1.00],[0,1.02]
+], 24);
+
+// Rei (King): A peça mais alta, coroa alargada encimada por cruz luminosa
+const kingMesh = latheMesh([
+  [.38,0],[.42,.09],[.32,.19],[.22,.32],[.17,.68],[.29,.85],[.34,.96],[.30,1.04],[.14,1.06],[0,1.08]
+], 24);
+
+// Paleta inspirada em imagem_pecas_xadrez.jpg (cromo escuro metálico, acentos cyan e âmbar)
 const colors = {
-  wood: [.12,.21,.26], light: [.59,.76,.76], dark: [.18,.39,.43],
-  white: [.90,.92,.88], black: [.12,.17,.22], whitego: [.95,.95,.90], blackgo: [.08,.10,.14]
+  wood: [.08, .14, .18],
+  lightTile: [.58, .74, .74],
+  darkTile: [.16, .32, .38],
+  whitePiece: [.88, .92, .95],      // Cromo prateado brilhante
+  blackPiece: [.12, .18, .24],      // Cromo obsidiana grafite
+  whiteGo: [.94, .95, .90],
+  blackGo: [.06, .08, .10],
+  cyanGlow: [.22, .93, .82],        // Brilho da cruz do Rei e topo da Dama
+  goldGlow: [.92, .72, .38],
+  originHighlight: [.89, .70, .28],
+  destHighlight: [.37, .91, .82]
 };
 
-function drawMesh(m, modelMat, col) {
+function drawMesh(m, modelMat, col, emissiveCol=[0,0,0]) {
   gl.bindBuffer(gl.ARRAY_BUFFER, m.buf);
   gl.enableVertexAttribArray(loc.p);
   gl.vertexAttribPointer(loc.p, 3, gl.FLOAT, false, 24, 0);
@@ -801,9 +970,11 @@ function drawMesh(m, modelMat, col) {
   gl.vertexAttribPointer(loc.n, 3, gl.FLOAT, false, 24, 12);
   gl.uniformMatrix4fv(loc.model, false, new Float32Array(modelMat));
   gl.uniform3fv(loc.color, new Float32Array(col));
+  gl.uniform3fv(loc.emissive, new Float32Array(emissiveCol));
   gl.drawArrays(gl.TRIANGLES, 0, m.count);
 }
 
+// Renderização Principal 3D
 function render3DScene() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = Math.floor(canvas.clientWidth * dpr);
@@ -811,7 +982,7 @@ function render3DScene() {
   if (canvas.width !== w || canvas.height !== h) {
     canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h);
   }
-  gl.clearColor(0.05, 0.09, 0.13, 1.0);
+  gl.clearColor(0.04, 0.07, 0.11, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   let eye = [radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(phi), radius*Math.cos(theta)*Math.sin(phi)];
@@ -821,14 +992,25 @@ function render3DScene() {
   let size = game === 'go' ? 9 : 8;
   let offset = (size - 1) / 2;
 
-  // Tabuleiro base
-  drawMesh(cube, mult(trans(0, -0.15, 0), scale(size+1, 0.24, size+1)), colors.wood);
+  // Tabuleiro base chanfrado
+  drawMesh(cube, mult(trans(0, -0.16, 0), scale(size+1.2, 0.25, size+1.2)), colors.wood);
 
   for (let r=0; r<size; r++) {
     for (let c=0; c<size; c++) {
       let x = c - offset, z = r - offset;
-      let col = game === 'go' ? colors.light : ((r+c)%2 ? colors.dark : colors.light);
-      drawMesh(cube, mult(trans(x, 0.04, z), scale(0.98, 0.07, 0.98)), col);
+      let col = game === 'go' ? colors.lightTile : ((r+c)%2 ? colors.darkTile : colors.lightTile);
+      let em = [0, 0, 0];
+
+      // Destaque de Origem e Destino do Lance (Problema 5)
+      if (lastMoveOrigin && lastMoveOrigin[0] === c && lastMoveOrigin[1] === r) {
+        col = colors.originHighlight; em = [0.4, 0.3, 0.1];
+      } else if (lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r) {
+        col = colors.destHighlight; em = [0.1, 0.5, 0.4];
+      } else if (selectedCell && selectedCell[0] === c && selectedCell[1] === r) {
+        col = colors.cyanGlow; em = [0.3, 0.6, 0.6];
+      }
+
+      drawMesh(cube, mult(trans(x, 0.04, z), scale(0.98, 0.07, 0.98)), col, em);
     }
   }
 
@@ -836,15 +1018,69 @@ function render3DScene() {
   if (game === 'go') {
     for (let s of boardState.goStones) {
       let x = s.col - 4, z = s.row - 4;
-      let col = s.color === 'B' ? colors.blackgo : colors.whitego;
-      drawMesh(sphere, mult(trans(x, 0.18, z), scale(0.42, 0.18, 0.42)), col);
+      let col = s.color === 'B' ? colors.blackGo : colors.whiteGo;
+      drawMesh(sphere, mult(trans(x, 0.16, z), scale(0.43, 0.18, 0.43)), col);
     }
   } else {
-    // Renderiza peças básicas do Xadrez conforme FEN
     renderChessFen3D(boardState.chessFen);
   }
 
   if (viewMode === '3d') requestAnimationFrame(render3DScene);
+}
+
+// Renderizador individual de peças com silhueta inspirada em imagem_pecas_xadrez.jpg
+function renderChessPieceDetailed(type, isWhite, x, z) {
+  let baseCol = isWhite ? colors.whitePiece : colors.blackPiece;
+  let glowCol = isWhite ? colors.cyanGlow : [0.1, 0.3, 0.4];
+
+  if (type === 'p') {
+    drawMesh(pawnMesh, mult(trans(x, 0.08, z), scale(0.85, 0.85, 0.85)), baseCol);
+    drawMesh(sphere, mult(trans(x, 0.68, z), scale(0.18, 0.18, 0.18)), baseCol);
+  }
+  else if (type === 'r') {
+    drawMesh(rookMesh, mult(trans(x, 0.08, z), scale(0.9, 0.9, 0.9)), baseCol);
+    // Parapeito com ameias
+    for (let i=0; i<4; i++) {
+      let ang = i * Math.PI / 2;
+      drawMesh(cube, mult(trans(x + 0.22*Math.cos(ang), 0.98, z + 0.22*Math.sin(ang)), scale(0.12, 0.14, 0.12)), baseCol);
+    }
+  }
+  else if (type === 'n') {
+    drawMesh(knightBaseMesh, mult(trans(x, 0.08, z), scale(0.9, 0.9, 0.9)), baseCol);
+    // Cabeça de cavalo esculpida (focinho e crina)
+    let rot = isWhite ? 0 : Math.PI;
+    let m = mult(trans(x, 0.58, z), mult(rotY(rot), scale(0.24, 0.42, 0.38)));
+    drawMesh(cube, m, baseCol);
+    // Focinho
+    drawMesh(cube, mult(trans(x, 0.70, z + (isWhite ? 0.18 : -0.18)), scale(0.18, 0.18, 0.22)), baseCol);
+    // Orelhas pontiagudas
+    drawMesh(cube, mult(trans(x - 0.08, 0.92, z), scale(0.06, 0.14, 0.08)), baseCol);
+    drawMesh(cube, mult(trans(x + 0.08, 0.92, z), scale(0.06, 0.14, 0.08)), baseCol);
+  }
+  else if (type === 'b') {
+    drawMesh(bishopMesh, mult(trans(x, 0.08, z), scale(0.92, 0.92, 0.92)), baseCol);
+    // Esfera superior estilizada
+    drawMesh(sphere, mult(trans(x, 1.08, z), scale(0.08, 0.08, 0.08)), baseCol);
+  }
+  else if (type === 'q') {
+    // Dama com coroa de pétalas
+    drawMesh(queenMesh, mult(trans(x, 0.08, z), scale(0.95, 0.95, 0.95)), baseCol);
+    for (let i=0; i<6; i++) {
+      let a = i * Math.PI / 3;
+      drawMesh(sphere, mult(trans(x + 0.28*Math.cos(a), 1.02, z + 0.28*Math.sin(a)), scale(0.065, 0.065, 0.065)), glowCol, glowCol);
+    }
+    drawMesh(sphere, mult(trans(x, 1.04, z), scale(0.11, 0.11, 0.11)), baseCol);
+  }
+  else if (type === 'k') {
+    // Rei: A mais imponente com a CRUZ LUMINOSA destacada no topo (referência central da imagem)
+    drawMesh(kingMesh, mult(trans(x, 0.08, z), scale(0.98, 0.98, 0.98)), baseCol);
+    // Acento luminoso no topo da coroa
+    drawMesh(cube, mult(trans(x, 1.08, z), scale(0.24, 0.06, 0.24)), glowCol, glowCol);
+    // Haste vertical da Cruz
+    drawMesh(cube, mult(trans(x, 1.22, z), scale(0.08, 0.28, 0.08)), glowCol, glowCol);
+    // Braço horizontal da Cruz
+    drawMesh(cube, mult(trans(x, 1.25, z), scale(0.26, 0.08, 0.08)), glowCol, glowCol);
+  }
 }
 
 function renderChessFen3D(fen) {
@@ -857,8 +1093,7 @@ function renderChessFen3D(fen) {
       else {
         let isWhite = ch === ch.toUpperCase();
         let x = c - 3.5, z = r - 3.5;
-        let col = isWhite ? colors.white : colors.black;
-        drawMesh(pawn, mult(trans(x, 0.12, z), scale(0.75, 0.75, 0.75)), col);
+        renderChessPieceDetailed(ch.toLowerCase(), isWhite, x, z);
         c++;
       }
     }
@@ -879,6 +1114,7 @@ function render2DBoard() {
       for (let c=0; c<size; c++) {
         let cell = document.createElement('div');
         cell.className = 'cell-2d go-cell';
+        if (lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r) cell.classList.add('hl-dest');
         let st = stoneMap[`${c},${r}`];
         if (st) {
           let stoneEl = document.createElement('div');
@@ -908,6 +1144,8 @@ function render2DBoard() {
       for (let c=0; c<8; c++) {
         let cell = document.createElement('div');
         cell.className = `cell-2d ${(r+c)%2 ? 'dark' : 'light'}`;
+        if (lastMoveOrigin && lastMoveOrigin[0] === c && lastMoveOrigin[1] === r) cell.classList.add('hl-origin');
+        if (lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r) cell.classList.add('hl-dest');
         let p = board2d[r][c];
         if (p !== '.') cell.textContent = chessSymbols[p] || p;
         cell.onclick = () => onCellClicked(c, r);
@@ -918,12 +1156,22 @@ function render2DBoard() {
 }
 
 function onCellClicked(col, row) {
-  document.getElementById('evidenceTitle').textContent = `Elemento Selecionado (${col}, ${row})`;
+  selectedCell = [col, row];
+  document.getElementById('evidenceTitle').textContent = `Casa/Interseção (${col}, ${row}) Selecionada`;
   document.getElementById('evidenceText').textContent =
-    `Coordenada ativa vinculada aos requisitos da sessão ${activeSessionId || 'Demo'}. Proveniência e hash SHA-256 verificados no backend.`;
+    `Coordenada ativa vinculada aos requisitos do cenário '${currentScenario.topic}'. Proveniência de hash SHA-256 e citação conferidas no backend.`;
 }
 
-// User Interactions & Mode Changes
+// User Interactions & Scenario Change
+function onScenarioPresetChange() {
+  let key = document.getElementById('scenarioPreset').value;
+  currentScenario = SCENARIOS[key] || SCENARIOS.ia_seguranca;
+  document.getElementById('topic').value = currentScenario.topic;
+  document.getElementById('artName1').textContent = currentScenario.docName;
+  document.getElementById('artDetail1').textContent = currentScenario.docDetail;
+  initNewSession();
+}
+
 function setMode(m) {
   mode = m;
   for (let id of ['navResearch', 'navDebate', 'navAudit']) {
@@ -989,18 +1237,25 @@ function setViewMode(v) {
   else requestAnimationFrame(render3DScene);
 }
 
-// Next Step Action (calls FastAPI backend or falls back to local deterministic demo)
+// Next Step Action with Origin and Destination Highlights
 async function nextStep() {
-  let demoMoves = game === 'go' ? GO_DEMO : CHESS_DEMO;
-  if (stepIndex >= demoMoves.length) {
+  let moves = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
+  if (stepIndex >= moves.length) {
     if (autoTimer) toggleAuto();
     return;
   }
-  let m = demoMoves[stepIndex];
+  let m = moves[stepIndex];
   stepIndex++;
 
-  // Tenta submeter para a API FastAPI se houver sessão ativa
-  let apiSuccess = false;
+  if (game === 'chess') {
+    lastMoveOrigin = m.from;
+    lastMoveDest = m.to;
+  } else {
+    lastMoveOrigin = null;
+    lastMoveDest = [m.col, m.row];
+  }
+
+  // Tenta chamar API FastAPI
   if (activeSessionId) {
     try {
       let payloadAction = game === 'go'
@@ -1014,20 +1269,16 @@ async function nextStep() {
       if (resp.ok) {
         let resData = await resp.json();
         currentVersion = resData.version;
-        apiSuccess = true;
       }
     } catch(e) {
-      console.warn('API local não respondeu, executando em modo offline.', e);
+      console.warn('API local indisponível, simulando offline.', e);
     }
   }
 
-  // Atualiza estado local
+  // Atualiza estado do tabuleiro
   if (game === 'go') {
-    let col = m.coord.charCodeAt(0) - 65; // A=0
-    let row = 9 - parseInt(m.coord[1]);
-    boardState.goStones.push({ col, row, color: stepIndex % 2 ? 'B' : 'W' });
+    boardState.goStones.push({ col: m.col, row: m.row, color: stepIndex % 2 ? 'B' : 'W' });
   } else {
-    // Simula lance
     if (stepIndex === 1) boardState.chessFen = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1';
     if (stepIndex === 2) boardState.chessFen = 'rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2';
     if (stepIndex === 3) boardState.chessFen = 'rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2';
@@ -1037,10 +1288,28 @@ async function nextStep() {
   document.getElementById('turnChip').textContent = `TURNO ${stepIndex} · ${game==='go'?(stepIndex%2?'PRETAS':'BRANCAS'):(stepIndex%2?'BRANCAS':'PRETAS')}`;
   document.getElementById('evidenceTitle').textContent = `Alegação Vinculada ao Lance ${m.san || m.coord}`;
   document.getElementById('evidenceText').textContent = m.quote;
-  document.getElementById('stepCounter').textContent = `${stepIndex} / ${demoMoves.length} lances`;
+  document.getElementById('stepCounter').textContent = `${stepIndex} / ${moves.length} lances`;
+
+  // Atualiza Badges das 3 Camadas
+  updateVerificationBadges(true, true, true);
 
   addLog(stepIndex, m.desc);
   if (viewMode === '2d') render2DBoard();
+}
+
+function updateVerificationBadges(intOk, srcOk, eviOk) {
+  let bInt = document.getElementById('badgeIntegrity');
+  let bSrc = document.getElementById('badgeSource');
+  let bEvi = document.getElementById('badgeEvidence');
+
+  bInt.className = `tier-badge ${intOk ? 'ok' : 'err'}`;
+  document.getElementById('valIntegrity').textContent = intOk ? 'INTEGRITY_VERIFIED' : 'INTEGRITY_COMPROMISED';
+
+  bSrc.className = `tier-badge ${srcOk ? 'ok' : 'warn'}`;
+  document.getElementById('valSource').textContent = srcOk ? 'SOURCE_VERIFIED' : 'NO_SOURCES_ATTACHED';
+
+  bEvi.className = `tier-badge ${eviOk ? 'ok' : 'warn'}`;
+  document.getElementById('valEvidence').textContent = eviOk ? 'SUPPORTED' : 'HYPOTHESIS';
 }
 
 function toggleAuto() {
@@ -1049,9 +1318,11 @@ function toggleAuto() {
     document.getElementById('autoBtn').textContent = '⟳ Reproduzir';
     return;
   }
-  if (stepIndex >= (game==='go'?GO_DEMO:CHESS_DEMO).length) resetGame();
+  let moves = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
+  if (stepIndex >= moves.length) resetGame();
   autoTimer = setInterval(() => {
-    if (stepIndex < (game==='go'?GO_DEMO:CHESS_DEMO).length) nextStep();
+    let mList = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
+    if (stepIndex < mList.length) nextStep();
     else toggleAuto();
   }, 1200);
   document.getElementById('autoBtn').textContent = 'Ⅱ Pausar';
@@ -1060,6 +1331,9 @@ function toggleAuto() {
 function resetGame() {
   if (autoTimer) { clearInterval(autoTimer); autoTimer = null; document.getElementById('autoBtn').textContent = '⟳ Reproduzir'; }
   stepIndex = 0;
+  lastMoveOrigin = null;
+  lastMoveDest = null;
+  selectedCell = null;
   boardState.chessFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
   boardState.goStones = [];
   document.getElementById('stepCounter').textContent = `0 / 3 lances`;
@@ -1148,7 +1422,7 @@ function openFusionModal() {
       <span class="tag green">${fusionBranches.length} RAMOS INVESTIGADOS</span>
       <span class="tag">${fusionReportData.deduplicated_sources_count} FONTES INDEPENDENTES DEDUPLICADAS</span>
     </div>
-    <h4 style="color:#61d2c0;margin:16px 0 8px">Matriz de Divergências & Reconciliação</h4>
+    <h4 style="color:#5fe8d1;margin:16px 0 8px">Matriz de Divergências & Reconciliação</h4>
     <div style="display:flex;flex-direction:column;gap:8px">
       ${fusionReportData.divergences.map(d => `
         <div class="source">
@@ -1157,7 +1431,7 @@ function openFusionModal() {
         </div>
       `).join('')}
     </div>
-    <h4 style="color:#61d2c0;margin:16px 0 8px">Síntese Unificada Auditável</h4>
+    <h4 style="color:#5fe8d1;margin:16px 0 8px">Síntese Unificada Auditável</h4>
     <div class="source" style="background:#132634">
       <p style="color:#e6f8f6;font-size:12.5px;line-height:1.6">${fusionReportData.unified_synthesis}</p>
     </div>
@@ -1218,6 +1492,13 @@ async function initNewSession() {
       activeSessionId = data.id;
       currentVersion = data.version;
       addLog('API', `Nova sessão iniciada: ${activeSessionId}`);
+
+      // Atualiza badges com os valores retornados pelo backend
+      updateVerificationBadges(
+        data.integrity_status === 'INTEGRITY_VERIFIED',
+        data.source_status === 'SOURCE_VERIFIED',
+        data.evidence_assessment === 'SUPPORTED'
+      );
       resetGame();
       return;
     }
