@@ -11,8 +11,10 @@ from typing import Dict, Any, List, Optional, Tuple
 
 
 class DocumentAccessForbiddenError(Exception):
-    """Lançada quando um ator tenta acessar documentos privados do lado oposto (HTTP 403)."""
+    """Lançada quando um ator tenta acessar documentos privados do lado oposto ou desautorizados para sua peça (HTTP 403)."""
     pass
+
+PermissionDeniedError = DocumentAccessForbiddenError
 
 
 class DocumentVault:
@@ -21,6 +23,31 @@ class DocumentVault:
         self._artifacts: Dict[str, Dict[str, Any]] = {}
         # session_id -> { "is_locked": bool, "white_manifest": List[str], ... }
         self._session_locks: Dict[str, Dict[str, Any]] = {}
+        # session_id -> { piece_id: [artifact_ids] } (RBAC Documental de Peça v2.5)
+        self._piece_permissions: Dict[str, Dict[str, List[str]]] = {}
+
+    def set_piece_permissions(self, session_id: str, piece_id: str, artifact_ids: List[str]) -> None:
+        """Registra a lista explícita de artefatos autorizados para a visão de uma peça específica."""
+        if session_id not in self._piece_permissions:
+            self._piece_permissions[session_id] = {}
+        self._piece_permissions[session_id][piece_id] = list(set(artifact_ids))
+
+    def authorize_piece_for_artifact(self, session_id: str, piece_id: str, artifact_id: str) -> None:
+        """Adiciona uma permissão documental específica a uma peça."""
+        if session_id not in self._piece_permissions:
+            self._piece_permissions[session_id] = {}
+        current = self._piece_permissions[session_id].setdefault(piece_id, [])
+        if artifact_id not in current:
+            current.append(artifact_id)
+
+    def get_piece_authorized_artifacts(self, session_id: str, piece_id: str) -> List[Dict[str, Any]]:
+        """Retorna os artefatos completos autorizados para a visão individual de uma peça."""
+        perms = self._piece_permissions.get(session_id, {}).get(piece_id, [])
+        results = []
+        for aid in perms:
+            if aid in self._artifacts:
+                results.append(self._artifacts[aid])
+        return results
 
     def ingest_document(
         self,
@@ -72,20 +99,41 @@ class DocumentVault:
         self._artifacts[artifact_id] = artifact
         return artifact
 
-    def get_artifact(self, artifact_id: str, requesting_side: Optional[str] = None) -> Dict[str, Any]:
+    def get_artifact(
+        self,
+        artifact_id: str,
+        requesting_side: Optional[str] = None,
+        requesting_piece_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
         if artifact_id not in self._artifacts:
             raise KeyError(f"Artefato {artifact_id} não encontrado.")
 
         art = self._artifacts[artifact_id]
         owner = art["owner_side"]
+        session_id = art["session_id"]
 
         if owner == "public":
+            if requesting_piece_id:
+                session_perms = self._piece_permissions.get(session_id, {})
+                allowed = session_perms.get(requesting_piece_id, [])
+                if artifact_id not in allowed:
+                    raise DocumentAccessForbiddenError(
+                        f"Acesso negado: a peça {requesting_piece_id} não possui autorização no cofre para o artefato {artifact_id}."
+                    )
             return art
 
         if requesting_side and requesting_side != owner and requesting_side != "arbitrator":
             raise DocumentAccessForbiddenError(
                 f"Acesso negado: o artefato {artifact_id} pertence ao cofre privado do lado '{owner}'."
             )
+
+        if requesting_piece_id:
+            session_perms = self._piece_permissions.get(session_id, {})
+            allowed = session_perms.get(requesting_piece_id, [])
+            if artifact_id not in allowed:
+                raise DocumentAccessForbiddenError(
+                    f"Acesso negado: a peça {requesting_piece_id} não possui autorização no cofre para o artefato {artifact_id}."
+                )
         return art
 
     def get_accessible_artifacts_with_content(

@@ -69,6 +69,16 @@ ClaimStatus = Literal[
     "NOT_COMPARABLE",
     "NOT_ASSESSED",
 ]
+ClashVerdict = Literal[
+    "CAPTURE_AUTHORIZED",
+    "DEFENSE_SUCCESSFUL",
+    "CONFRONTATION_INCONCLUSIVE",
+    "ASSESSMENT_PENDING",
+    "MOVE_ILLEGAL",
+]
+SwotCategory = Literal["STRENGTH", "WEAKNESS", "OPPORTUNITY", "THREAT"]
+PieceBoardStatus = Literal["in_game", "captured", "promoted", "protected"]
+
 
 
 def normalize_source_policy(policy: str) -> NormalizedSourcePolicy:
@@ -385,11 +395,72 @@ class PieceDossierSchema(BaseModel):
     captured_by_piece_id: Optional[str] = None
     fall_explanation: Optional[str] = None
     claim: str
+    parent_thesis_id: str = ""
+    claim_id: str = ""
+    authorized_artifact_ids: List[str] = Field(default_factory=list)
+    supporting_evidence_ids: List[str] = Field(default_factory=list)
+    contradicting_evidence_ids: List[str] = Field(default_factory=list)
+    board_status: PieceBoardStatus = "in_game"
     supporting_artifacts: List[PieceArtifactRefSchema] = Field(default_factory=list)
     counter_artifacts: List[PieceArtifactRefSchema] = Field(default_factory=list)
     confidence_score: float = 0.0
     epistemic_status: EvidenceVerdict = "HYPOTHESIS"
     history: List[PieceHistoryEntrySchema] = Field(default_factory=list)
+    confrontation_history: List[Dict[str, Any]] = Field(default_factory=list)
+    swot_category: Optional[SwotCategory] = None
+    swot_rationale: Optional[str] = None
+
+
+class ReachableOpponentSchema(BaseModel):
+    coord: str
+    piece_id: str
+    label: str
+    role: str
+    claim: str
+    clash_status: ClashVerdict = "ASSESSMENT_PENDING"
+    clash_reason: str = ""
+    attacker_evidence_count: int = 0
+    defender_evidence_count: int = 0
+    is_king_protected: bool = False
+    evaluated: bool = False
+
+
+class PieceReachabilityResponseSchema(BaseModel):
+    piece_id: str
+    coord: str
+    label: str
+    role: str
+    claim: str
+    side: str
+    color: str
+    epistemic_status: str
+    authorized_artifact_ids: List[str] = Field(default_factory=list)
+    authorized_artifacts: List[PieceArtifactRefSchema] = Field(default_factory=list)
+    free_moves: List[str] = Field(default_factory=list)
+    reachable_opponents: List[ReachableOpponentSchema] = Field(default_factory=list)
+
+
+class ConfrontationEvaluationRequest(BaseModel):
+    attacker_piece_id: str
+    defender_piece_id: str
+    from_coord: Optional[str] = None
+    to_coord: Optional[str] = None
+
+
+class ConfrontationEvaluationResponse(BaseModel):
+    confrontation_id: str
+    session_id: str
+    attacker_piece_id: str
+    defender_piece_id: str
+    attacker_claim: str
+    defender_claim: str
+    attacker_artifacts: List[Dict[str, Any]] = Field(default_factory=list)
+    defender_artifacts: List[Dict[str, Any]] = Field(default_factory=list)
+    verdict: ClashVerdict
+    justification: str
+    is_king_protected: bool = False
+    cached: bool = False
+    evaluated_at: str
 
 
 class MoveAuditPayloadSchema(BaseModel):

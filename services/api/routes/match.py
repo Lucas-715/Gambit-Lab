@@ -10,6 +10,9 @@ from services.api.models.schemas import (
     ResearchMatchStateSchema,
     ResumeMatchRequest,
     RunMatchRequest,
+    PieceReachabilityResponseSchema,
+    ConfrontationEvaluationRequest,
+    ConfrontationEvaluationResponse,
 )
 
 router = APIRouter(prefix="/api/v1/sessions", tags=["Research Match"])
@@ -99,4 +102,41 @@ def list_piece_dossiers(
         return manager.match_orchestrator.get_pieces_for_viewer(session_id, viewer_side=viewer_side, role=role)
     except KeyError as ke:
         raise HTTPException(status_code=404, detail=str(ke))
+
+
+@router.get("/{session_id}/pieces/{piece_id}/reachability", response_model=PieceReachabilityResponseSchema)
+def get_piece_reachability(
+    session_id: str,
+    piece_id: str,
+    manager=Depends(get_manager),
+):
+    """Calcula deterministicamente o alcance físico da peça e o status semântico de confronto dos alvos alcançáveis (v2.5)."""
+    try:
+        return manager.get_piece_reachability(session_id, piece_id)
+    except KeyError as ke:
+        raise HTTPException(status_code=404, detail=str(ke))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/{session_id}/confrontation/evaluate", response_model=ConfrontationEvaluationResponse)
+def evaluate_piece_confrontation(
+    session_id: str,
+    req: ConfrontationEvaluationRequest = Body(...),
+    manager=Depends(get_manager),
+):
+    """Avalia a arbitragem semântica entre uma peça atacante e uma defensora com suporte a cache (v2.5)."""
+    try:
+        return manager.evaluate_confrontation(
+            session_id=session_id,
+            attacker_pid=req.attacker_piece_id,
+            defender_pid=req.defender_piece_id,
+            from_coord=req.from_coord,
+            to_coord=req.to_coord,
+        )
+    except KeyError as ke:
+        raise HTTPException(status_code=404, detail=str(ke))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 

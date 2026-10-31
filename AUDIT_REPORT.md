@@ -215,3 +215,41 @@ Em atendimento à avaliação de interface e rigor funcional solicitada pelo usu
 ### Resultados Consolidados v2.4.1
 - **Suíte Pytest Completa**: **90 passed, 0 failed, 1 warning**.
 - **Suíte E2E CDP Real (v2.4.1)**: Todos os 8 passos aprovados com 6 telas comprobatórias capturadas em alta definição.
+
+
+---
+
+## 11. Xadrez Epistêmico, Cofres Individuais e Confrontos Argumentativos v2.5.0 (Resoluções E01–E20)
+
+Em cumprimento integral à Reengenharia Funcional v2.5 para consolidar uma genuína **Game-Driven Multi-Agent Architecture**, foram implementados e aprovados os 20 critérios obrigatórios:
+
+| ID | Critério de Aceite v2.5 | Implementação Técnica | Evidência / Teste |
+|---|---|---|---|
+| **E01** | Identidade Única para as 32 Peças | 32 peças de xadrez com `piece_id`, `parent_thesis_id` e `claim_id` únicos gerados em `preparation.py`. | `test_v25_heterogeneous_subtheses_32_pieces` (**PASS**) |
+| **E02** | Subteses Heterogêneas Especializadas | Subteses geradas por papel (Rei=central, Dama=ataque principal, Torres=normativo/institucional, Bispos=conceitual/causal, Cavalos=empírico/exceções, Peões=dados atômicos). | `test_v25_heterogeneous_subtheses_32_pieces` (**PASS**) |
+| **E03** | Relação de Dependência Epistêmica | Cada subtese mapeia expressamente para a tese central do lado (`parent_thesis_id`). | `test_v25_heterogeneous_subtheses_32_pieces` (**PASS**) |
+| **E04** | Legitimidade Física Determinística | Movimentos e capturas condicionados à legalidade física no `python-chess` (`EpistemicChessEngine`). | `test_v25_clash_engine_evidentiary_arbitration` (**PASS**) |
+| **E05** | Arbitragem Semântica sem Pesos Artificiais | Eliminação de pesos arbitrários de peças na determinação de verdade; avaliação estritamente documental no `SemanticClashEngine`. | `test_v25_clash_engine_evidentiary_arbitration` (**PASS**) |
+| **E06** | Veredito Explícito de Confronto | 4 vereditos formais: `CAPTURE_AUTHORIZED`, `DEFENSE_SUCCESSFUL`, `CONFRONTATION_INCONCLUSIVE`, `MOVE_ILLEGAL`. | `test_v25_clash_engine_evidentiary_arbitration` (**PASS**) |
+| **E07** | Cofres Individuais e RBAC por Peça | `DocumentVault.set_piece_permissions` com isolamento estrito; tentativa de leitura não autorizada gera `PermissionDeniedError`. | `test_v25_piece_vault_rbac_isolation` (**PASS**) |
+| **E08** | Invariante Epistêmico do Rei | Rei protegido enquanto houver subteses defensivas ativas (`is_king_protected=True`), retornando `DEFENSE_SUCCESSFUL`. | `test_v25_clash_engine_king_invariant` (**PASS**) |
+| **E09** | Resiliência do Defensor no Tabuleiro | Se a defesa tem sucesso, a peça defensora **permanece no tabuleiro** e o confronto é registrado em `confrontation_history`. | `test_v25_clash_engine_evidentiary_arbitration` (**PASS**) |
+| **E10** | Inspeção de Alcance e Capturabilidade | Realce de casas livres (pontos discretos) e oponentes alcançáveis com cores semânticas (menta, carmim, âmbar) em 2D e 3D. | `verify_v25_epistemic_cdp.py` Passos 3 e 4 (**PASS**) |
+| **E11** | Modal de Confronto Argumentativo | Modal `#confrontationModal` comparando teses e evidências com justificativa do árbitro. | `verify_v25_epistemic_cdp.py` Passo 5 (**PASS**) |
+| **E12** | Go 9×9 com Matriz SWOT Dimensional | Pedras classificadas dimensionalmente em `STRENGTH`, `WEAKNESS`, `OPPORTUNITY`, `THREAT`. | `test_v25_go_swot_distribution` (**PASS**) |
+| **E13** | Preservação das Regras Espaciais de Go | Liberdades, território, superko e passes do Go 9×9 mantidos 100% íntegros sem divisão em quadrantes rígidos. | `test_v25_go_swot_distribution` (**PASS**) |
+| **E14** | Cache de Avaliações Semânticas | Confrontos idênticos usam cache determinístico baseado em hash SHA-256 das alegações e evidências. | `SemanticClashEngine` (**VERIFIED**) |
+| **E15** | Endpoint de Alcance (`/reachability`) | `GET /api/v1/sessions/{id}/pieces/{piece_id}/reachability` documentado e validado. | `test_v25_reachability_api_endpoint` (**PASS**) |
+| **E16** | Endpoint de Confronto (`/confrontation/evaluate`) | `POST /api/v1/sessions/{id}/confrontation/evaluate` documentado e validado. | `test_v25_confrontation_evaluate_api_endpoint` (**PASS**) |
+| **E17** | Erradicação Estrita de Emojis (Zero Emojis) | 100% dos emojis removidos de botões, cabeçalhos, abas, badges de status e relatórios, substituídos por SVGs e glifos clássicos. | `verify_v25_epistemic_cdp.py` Passo 1 (**PASS**) |
+| **E18** | Rastreabilidade no Histórico da Peça | Confrontos e tentativas de captura gravados no histórico individual de cada peça. | `test_v25_full_chess_epistemic_match` (**PASS**) |
+| **E19** | Registro no Event Store e Audit Payload | `clash_info` integrado com integridade criptográfica no payload de auditoria de cada lance jogado. | `test_v25_full_chess_epistemic_match` (**PASS**) |
+| **E20** | Conclusão Epistêmica e Síntese Dual | Relatório final sintetizando pontos de virada, subteses sustentadas e refutadas de forma desacoplada do resultado lúdico. | `test_v25_full_chess_epistemic_match` (**PASS**) |
+
+### Resultados Consolidados v2.5.0
+- **Suíte Pytest Completa**: **96 passed, 0 failed, 1 warning** (tempo total de execução ~5m).
+- **Suíte E2E CDP Real (v2.5)**: 6/6 passos aprovados com 4 telas de alta definição capturadas em `docs/screenshots/`:
+  - `nocturne_v25_piece_reachability_2d.png`
+  - `nocturne_v25_piece_reachability_3d.png`
+  - `nocturne_v25_confrontation_modal.png`
+  - `nocturne_v25_go_swot_matrix.png`

@@ -2083,6 +2083,137 @@ body.star-motion-paused #space {
   min-width: 18px;
 }
 
+
+/* =========================================================================
+   V2.5 — XADREZ EPISTÊMICO, ALCANCE, CONFRONTOS E MATRIZ SWOT
+   ========================================================================= */
+.reach-free-move {
+  fill: #4A4D5E;
+  opacity: 0.85;
+}
+.reach-target-auth {
+  stroke: #5BBFA7 !important;
+  fill: rgba(91, 191, 167, 0.35) !important;
+  animation: pulseTarget 1.8s infinite ease-in-out;
+}
+.reach-target-resisted {
+  stroke: #D86B75 !important;
+  fill: rgba(216, 107, 117, 0.30) !important;
+}
+.reach-target-inconclusive {
+  stroke: #D5A65B !important;
+  fill: rgba(213, 166, 91, 0.30) !important;
+}
+.reach-selected-square {
+  stroke: #A78BFA !important;
+  fill: rgba(167, 139, 250, 0.25) !important;
+}
+@keyframes pulseTarget {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+/* Modal de Confronto Argumentativo */
+.confrontation-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+.confrontation-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.confrontation-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+.confrontation-side-box {
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.confrontation-side-box.attacker {
+  border-left: 3px solid #A78BFA;
+}
+.confrontation-side-box.defender {
+  border-left: 3px solid #7986CB;
+}
+.confrontation-arbiter-box {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+.king-invariant-alert {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(216, 107, 117, 0.15);
+  border: 1px solid #D86B75;
+  color: #F87171;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* SWOT Badges (Go) */
+.swot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.swot-badge.swot-s {
+  background: rgba(91, 191, 167, 0.15);
+  color: #5BBFA7;
+  border: 1px solid rgba(91, 191, 167, 0.4);
+}
+.swot-badge.swot-w {
+  background: rgba(216, 107, 117, 0.15);
+  color: #D86B75;
+  border: 1px solid rgba(216, 107, 117, 0.4);
+}
+.swot-badge.swot-o {
+  background: rgba(167, 139, 250, 0.15);
+  color: #A78BFA;
+  border: 1px solid rgba(167, 139, 250, 0.4);
+}
+.swot-badge.swot-t {
+  background: rgba(213, 166, 91, 0.15);
+  color: #D5A65B;
+  border: 1px solid rgba(213, 166, 91, 0.4);
+}
+.swot-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.swot-quadrant-card {
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11.5px;
+}
+
 </style>
 </head>
 <body>
@@ -2232,7 +2363,7 @@ body.star-motion-paused #space {
     <button class="rail-btn" id="historyBtn" title="Replay Event Store" aria-label="Abrir replay do Event Store">◷</button>
     <button class="rail-btn" id="fusionRailBtn" title="Síntese FUSION" aria-label="Abrir síntese FUSION">◇</button>
     <div class="rail-bottom">
-      <button class="rail-btn" id="motionBtn" title="Alternar animação estelar viva (Parallax / Drift)" aria-label="Alternar animação estelar viva" onclick="toggleStarMotion()">✨</button>
+      <button class="rail-btn" id="motionBtn" title="Alternar animação estelar viva (Parallax / Drift)" aria-label="Alternar animação estelar viva" onclick="toggleStarMotion()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></button>
       <button class="rail-btn" id="themeBtn" title="Alternar tema Nocturne / Cosmic" aria-label="Alternar tema visual">◐</button>
       <button class="rail-btn" id="infoBtn" title="Princípios de honestidade epistêmica" aria-label="Sobre o Gambit Lab">ⓘ</button>
     </div>
@@ -2251,7 +2382,7 @@ body.star-motion-paused #space {
         <span class="pill" id="backendBadge" style="display:none;">● Conectando...</span>
         <span class="pill" id="webCapBadge" style="display:none;">● Web...</span>
         <button class="btn sm secondary" id="btnDiagnostics" onclick="openDiagnosticsModal()" title="Diagnóstico de capacidades, IA, telemetria e Event Store">
-          ⚙ Diagnóstico & Estado
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Diagnóstico & Estado
         </button>
       </div>
     </header>
@@ -2265,11 +2396,11 @@ body.star-motion-paused #space {
       <!-- Alternador de Modos Proeminente: Debater vs Auditar -->
       <div class="mode-switcher-container">
         <button type="button" class="mode-pill active" id="modeBtnDebate" onclick="setHomeMode('debate')" title="Investigar pergunta confrontando teses, oponentes e evidências">
-          <span class="mode-icon">⚖️</span>
+          <span class="mode-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></span>
           <span class="mode-title">Debate de Evidências</span>
         </button>
         <button type="button" class="mode-pill" id="modeBtnAudit" onclick="setHomeMode('audit')" title="Auditar conformidade, controles, normas e relatórios de risco">
-          <span class="mode-icon">🔍</span>
+          <span class="mode-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
           <span class="mode-title">Auditoria de Controles</span>
         </button>
       </div>
@@ -2322,10 +2453,10 @@ body.star-motion-paused #space {
       </div>
 
       <div class="suggestions" aria-label="Exemplos de investigação">
-        <button type="button" data-prompt="O trabalho remoto reduziu ou aumentou a produtividade das equipes de engenharia de software?" data-mode="debate" data-game="chess" data-policy="OWN_ONLY">⚖️ Produtividade e trabalho remoto em engenharia (Debate · Xadrez)</button>
-        <button type="button" data-prompt="Quais são os prós e contras no uso de modelos de linguagem abertos vs proprietários em produção?" data-mode="debate" data-game="go" data-policy="WEB_ONLY">⚖️ Modelos abertos vs proprietários em produção (Debate · Go 9×9)</button>
-        <button type="button" data-prompt="Auditoria de controles ISO 27001 para gerenciamento de chaves criptográficas (KMS) e rotação em Cloud" data-mode="audit" data-game="chess" data-policy="OWN_ONLY">🔍 Auditoria ISO 27001 em KMS e rotação de chaves (Auditoria · Xadrez)</button>
-        <button type="button" data-prompt="Auditoria de conformidade com a LGPD: retenção, eliminação e consentimento em pipelines de dados" data-mode="audit" data-game="go" data-policy="HYBRID">🔍 Auditoria LGPD e governança de dados sensíveis (Auditoria · Go 9×9)</button>
+        <button type="button" data-prompt="O trabalho remoto reduziu ou aumentou a produtividade das equipes de engenharia de software?" data-mode="debate" data-game="chess" data-policy="OWN_ONLY"><span class="preset-tag debate">Debate</span> Produtividade e trabalho remoto em engenharia (Debate · Xadrez)</button>
+        <button type="button" data-prompt="Quais são os prós e contras no uso de modelos de linguagem abertos vs proprietários em produção?" data-mode="debate" data-game="go" data-policy="WEB_ONLY"><span class="preset-tag debate">Debate</span> Modelos abertos vs proprietários em produção (Debate · Go 9×9)</button>
+        <button type="button" data-prompt="Auditoria de controles ISO 27001 para gerenciamento de chaves criptográficas (KMS) e rotação em Cloud" data-mode="audit" data-game="chess" data-policy="OWN_ONLY"><span class="preset-tag audit">Auditoria</span> Auditoria ISO 27001 em KMS e rotação de chaves (Auditoria · Xadrez)</button>
+        <button type="button" data-prompt="Auditoria de conformidade com a LGPD: retenção, eliminação e consentimento em pipelines de dados" data-mode="audit" data-game="go" data-policy="HYBRID"><span class="preset-tag audit">Auditoria</span> Auditoria LGPD e governança de dados sensíveis (Auditoria · Go 9×9)</button>
       </div>
 
       <p class="caption">
@@ -2384,7 +2515,7 @@ body.star-motion-paused #space {
             <h3>Conclusão da Partida de Investigação</h3>
           </div>
           <div class="dcc-actions">
-            <button class="btn sm accent" id="turningPointBtn" style="display:none" onclick="jumpToTurningPoint()">⚡ Ponto de Virada (Lance #<span id="tpPlyNum">0</span>)</button>
+            <button class="btn sm accent" id="turningPointBtn" style="display:none" onclick="jumpToTurningPoint()"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Ponto de Virada (Lance #<span id="tpPlyNum">0</span>)</button>
             <button class="btn sm secondary" onclick="exportReport('markdown')">⬇ Exportar Dossiê MD</button>
           </div>
         </div>
@@ -2392,7 +2523,7 @@ body.star-motion-paused #space {
         <div class="dcc-grid">
           <!-- Coluna 1: Resultado Lúdico (Tabuleiro) -->
           <div class="dcc-column ludic">
-            <div class="dcc-col-title">⚔️ RESULTADO LÚDICO (TABULEIRO)</div>
+            <div class="dcc-col-title">RESULTADO LÚDICO (TABULEIRO)</div>
             <div class="dcc-winner" id="ludicWinner">—</div>
             <div class="dcc-meta">
               <span class="dcc-pill" id="ludicCriterion">Critério: —</span>
@@ -2403,7 +2534,7 @@ body.star-motion-paused #space {
 
           <!-- Coluna 2: Veredito Epistêmico (Verdade Científica Desacoplada) -->
           <div class="dcc-column epistemic">
-            <div class="dcc-col-title">⚖️ VEREDITO EPISTÊMICO (VERDADE CIENTÍFICA)</div>
+            <div class="dcc-col-title">VEREDITO EPISTÊMICO (VERDADE CIENTÍFICA)</div>
             <div class="dcc-verdict" id="epistemicVerdict">—</div>
             <div class="dcc-meta">
               <span class="dcc-pill highlight" id="epistemicStatusPill">EVIDÊNCIA AUDITADA</span>
@@ -2469,7 +2600,7 @@ body.star-motion-paused #space {
               <div class="exec-bar">
                 <button class="btn primary" id="continueBtn" onclick="continueInvestigation(1)">▶ Continuar investigação</button>
                 <button class="btn accent" id="advance3Btn" onclick="continueInvestigation(3)">⏭ +3 etapas</button>
-                <button class="btn accent" id="runMatchV2Btn" onclick="triggerRunMatchV2()" title="Simular partida completa com 7 estágios e dossiês">⚔ Gerar Partida Completa v2</button>
+                <button class="btn accent" id="runMatchV2Btn" onclick="triggerRunMatchV2()" title="Simular partida completa com 7 estágios e dossiês">Gerar Partida Completa v2</button>
                 <button class="btn secondary" id="resumeMatchBtn" style="display:none" onclick="triggerResumeMatch()" title="Retomar partida interrompida por limite de lances">▶ Retomar Partida (+12 lances)</button>
                 <button class="btn secondary" id="passGoBtn" style="display:none" onclick="submitGoPass()">Passe (Go)</button>
                 <span class="turn-indicator" id="execHint">Pronto para gerar próximo ciclo</span>
@@ -2501,7 +2632,7 @@ body.star-motion-paused #space {
         <section class="tabs-surface" aria-label="Painel analítico da investigação">
           <div class="tab-nav" role="tablist" aria-label="Abas de investigação">
             <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tabPanelMove" id="tabBtnMove" onclick="switchTab('move')">
-              ⚔️ Lance Selecionado
+              Lance Selecionado
             </button>
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelPieces" id="tabBtnPieces" onclick="switchTab('pieces')">
               Dossiês <span class="tab-count" id="countPieces">0</span>
@@ -2617,7 +2748,7 @@ body.star-motion-paused #space {
                     <div><small style="color:var(--muted)">Xeque-mate:</small><br><b id="smpMateBadge">NÃO</b></div>
                   </div>
                   <div class="epistemic-disclaimer" style="margin-top:8px;">
-                    <small>⚠️ <em>Rigor científico:</em> A captura física no jogo nunca equivale automaticamente à refutação factual da tese sem contraprova semântica demonstrada.</small>
+                    <small><em>Rigor metodológico:</em> A captura física no jogo nunca equivale automaticamente à refutação factual da tese sem contraprova semântica demonstrada.</small>
                   </div>
                 </div>
               </details>
@@ -2689,8 +2820,8 @@ body.star-motion-paused #space {
             <div class="pieces-controls">
               <div class="pieces-filter-pills">
                 <button class="filter-pill active" id="fPillAll" onclick="filterPieces('all')">Todas (<span id="pCountAll">0</span>)</button>
-                <button class="filter-pill" id="fPillWhite" onclick="filterPieces('white')">⚪ Pró (<span id="pCountWhite">0</span>)</button>
-                <button class="filter-pill" id="fPillBlack" onclick="filterPieces('black')">⚫ Contra (<span id="pCountBlack">0</span>)</button>
+                <button class="filter-pill" id="fPillWhite" onclick="filterPieces('white')"><span class="side-indicator pro"></span> Pró (<span id="pCountWhite">0</span>)</button>
+                <button class="filter-pill" id="fPillBlack" onclick="filterPieces('black')"><span class="side-indicator contra"></span> Contra (<span id="pCountBlack">0</span>)</button>
                 <button class="filter-pill" id="fPillActive" onclick="filterPieces('active')">Em Jogo (<span id="pCountActive">0</span>)</button>
                 <button class="filter-pill" id="fPillFallen" onclick="filterPieces('fallen')">Caídas / Refutadas (<span id="pCountFallen">0</span>)</button>
               </div>
@@ -2814,6 +2945,23 @@ body.star-motion-paused #space {
     </div>
   </div>
 
+  
+  <!-- Modal de Confronto Argumentativo entre Peças (v2.5) -->
+  <div class="modal-overlay" id="confrontationModal" role="dialog" aria-modal="true" aria-labelledby="confrontationTitle" style="display:none;">
+    <div class="modal-card confrontation-card" style="max-width: 680px; width: 92%;">
+      <div class="confrontation-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="badge-verdict" id="confrontationVerdictBadge">ARBITRAGEM</span>
+          <h3 id="confrontationTitle" style="margin:0;font-size:16px;">Confronto Argumentativo</h3>
+        </div>
+        <button class="icon-btn" onclick="closeModal('confrontationModal')" aria-label="Fechar">✕</button>
+      </div>
+      <div id="confrontationModalBody" style="padding:16px 20px;">
+        <div style="text-align:center;padding:24px;color:var(--muted)">Avaliando confronto epistêmico...</div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="inspectModal" role="dialog" aria-modal="true" aria-labelledby="inspectTitle">
   <div class="modal-content">
     <div class="modal-header">
@@ -2826,6 +2974,182 @@ body.star-motion-paused #space {
 
 <script>
 'use strict';
+
+/* =========================================================================
+   ESTADO E FUNÇÕES V2.5 — XADREZ EPISTÊMICO, ALCANCE E CONFRONTOS
+   ========================================================================= */
+let selectedPieceReachability = null; // { piece_id, coord, free_moves: [], reachable_opponents: [] }
+let selectedPieceId = null;
+let selectedPieceCoord = null;
+
+async function selectPieceAndReachability(pieceId, explicitCoord) {
+  if (!activeSessionId) return;
+  selectedPieceId = pieceId;
+  const p = (activePieces || []).find(x => x.piece_id === pieceId);
+  const coord = explicitCoord || (p ? (p.current_coord || p.initial_coord) : null);
+  selectedPieceCoord = coord;
+
+  if (coord && coord.length === 2) {
+    const c = 'abcdefgh'.indexOf(coord[0].toLowerCase());
+    const r = 8 - parseInt(coord[1], 10);
+    if (c >= 0 && r >= 0) selectedCell = [c, r];
+  }
+
+  // Consulta endpoint determinístico de alcance
+  try {
+    const res = await fetch(`/api/v1/sessions/${activeSessionId}/pieces/${pieceId}/reachability`);
+    if (res.ok) {
+      selectedPieceReachability = await res.json();
+    } else {
+      selectedPieceReachability = null;
+    }
+  } catch (err) {
+    console.warn('Falha ao obter alcance da peça:', err);
+    selectedPieceReachability = null;
+  }
+
+  // Atualiza tabuleiros
+  if (viewMode === '2d') render2DBoard();
+  else if (typeof render3DScene === 'function') requestAnimationFrame(render3DScene);
+
+  // Destaca card na lista de peças se visível
+  const pCards = document.querySelectorAll('.piece-card');
+  pCards.forEach(el => el.classList.remove('highlighted'));
+  const targetCard = document.getElementById(`pcard_${pieceId}`);
+  if (targetCard) {
+    targetCard.classList.add('highlighted');
+    targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+async function openConfrontationModal(attackerPid, defenderPid, toCoord) {
+  if (!activeSessionId) return;
+  const modal = document.getElementById('confrontationModal');
+  const body = document.getElementById('confrontationModalBody');
+  const title = document.getElementById('confrontationTitle');
+  const badge = document.getElementById('confrontationVerdictBadge');
+
+  title.textContent = `Confronto Epistêmico em ${toCoord ? toCoord.toUpperCase() : 'Posição'}`;
+  body.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted)">Consultando árbitro semântico...</div>`;
+  modal.style.display = 'flex';
+
+  try {
+    const res = await fetch(`/api/v1/sessions/${activeSessionId}/confrontation/evaluate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        attacker_piece_id: attackerPid,
+        defender_piece_id: defenderPid,
+        to_coord: toCoord
+      })
+    });
+    if (!res.ok) {
+      body.innerHTML = `<div class="empty-state">Erro ao avaliar confronto: ${res.statusText}</div>`;
+      return;
+    }
+    const data = await res.json();
+    renderConfrontationData(data);
+  } catch (err) {
+    body.innerHTML = `<div class="empty-state">Falha de conexão com árbitro: ${err.message}</div>`;
+  }
+}
+
+function renderConfrontationData(data) {
+  const body = document.getElementById('confrontationModalBody');
+  const badge = document.getElementById('confrontationVerdictBadge');
+
+  const vClass = (data.verdict || 'CONFRONTATION_INCONCLUSIVE').toLowerCase();
+  badge.className = `badge-verdict ${vClass}`;
+  badge.textContent = data.verdict === 'CAPTURE_AUTHORIZED' ? 'REFUTAÇÃO AUTORIZADA'
+    : (data.verdict === 'DEFENSE_SUCCESSFUL' ? 'DEFESA SUSTENTADA'
+    : (data.verdict === 'MOVE_ILLEGAL' ? 'MOVIMENTO INVÁLIDO' : 'CONFRONTO INCONCLUSIVO'));
+
+  const attArts = (data.attacker_artifacts || []).map(a => `
+    <div class="msg-quote" style="margin-top:6px">
+      "${escapeHtml(a.quote_text || 'Citação autorizada no cofre.')}"<br>
+      <small>Fonte: ${escapeHtml(a.title || a.name || a.artifact_id)} · ${a.verified !== false ? '[VERIFICADA]' : '[NÃO COMPROVADA]'}</small>
+    </div>
+  `).join('') || '<small style="color:var(--muted)">Nenhum trecho documental anexado.</small>';
+
+  const defArts = (data.defender_artifacts || []).map(a => `
+    <div class="msg-quote" style="margin-top:6px">
+      "${escapeHtml(a.quote_text || 'Citação autorizada no cofre.')}"<br>
+      <small>Fonte: ${escapeHtml(a.title || a.name || a.artifact_id)} · ${a.verified !== false ? '[VERIFICADA]' : '[NÃO COMPROVADA]'}</small>
+    </div>
+  `).join('') || '<small style="color:var(--muted)">Nenhum trecho documental anexado.</small>';
+
+  let kingAlert = '';
+  if (data.is_king_protected) {
+    kingAlert = `
+      <div class="king-invariant-alert">
+        <span>BLINDAGEM INVARIANTE DO REI:</span> O Rei é a tese central e está protegido por subteses ativas no tabuleiro. Captura bloqueada deterministicamente.
+      </div>
+    `;
+  }
+
+  body.innerHTML = `
+    <div class="confrontation-cols">
+      <div class="confrontation-side-box attacker">
+        <div style="font-weight:700;color:var(--text);margin-bottom:4px">ATACANTE: ${escapeHtml(data.attacker_piece_id)}</div>
+        <div style="font-size:12.5px;color:var(--text);margin-bottom:8px">"${escapeHtml(data.attacker_claim)}"</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase">Evidências do Cofre Privado:</div>
+        ${attArts}
+      </div>
+
+      <div class="confrontation-side-box defender">
+        <div style="font-weight:700;color:var(--text);margin-bottom:4px">DEFENSOR: ${escapeHtml(data.defender_piece_id)}</div>
+        <div style="font-size:12.5px;color:var(--text);margin-bottom:8px">"${escapeHtml(data.defender_claim)}"</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase">Evidências do Cofre Privado:</div>
+        ${defArts}
+      </div>
+    </div>
+
+    ${kingAlert}
+
+    <div class="confrontation-arbiter-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <b style="font-size:13px;color:var(--text)">Justificativa da Arbitragem Semântica:</b>
+        <span style="font-size:11px;color:var(--muted)">${data.cached ? 'Recuperado do Cache SHA-256' : 'Avaliado pelo Árbitro'}</span>
+      </div>
+      <p style="margin:0;font-size:12.5px;line-height:1.5;color:var(--text)">${escapeHtml(data.justification)}</p>
+    </div>
+  `;
+}
+
+function handleSquareClick(c, r, sq) {
+  // Verifica se o usuário clicou em um alvo adversário alcançável pela peça selecionada
+  if (selectedPieceReachability && selectedPieceReachability.reachable_opponents) {
+    const targetOpp = selectedPieceReachability.reachable_opponents.find(o => o.target_coord.toLowerCase() === sq.toLowerCase());
+    if (targetOpp) {
+      openConfrontationModal(selectedPieceId, targetOpp.target_piece_id, sq);
+      return;
+    }
+  }
+
+  // Verifica se há peça nesta casa
+  const p = (activePieces || []).find(x => {
+    const cur = (x.current_coord || x.current_square || '').toLowerCase();
+    const ini = (x.initial_coord || x.origin_square || '').toLowerCase();
+    return (cur === sq.toLowerCase() && x.alive !== false) || (ini === sq.toLowerCase() && !cur && x.alive !== false);
+  });
+
+  if (p && game === 'chess') {
+    selectPieceAndReachability(p.piece_id, sq);
+  } else {
+    // Limpa seleção se clicou no vazio
+    if (selectedPieceId && (!targetOpp)) {
+      selectedPieceId = null;
+      selectedPieceCoord = null;
+      selectedPieceReachability = null;
+      if (viewMode === '2d') render2DBoard();
+      else if (typeof render3DScene === 'function') requestAnimationFrame(render3DScene);
+    }
+  }
+
+  // Inspeciona casa normalmente
+  inspectCell(c, r, sq);
+}
+
 /**
  * Gambit Lab Nocturne (R1.0) — Frontend Client
  * Preserva 100% da renderização WebGL 3D procedural das peças e pedras de Go,
@@ -2956,7 +3280,7 @@ function toggleStarMotion() {
   starMotionEnabled = !starMotionEnabled;
   document.body.classList.toggle('star-motion-paused', !starMotionEnabled);
   const btn = document.getElementById('motionBtn');
-  if (btn) btn.textContent = starMotionEnabled ? '✨' : '⏸';
+  if (btn) btn.innerHTML = starMotionEnabled ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>' : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>';
   if (starMotionEnabled) requestAnimationFrame(starLoop);
   else drawStars(0);
 }
@@ -3247,7 +3571,26 @@ function render3DScene() {
       } else if (lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r) {
         col = colors3D.destHighlight; em = [0.24, 0.18, 0.45];
       } else if (selectedCell && selectedCell[0] === c && selectedCell[1] === r) {
-        col = colors3D.accentGlow; em = [0.28, 0.22, 0.5];
+        col = colors3D.accentGlow; em = [0.36, 0.28, 0.65];
+      }
+
+      // Realce de Alcance e Capturabilidade Epistêmica em 3D (v2.5)
+      const sq3d = 'abcdefgh'[c] + (8 - r);
+      if (selectedPieceReachability && game === 'chess') {
+        if (selectedPieceReachability.free_moves && selectedPieceReachability.free_moves.includes(sq3d)) {
+          col = [0.26, 0.27, 0.34]; em = [0.15, 0.16, 0.20];
+        } else if (selectedPieceReachability.reachable_opponents) {
+          const targetOpp = selectedPieceReachability.reachable_opponents.find(o => o.target_coord.toLowerCase() === sq3d);
+          if (targetOpp) {
+            if (targetOpp.verdict === 'CAPTURE_AUTHORIZED') {
+              col = [0.28, 0.70, 0.58]; em = [0.18, 0.45, 0.36];
+            } else if (targetOpp.verdict === 'DEFENSE_SUCCESSFUL') {
+              col = [0.80, 0.38, 0.42]; em = [0.45, 0.16, 0.18];
+            } else {
+              col = [0.78, 0.60, 0.30]; em = [0.38, 0.26, 0.10];
+            }
+          }
+        }
       }
 
       drawMesh(cube, mult(trans(x, 0.04, z), scale(0.97, 0.07, 0.97)), col, em);
@@ -3285,7 +3628,52 @@ canvas3D.addEventListener('pointermove', e => {
   phi = Math.max(0.20, Math.min(1.42, phi + (e.clientY - py) * 0.006));
   px = e.clientX; py = e.clientY;
 });
-canvas3D.addEventListener('pointerup', () => { isDragging = false; });
+
+function get3DBoardClickCoord(e) {
+  if (!canvas3D) return null;
+  const rect = canvas3D.getBoundingClientRect();
+  const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  const ndcY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+  const eye = [radius * Math.sin(theta) * Math.sin(phi), radius * Math.cos(phi), radius * Math.cos(theta) * Math.sin(phi)];
+  const fwd = norm([camTarget[0] - eye[0], camTarget[1] - eye[1], camTarget[2] - eye[2]]);
+  const right = norm(cross(fwd, [0, 1, 0]));
+  const up = cross(right, fwd);
+  const fov = Math.PI / 4;
+  const aspect = rect.width / rect.height;
+  const halfH = Math.tan(fov / 2);
+  const halfW = halfH * aspect;
+  const rayDir = norm([
+    fwd[0] + ndcX * halfW * right[0] + ndcY * halfH * up[0],
+    fwd[1] + ndcX * halfW * right[1] + ndcY * halfH * up[1],
+    fwd[2] + ndcX * halfW * right[2] + ndcY * halfH * up[2]
+  ]);
+  if (Math.abs(rayDir[1]) < 0.0001) return null;
+  const t = -eye[1] / rayDir[1];
+  if (t < 0) return null;
+  const hitX = eye[0] + t * rayDir[0];
+  const hitZ = eye[2] + t * rayDir[2];
+  const size = game === 'go' ? 9 : 8;
+  const offset = (size - 1) / 2;
+  const c = Math.round(hitX + offset);
+  const r = Math.round(hitZ + offset);
+  if (c >= 0 && c < size && r >= 0 && r < size) {
+    return [c, r];
+  }
+  return null;
+}
+
+canvas3D.addEventListener('pointerup', e => {
+  const dist = Math.hypot(e.clientX - px, e.clientY - py);
+  isDragging = false;
+  if (dist < 5) {
+    const coord3d = get3DBoardClickCoord(e);
+    if (coord3d) {
+      const sq = 'abcdefgh'[coord3d[0]] + (8 - coord3d[1]);
+      handleSquareClick(coord3d[0], coord3d[1], sq);
+    }
+  }
+});
+
 canvas3D.addEventListener('wheel', e => {
   e.preventDefault();
   radius = Math.max(8.5, Math.min(22, radius + e.deltaY * 0.012));
@@ -3362,13 +3750,38 @@ function render2DBoard() {
         // Casas de xadrez profissionais: clara pedra-cinza fosco #2E303B, escura grafite profundo #18181E
         const bgFill = isLight ? '#2E303B' : '#18181E';
 
-        svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="${bgFill}" class="cell-2d ${isLight ? 'light' : 'dark'}" style="cursor:pointer;" onclick="inspectCell(${renderC}, ${renderR}, '${sq}')" />`;
+        svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="${bgFill}" class="cell-2d ${isLight ? 'light' : 'dark'}" style="cursor:pointer;" onclick="handleSquareClick(${renderC}, ${renderR}, '${sq}')" />`;
 
         if (isHlOrigin) {
           svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.30)" pointer-events="none" />`;
         }
         if (isHlDest) {
           svgHtml += `<rect x="${x}" y="${y}" width="100" height="100" fill="rgba(167, 139, 250, 0.48)" stroke="#A78BFA" stroke-width="3" pointer-events="none" />`;
+        }
+
+        // Realces de Alcance e Capturabilidade v2.5
+        if (selectedPieceCoord && selectedPieceCoord.toLowerCase() === sq.toLowerCase()) {
+          svgHtml += `<rect x="${x+2}" y="${y+2}" width="96" height="96" fill="rgba(167, 139, 250, 0.22)" stroke="#A78BFA" stroke-width="4" stroke-dasharray="8 4" rx="6" pointer-events="none" />`;
+        }
+        if (selectedPieceReachability) {
+          if (selectedPieceReachability.free_moves && selectedPieceReachability.free_moves.includes(sq)) {
+            svgHtml += `<circle cx="${x+50}" cy="${y+50}" r="11" fill="#4E5160" opacity="0.85" pointer-events="none" />`;
+          }
+          if (selectedPieceReachability.reachable_opponents) {
+            const opp = selectedPieceReachability.reachable_opponents.find(o => o.target_coord.toLowerCase() === sq.toLowerCase());
+            if (opp) {
+              if (opp.verdict === 'CAPTURE_AUTHORIZED') {
+                svgHtml += `<rect x="${x+2}" y="${y+2}" width="96" height="96" class="reach-target-auth" rx="6" style="cursor:pointer;" onclick="event.stopPropagation(); openConfrontationModal('${selectedPieceId}', '${opp.target_piece_id}', '${sq}')" />`;
+                svgHtml += `<circle cx="${x+50}" cy="${y+50}" r="38" fill="none" stroke="#5BBFA7" stroke-width="2.5" stroke-dasharray="6 3" pointer-events="none"/>`;
+              } else if (opp.verdict === 'DEFENSE_SUCCESSFUL') {
+                svgHtml += `<rect x="${x+2}" y="${y+2}" width="96" height="96" class="reach-target-resisted" rx="6" style="cursor:pointer;" onclick="event.stopPropagation(); openConfrontationModal('${selectedPieceId}', '${opp.target_piece_id}', '${sq}')" />`;
+                svgHtml += `<circle cx="${x+50}" cy="${y+50}" r="38" fill="none" stroke="#D86B75" stroke-width="2.5" stroke-dasharray="6 3" pointer-events="none"/>`;
+              } else {
+                svgHtml += `<rect x="${x+2}" y="${y+2}" width="96" height="96" class="reach-target-inconclusive" rx="6" style="cursor:pointer;" onclick="event.stopPropagation(); openConfrontationModal('${selectedPieceId}', '${opp.target_piece_id}', '${sq}')" />`;
+                svgHtml += `<circle cx="${x+50}" cy="${y+50}" r="38" fill="none" stroke="#D5A65B" stroke-width="2.5" stroke-dasharray="6 3" pointer-events="none"/>`;
+              }
+            }
+          }
         }
 
         // Rótulos de coordenadas integrados nos cantos das casas de borda (Lichess/Chess.com)
@@ -3399,7 +3812,7 @@ function render2DBoard() {
           if (symId) {
             const x = c * 100;
             const y = r * 100;
-            svgHtml += `<use href="${symId}" x="${x}" y="${y}" width="100" height="100" style="cursor:pointer;" onclick="inspectCell(${renderC}, ${renderR}, '${sq}')" />`;
+            svgHtml += `<use href="${symId}" x="${x}" y="${y}" width="100" height="100" style="cursor:pointer;" onclick="handleSquareClick(${renderC}, ${renderR}, '${sq}')" />`;
           }
         }
       }
@@ -3583,7 +3996,7 @@ function inspectCell(c, r, label) {
     pieceHtml = `
       <div class="source-box" style="border-left: 3px solid ${isPro ? '#7986cb' : '#ef5350'}; margin-bottom: 12px; background: rgba(121, 134, 203, 0.08);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <b>Dossiê da Peça: ${escapeHtml(pieceDossier.piece_id)} (${isPro ? '⚪ Pró' : '⚫ Contra'})</b>
+          <b>Dossiê da Peça: ${escapeHtml(pieceDossier.piece_id)} (${isPro ? 'Pró' : 'Contra'})</b>
           <span class="piece-status-badge ${pieceDossier.epistemic_status.toLowerCase()}">${escapeHtml(pieceDossier.epistemic_status)}</span>
         </div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:4px"><em>${escapeHtml(pieceDossier.role_description)}</em></div>
@@ -4460,12 +4873,12 @@ let pieceSearchQuery = '';
 
 const STAGE_METADATA = [
   { num: 1, name: 'DEFINING_SIDES', label: '1. Definição dos Lados Pró vs Contra', icon: '♟️', desc: 'Identificação da pergunta central e tese de cada lado' },
-  { num: 2, name: 'PRO_RESEARCH', label: '2. Investigação Pró (Cofre Isolado)', icon: '🔒', desc: 'Coleta de fontes e evidências a favor sem acesso ao lado contra' },
-  { num: 3, name: 'CONTRA_RESEARCH', label: '3. Investigação Contra (Cofre Isolado)', icon: '🔒', desc: 'Coleta de fontes e evidências contrárias em cofre estritamente isolado' },
-  { num: 4, name: 'DOSSIER_ASSIGNMENT', label: '4. Atribuição de Dossiês às Peças', icon: '📜', desc: 'Vinculação de papéis argumentativos e teses a peças e casas' },
-  { num: 5, name: 'LUDIC_SIMULATION', label: '5. Simulação do Jogo (python-chess / Go 9×9)', icon: '⚔️', desc: 'Confronto lúdico determinístico com gating epistêmico em capturas' },
-  { num: 6, name: 'SYNTHESIS', label: '6. Síntese Epistêmica Desacoplada', icon: '⚖️', desc: 'Veredito científico desacoplado do vencedor das regras do jogo' },
-  { num: 7, name: 'REPLAY_SEALED', label: '7. Selagem Criptográfica SHA-256', icon: '🔏', desc: 'Hash chain do Event Store selada para replay auditável sem LLM' }
+  { num: 2, name: 'PRO_RESEARCH', label: '2. Investigação Pró (Cofre Isolado)', icon: 'LOCK', desc: 'Coleta de fontes e evidências a favor sem acesso ao lado contra' },
+  { num: 3, name: 'CONTRA_RESEARCH', label: '3. Investigação Contra (Cofre Isolado)', icon: 'LOCK', desc: 'Coleta de fontes e evidências contrárias em cofre estritamente isolado' },
+  { num: 4, name: 'DOSSIER_ASSIGNMENT', label: '4. Atribuição de Dossiês às Peças', icon: 'DOCS', desc: 'Vinculação de papéis argumentativos e teses a peças e casas' },
+  { num: 5, name: 'LUDIC_SIMULATION', label: '5. Simulação do Jogo (python-chess / Go 9×9)', icon: 'PLAY', desc: 'Confronto lúdico determinístico com gating epistêmico em capturas' },
+  { num: 6, name: 'SYNTHESIS', label: '6. Síntese Epistêmica Desacoplada', icon: 'ARBITER', desc: 'Veredito científico desacoplado do vencedor das regras do jogo' },
+  { num: 7, name: 'REPLAY_SEALED', label: '7. Selagem Criptográfica SHA-256', icon: 'SEAL', desc: 'Hash chain do Event Store selada para replay auditável sem LLM' }
 ];
 
 function renderStageList(stages = [], currentStageIndex = 1, liveMsg = '') {
@@ -4662,9 +5075,9 @@ function renderDualConclusionCard(conc, matchState) {
 
   // 1. Resultado Lúdico
   const winnerMap = {
-    WHITE_WINS: '⚪ Brancas Vencem',
-    BLACK_WINS: '⚫ Pretas Vencem',
-    DRAW: '⚖ Empate',
+    WHITE_WINS: 'Brancas Vencem',
+    BLACK_WINS: 'Pretas Vencem',
+    DRAW: 'Empate',
     UNDECIDED: '⏳ Indefinido'
   };
   const critMap = {
@@ -4705,10 +5118,10 @@ function renderDualConclusionCard(conc, matchState) {
 
   // 2. Veredito Epistêmico (Desacoplado)
   const verdictMap = {
-    PRO_THESIS_SUPPORTED: '🟢 TESE PRÓ SUSTENTADA',
-    CONTRA_THESIS_SUPPORTED: '🔵 TESE CONTRA SUSTENTADA',
-    INCONCLUSIVE: '🟡 INCONCLUSIVO',
-    OPEN_HYPOTHESIS: '🟣 HIPÓTESE EM ABERTO (OPEN HYPOTHESIS)'
+    PRO_THESIS_SUPPORTED: 'TESE PRÓ SUSTENTADA',
+    CONTRA_THESIS_SUPPORTED: 'TESE CONTRA SUSTENTADA',
+    INCONCLUSIVE: 'INCONCLUSIVO',
+    OPEN_HYPOTHESIS: 'HIPÓTESE EM ABERTO'
   };
   const eVerdict = document.getElementById('epistemicVerdict');
   const eStatusPill = document.getElementById('epistemicStatusPill');
@@ -4737,7 +5150,7 @@ function renderDualConclusionCard(conc, matchState) {
   if (tpBtn && tpPly) {
     tpBtn.style.display = 'inline-flex';
     if (tpNum) tpNum.textContent = String(tpPly);
-    if (tpReason) tpReason.textContent = `⚡ Ponto de Virada no lance #${tpPly}${tpDesc ? `: ${tpDesc}` : ''}`;
+    if (tpReason) tpReason.textContent = `Ponto de Virada no lance #${tpPly}${tpDesc ? `: ${tpDesc}` : ''}`;
   } else if (tpBtn) {
     tpBtn.style.display = 'none';
     if (tpReason) tpReason.textContent = '';
@@ -4757,14 +5170,14 @@ function renderDualConclusionCard(conc, matchState) {
     for (const c of citations) {
       const sp = document.createElement('span');
       sp.className = 'dcc-pill highlight';
-      sp.textContent = `📖 Citação: ${c.length > 50 ? c.slice(0, 50) + '…' : c}`;
+      sp.textContent = `Citação: ${c.length > 50 ? c.slice(0, 50) + '…' : c}`;
       pillsRow.appendChild(sp);
     }
     const caveats = (conc && (conc.limitations || conc.caveats)) || [];
     for (const cav of caveats) {
       const sp = document.createElement('span');
       sp.className = 'dcc-pill';
-      sp.textContent = `⚠️ ${cav}`;
+      sp.textContent = `Nota de Auditoria: ${cav}`;
       pillsRow.appendChild(sp);
     }
   }
@@ -4795,7 +5208,7 @@ function renderPiecesList(pieces = []) {
   const glyphMap = {
     K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙',
     k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟',
-    white_stone: '⚪', black_stone: '⚫'
+    white_stone: '○', black_stone: '●'
   };
 
   // Contadores de filtro com suporte aos esquemas flexíveis
@@ -4838,7 +5251,7 @@ function renderPiecesList(pieces = []) {
     const isPro = p.side === 'pro' || p.color === 'white' || p.owner_side === 'white';
     const isFallen = p.alive === false || p.captured_at_ply != null || p.epistemic_status === 'FALLEN' || p.epistemic_status === 'REFUTED';
     const confPct = Math.round((p.confidence_score || 0) * 100);
-    const pieceGlyph = p.symbol || glyphMap[p.piece_type] || (isPro ? '⚪' : '⚫');
+    const pieceGlyph = p.symbol || glyphMap[p.piece_type] || (isPro ? '○' : '●');
     const pieceDisplayName = p.label || p.piece_id;
     const statusClass = (p.epistemic_status || 'UNTESTED').toLowerCase();
 
@@ -4850,11 +5263,12 @@ function renderPiecesList(pieces = []) {
     const fallPly = p.captured_at_ply || p.fall_ply;
 
     html += `
-      <div class="piece-card ${isFallen ? 'fallen' : ''}" id="pcard_${escapeHtml(p.piece_id)}" onclick="highlightPieceSquare('${curCoord || initCoord || ''}')">
+      <div class="piece-card ${isFallen ? 'fallen' : ''}" id="pcard_${escapeHtml(p.piece_id)}" onclick="selectPieceAndReachability('${escapeHtml(p.piece_id)}', '${curCoord || initCoord || ''}')">
         <div class="piece-card-head">
           <span class="piece-glyph">${pieceGlyph}</span>
           <span class="piece-name">${escapeHtml(pieceDisplayName)} <small style="color:var(--muted);font-weight:450">${sqLabel}</small></span>
-          <span class="piece-badge-side ${isPro ? 'pro' : 'contra'}">${isPro ? '⚪ PRÓ' : '⚫ CONTRA'}</span>
+          ${p.swot_category ? `<span class="swot-badge swot-${p.swot_category[0].toLowerCase()}" title="${escapeHtml(p.swot_rationale || '')}">[${p.swot_category[0]}] ${escapeHtml(p.swot_category)}</span>` : ''}
+          <span class="piece-badge-side ${isPro ? 'pro' : 'contra'}">${isPro ? 'PRÓ' : 'CONTRA'}</span>
           <span class="piece-status-badge ${statusClass}">${escapeHtml(p.epistemic_status)}</span>
         </div>
 
@@ -4868,12 +5282,12 @@ function renderPiecesList(pieces = []) {
           </div>
         </div>
 
-        ${fallAlert ? `<div class="piece-fall-alert">⚔️ Queda no lance #${fallPly || '?'}: ${escapeHtml(fallAlert)}</div>` : ''}
+        ${fallAlert ? `<div class="piece-fall-alert">Queda no lance #${fallPly || '?'}: ${escapeHtml(fallAlert)}</div>` : ''}
 
         ${artsCount > 0 ? `
           <div class="piece-artifacts-row">
             <span style="font-size:11px;color:var(--muted)">Evidências:</span>
-            ${p.supporting_artifacts.map(a => `<span class="artifact-chip" onclick="openArtifactFromPiece('${escapeHtml(a.artifact_id)}')">📄 ${escapeHtml(a.name || a.artifact_id)}</span>`).join('')}
+            ${p.supporting_artifacts.map(a => `<span class="artifact-chip" onclick="openArtifactFromPiece('${escapeHtml(a.artifact_id)}')">${escapeHtml(a.name || a.artifact_id)}</span>`).join('')}
           </div>
         ` : ''}
       </div>
@@ -5262,11 +5676,11 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
   if (sanLabel) sanLabel.textContent = san;
   if (sidePill) {
     if (mode === 'audit') {
-      sidePill.textContent = (side === 'pro' ? '🛡️ Auditor Controles' : '⚠️ Auditor Riscos');
+      sidePill.textContent = (side === 'pro' ? 'Auditor de Controles' : 'Auditor de Riscos');
       sidePill.style.background = (side === 'pro' ? 'rgba(91, 191, 167, 0.18)' : 'rgba(216, 107, 117, 0.18)');
       sidePill.style.color = (side === 'pro' ? '#5BBFA7' : '#FF8F9C');
     } else {
-      sidePill.textContent = (side === 'pro' ? '⚪ Pró' : '⚫ Contra');
+      sidePill.textContent = (side === 'pro' ? 'Pró' : 'Contra');
       sidePill.style.background = (side === 'pro' ? 'rgba(167, 139, 250, 0.18)' : 'rgba(239, 83, 80, 0.2)');
       sidePill.style.color = (side === 'pro' ? '#A78BFA' : '#ef9a9a');
     }
@@ -5314,7 +5728,7 @@ function updateSelectedMovePanel(record, state = 'MOVE_READY') {
     quoteBox.style.display = 'block';
     if (quoteText) quoteText.textContent = `"${quote}"`;
     if (sourceMeta) {
-      const vText = isVerified ? '✓ Citação verificada no arquivo' : '⚠️ Citação anexada; relevância semântica pendente';
+      const vText = isVerified ? '[VERIFICADA] Citação verificada no arquivo' : '[ANEXADA] Citação anexada; relevância semântica pendente';
       sourceMeta.textContent = `Fonte: ${record.artifact_title || 'Documento do cofre'} · ${vText}`;
       sourceMeta.style.color = isVerified ? '#5BBFA7' : '#D5A65B';
     }
@@ -5438,7 +5852,7 @@ window.addEventListener('keydown', (e) => {
   <div class="modal" id="diagnosticsModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="diagModalTitle">
     <div class="modal-card" style="max-width:700px;">
       <div class="modal-head">
-        <h3 id="diagModalTitle">⚙️ Diagnóstico & Estado da Sessão</h3>
+        <h3 id="diagModalTitle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Diagnóstico & Estado da Sessão</h3>
         <button class="btn sm secondary" onclick="closeModal('diagnosticsModal')">✕</button>
       </div>
       <div class="modal-body">

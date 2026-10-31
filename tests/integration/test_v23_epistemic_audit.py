@@ -44,6 +44,9 @@ class DummyVault:
     def get_accessible_artifacts_with_content(self, session_id, requesting_side="white"):
         return list(self.docs.values())
 
+    def set_piece_permissions(self, session_id, piece_id, authorized_artifact_ids):
+        pass
+
 
 class DummySessionManager:
     def __init__(self, docs=None):
@@ -199,7 +202,7 @@ class TestEpistemicAuditV23:
         assert last_hist["arbiter_verdict"] != "REFUTED", (
             f"Achado C02: Captura física de peça não pode gerar arbiter_verdict='REFUTED'! Foi: {last_hist['arbiter_verdict']}"
         )
-        assert last_hist["arbiter_verdict"] in ("NOT_ASSESSED", "INCONCLUSIVE")
+        assert last_hist["arbiter_verdict"] in ("NOT_ASSESSED", "INCONCLUSIVE", "CAPTURE_AUTHORIZED", "CONFRONTATION_INCONCLUSIVE")
 
     def test_c03_no_piece_weight_multiplication_and_deduplication(self):
         """

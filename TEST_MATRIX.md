@@ -170,3 +170,31 @@ Este documento estabelece o mapeamento formal de rastreabilidade entre os requis
 | **UX16** | Sincronia instantânea de dossiê ao clicar em qualquer lance da barra em pares | Browser / CDP | `scratch/verify_v24_1_full_run_cdp.py` | **PASS** |
 | **UX17** | Bloco de Auditoria de Controles exibindo Requisito, Risco e Conformidade no modo Audit | Browser / CDP | `docs/screenshots/nocturne_v24_1_audit_go_cburnett.png` | **PASS** |
 | **UX18** | Coordenadas oficiais de Go 9x9 sem a letra `I` (colunas A..H, J) | Browser / CDP | `scratch/verify_v24_1_full_run_cdp.py` | **PASS** |
+
+
+---
+
+## 7. Suíte de Aceite Xadrez Epistêmico & Matriz SWOT v2.5 (`E01` a `E20`)
+
+| ID | Cenário de Teste | Arquivo / Função | Resultado |
+| :--- | :--- | :--- | :---: |
+| `E01` | Identidades únicas para as 32 peças de xadrez (`piece_id`, `claim_id`) | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_heterogeneous_subtheses_32_pieces` | **PASS** |
+| `E02` | Subteses heterogêneas especializadas por papel e casa | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_heterogeneous_subtheses_32_pieces` | **PASS** |
+| `E03` | Dependência epistêmica estruturada (`parent_thesis_id`) | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_heterogeneous_subtheses_32_pieces` | **PASS** |
+| `E04` | Legitimidade física restrita às regras FIDE (`python-chess`) | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_clash_engine_evidentiary_arbitration` | **PASS** |
+| `E05` | Arbitragem puramente documental sem pesos arbitrários de peças | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_clash_engine_evidentiary_arbitration` | **PASS** |
+| `E06` | Vereditos explícitos de confronto (`CAPTURE_AUTHORIZED`, `DEFENSE_SUCCESSFUL`, etc.) | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_clash_engine_evidentiary_arbitration` | **PASS** |
+| `E07` | RBAC granular por peça no `DocumentVault` (`PermissionDeniedError` em acesso indevido) | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_piece_vault_rbac_isolation` | **PASS** |
+| `E08` | Invariante Epistêmico do Rei (`is_king_protected=True`) | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_clash_engine_king_invariant` | **PASS** |
+| `E09` | Resiliência do defensor: peça permanece no tabuleiro se a defesa sucede | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_clash_engine_evidentiary_arbitration` | **PASS** |
+| `E10` | Realce visual de alcance e capturabilidade em 2D e 3D | `scratch/verify_v25_epistemic_cdp.py` (Passos 3 e 4) | **PASS** |
+| `E11` | Modal interativo de confronto argumentativo com justificativa do árbitro | `scratch/verify_v25_epistemic_cdp.py` (Passo 5) | **PASS** |
+| `E12` | Go 9×9 com Matriz SWOT dimensional (`STRENGTH`, `WEAKNESS`, `OPPORTUNITY`, `THREAT`) | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_go_swot_distribution` | **PASS** |
+| `E13` | Preservação total das regras espaciais, liberdades e contagem do Go | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_go_swot_distribution` | **PASS** |
+| `E14` | Cache de avaliações semânticas via hash SHA-256 | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_clash_engine_evidentiary_arbitration` | **PASS** |
+| `E15` | Endpoint REST `GET /pieces/{piece_id}/reachability` | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_reachability_api_endpoint` | **PASS** |
+| `E16` | Endpoint REST `POST /confrontation/evaluate` | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_confrontation_evaluate_api_endpoint` | **PASS** |
+| `E17` | Zero Emojis em toda a interface e relatórios | `scratch/verify_v25_epistemic_cdp.py` (Passo 1) | **PASS** |
+| `E18` | Rastreabilidade de confrontos no histórico individual de cada peça | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_full_chess_epistemic_match` | **PASS** |
+| `E19` | Gravação de `clash_info` no payload de auditoria do Event Store | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_full_chess_epistemic_match` | **PASS** |
+| `E20` | Partida completa de Xadrez Epistêmico gerando conclusão dual auditável | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_full_chess_epistemic_match` | **PASS** |

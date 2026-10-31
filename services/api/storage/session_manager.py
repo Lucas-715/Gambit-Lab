@@ -29,6 +29,7 @@ from services.api.agents.web_search_adapter import (
 )
 from services.api.fusion.pipeline import FusionOrchestrator
 from services.api.match.orchestrator import ResearchMatchOrchestrator
+from services.api.match.clash_engine import SemanticClashEngine
 from services.api.models.schemas import (
     CreateSessionRequest,
     BoardPositionSchema,
@@ -89,6 +90,7 @@ class SessionManager:
         self.web_search_adapter = web_search_adapter or WebSearchAdapter()
         self.fusion_orchestrator = FusionOrchestrator(self.gemini_adapter)
         self.match_orchestrator = ResearchMatchOrchestrator(self)
+        self.clash_engine = SemanticClashEngine(self)
         self.idempotency_cache: Dict[str, Dict[str, Any]] = {}
         self.advance_idempotency_cache: Dict[str, Dict[str, Any]] = {}
 
@@ -1450,3 +1452,65 @@ class SessionManager:
             self.idempotency_cache[idempotency_key] = response.model_dump()
 
         return response
+
+    def get_piece_reachability(self, session_id: str, piece_id: str) -> Dict[str, Any]:
+        """Calcula o alcance físico e a capturabilidade semântica de uma peça na posição atual da sessão."""
+        sess = self.sessions.get(session_id)
+        if not sess:
+            raise KeyError(f"Sessão {session_id} não encontrada.")
+        mstate = sess.get("research_match") or sess.get("_match_internal") or {}
+        pieces = mstate.get("pieces") or []
+        board_data = sess.get("board") or {}
+        board_fen = board_data.get("fen") or board_data.get("chess_fen") or (
+            self.chess_engines[session_id].fen
+            if session_id in self.chess_engines
+            else "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        )
+        return self.clash_engine.get_piece_reachability(
+            session_id=session_id,
+            piece_id=piece_id,
+            board_fen=board_fen,
+            pieces=pieces,
+        )
+
+    def evaluate_confrontation(
+        self,
+        session_id: str,
+        attacker_pid: str,
+        defender_pid: str,
+        from_coord: Optional[str] = None,
+        to_coord: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Executa ou recupera em cache a arbitragem semântica entre duas peças."""
+        sess = self.sessions.get(session_id)
+        if not sess:
+            raise KeyError(f"Sessão {session_id} não encontrada.")
+        mstate = sess.get("research_match") or sess.get("_match_internal") or {}
+        pieces = mstate.get("pieces") or []
+        by_id = {p["piece_id"]: p for p in pieces}
+
+        att = by_id.get(attacker_pid)
+        if not att:
+            raise KeyError(f"Peça atacante {attacker_pid} não encontrada.")
+        dfn = by_id.get(defender_pid)
+        if not dfn:
+            raise KeyError(f"Peça defensora {defender_pid} não encontrada.")
+
+        from_c = from_coord or att.get("current_coord") or att.get("initial_coord") or ""
+        to_c = to_coord or dfn.get("current_coord") or dfn.get("initial_coord") or ""
+        board_data = sess.get("board") or {}
+        board_fen = board_data.get("fen") or board_data.get("chess_fen") or (
+            self.chess_engines[session_id].fen if session_id in self.chess_engines else None
+        )
+
+        res = self.clash_engine.evaluate_confrontation(
+            session_id=session_id,
+            attacker=att,
+            defender=dfn,
+            from_coord=from_c,
+            to_coord=to_c,
+            board_fen=board_fen,
+            all_pieces=pieces,
+        )
+        res["evaluated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        return res

@@ -286,55 +286,95 @@ class PlayMixin:
                 if doc:
                     bias[chess.parse_square(sq_name)] = (doc["confidence_score"] - 0.5) * 30.0
             ranked = player.rank_moves(board, bias)
-            mv, block_note = self._gate_chess_move(board, ranked, sq_to_pid, pieces_by_id, ply_idx)
-            self._apply_chess_move(sess, mstate, play, engine, mv, block_note, ply_idx, acting_side, acting_color, pieces_by_id)
+            mv, block_note, clash_info = self._gate_chess_move(sess, board, ranked, sq_to_pid, pieces_by_id, ply_idx)
+            self._apply_chess_move(sess, mstate, play, engine, mv, block_note, ply_idx, acting_side, acting_color, pieces_by_id, clash_info)
 
-    def _gate_chess_move(self, board, ranked, sq_to_pid, pieces_by_id, ply_idx):
+    def _gate_chess_move(self, sess, board, ranked, sq_to_pid, pieces_by_id, ply_idx):
         """
-        v2.3 C05: No Xadrez padrão FIDE, capturas legais NUNCA são bloqueadas.
-        A disputa epistêmica corre em paralelo sem adulterar a legalidade das regras.
+        No Xadrez Epistêmico (v2.5), capturas são condicionadas à autorização do SemanticClashEngine.
+        Se a defesa do defensor for bem-sucedida ou o Rei estiver protegido por subteses ativas,
+        a captura é rejeitada, a tentativa é registrada e o motor busca o próximo lance legal admissível.
         """
-        if not getattr(self, "epistemic_gating_enabled", False):
-            return ranked[0][1], None
-
+        session_id = sess["id"]
+        all_pieces = list(pieces_by_id.values())
         first_block: Optional[str] = None
+        first_clash_res: Optional[Dict[str, Any]] = None
+
         for score, mv in ranked:
             if not board.is_capture(mv):
-                return mv, first_block
-            board.push(mv)
-            mates = board.is_checkmate()
-            board.pop()
-            if mates:
-                return mv, first_block
+                # Lance posicional de avanço/reorganização é livre
+                return mv, first_block, first_clash_res
+
             att_sq = chess.square_name(mv.from_square)
             def_sq = chess.square_name(mv.to_square)
             if board.is_en_passant(mv):
                 def_sq = chess.square_name(chess.square(chess.square_file(mv.to_square), chess.square_rank(mv.from_square)))
+
             att = pieces_by_id.get(sq_to_pid.get(att_sq, ""))
             dfn = pieces_by_id.get(sq_to_pid.get(def_sq, ""))
-            blocked = (
-                att and dfn
-                and dfn["epistemic_status"] == "SUPPORTED"
-                and att["epistemic_status"] != "SUPPORTED"
-                and att["confidence_score"] + 0.05 < dfn["confidence_score"]
-            )
-            if not blocked:
-                return mv, first_block
-            if first_block is None:
-                first_block = (
-                    f"Captura em {def_sq} bloqueada pelo Árbitro Epistêmico: {dfn['label']} tem sustentação literal "
-                    f"verificada ({dfn['confidence_score']:.2f}) superior a {att['label']} ({att['confidence_score']:.2f})."
-                )
-                att["history"].append(
-                    PieceHistoryEntrySchema(
-                        ply=ply_idx, move_label=board.san(mv), from_coord=att_sq, to_coord=def_sq,
-                        event_kind="CONFRONTATION_BLOCKED", summary=first_block,
-                        arbiter_verdict="CAPTURE_BLOCKED_BY_EVIDENCE",
-                    ).model_dump()
-                )
-        return ranked[0][1], first_block
 
-    def _apply_chess_move(self, sess, mstate, play, engine, mv, block_note, ply_idx, acting_side, acting_color, pieces_by_id):
+            if not att or not dfn:
+                return mv, first_block, first_clash_res
+
+            # Executa a arbitragem semântica rigorosa (v2.5)
+            clash_res = self.sm.clash_engine.evaluate_confrontation(
+                session_id=session_id,
+                attacker=att,
+                defender=dfn,
+                from_coord=att_sq,
+                to_coord=def_sq,
+                board_fen=board.fen(),
+                all_pieces=all_pieces,
+            )
+
+            verdict = clash_res.get("verdict")
+            if verdict == "CAPTURE_AUTHORIZED":
+                # Captura autorizada pela refutação documental comprovada!
+                return mv, first_block, clash_res
+
+            # Captura rejeitada: a defesa resistiu ou o Rei está protegido
+            fail_note = f"Tentativa de captura {att_sq} → {def_sq} rejeitada: {clash_res.get('justification')}"
+            if first_block is None:
+                first_block = fail_note
+                first_clash_res = clash_res
+
+            # Registra tentativa fracassada no histórico de confrontos (Critério 8)
+            attempt_entry = {
+                "ply": ply_idx,
+                "move": board.san(mv),
+                "attacker_piece_id": att["piece_id"],
+                "defender_piece_id": dfn["piece_id"],
+                "from_coord": att_sq,
+                "to_coord": def_sq,
+                "verdict": verdict,
+                "justification": clash_res.get("justification"),
+                "is_king_protected": clash_res.get("is_king_protected", False),
+                "captured": False,
+            }
+            att.setdefault("confrontation_history", []).append(attempt_entry)
+            dfn.setdefault("confrontation_history", []).append(attempt_entry)
+
+            att.setdefault("history", []).append(
+                PieceHistoryEntrySchema(
+                    ply=ply_idx,
+                    move_label=board.san(mv),
+                    from_coord=att_sq,
+                    to_coord=def_sq,
+                    event_kind="CONFRONTATION_BLOCKED",
+                    summary=fail_note,
+                    arbiter_verdict=verdict,
+                ).model_dump()
+            )
+
+        # Se todas as capturas foram rejeitadas, busca lance não capturante legal
+        non_caps = [m for m in board.legal_moves if not board.is_capture(m)]
+        if non_caps:
+            return non_caps[0], first_block, first_clash_res
+
+        # Caso extremo: apenas capturas rejeitadas disponíveis
+        return ranked[0][1], first_block, first_clash_res
+
+    def _apply_chess_move(self, sess, mstate, play, engine, mv, block_note, ply_idx, acting_side, acting_color, pieces_by_id, clash_info=None):
         sq_to_pid = play["sq_to_pid"]
         board = engine.board
         from_sq = chess.square_name(mv.from_square)
@@ -380,29 +420,50 @@ class PlayMixin:
         note = block_note
         if is_cap and cap and att:
             cap["alive"] = False
+            cap["board_status"] = "captured"
             cap["current_coord"] = None
             cap["captured_at_ply"] = ply_idx
             cap["captured_by_piece_id"] = att["piece_id"]
             for aref in att["supporting_artifacts"][:1]:
                 cap["counter_artifacts"].append(copy.deepcopy(aref))
-            # v2.3 C02: Captura física != REFUTED. Marca NOT_ASSESSED ou INCONCLUSIVE
-            note = f"Capturada no tabuleiro físico no lance #{ply_idx} ({res.san}) por {att['label']}."
+
+            clash_verdict = clash_info.get("verdict", "CAPTURE_AUTHORIZED") if clash_info else "CAPTURE_AUTHORIZED"
+            clash_just = clash_info.get("justification", f"Refutação argumentativa bem-sucedida em {to_sq}.") if clash_info else f"Captura autorizada por refutação documental."
+
+            note = f"Capturada no lance #{ply_idx} ({res.san}) por {att['label']}: {clash_just}"
             cap["fall_explanation"] = note
+
+            confrontation_record = {
+                "ply": ply_idx,
+                "move": res.san,
+                "attacker_piece_id": att["piece_id"],
+                "defender_piece_id": cap["piece_id"],
+                "from_coord": from_sq,
+                "to_coord": to_sq,
+                "verdict": clash_verdict,
+                "justification": clash_just,
+                "is_king_protected": False,
+                "captured": True,
+            }
+            att.setdefault("confrontation_history", []).append(confrontation_record)
+            cap.setdefault("confrontation_history", []).append(confrontation_record)
+
             cap["history"].append(
                 PieceHistoryEntrySchema(
                     ply=ply_idx, move_label=res.san, from_coord=from_sq, to_coord=to_sq,
-                    event_kind="PIECE_CAPTURED", summary=note, arbiter_verdict="NOT_ASSESSED",
+                    event_kind="PIECE_CAPTURED", summary=note, arbiter_verdict=clash_verdict,
                 ).model_dump()
             )
             play["highlights"].append(f"Lance #{ply_idx} ({res.san}): {note}")
         if att:
+            att.setdefault("board_status", "active")
             att["history"].append(
                 PieceHistoryEntrySchema(
                     ply=ply_idx, move_label=res.san, from_coord=from_sq, to_coord=to_sq,
                     event_kind="CONFRONTATION_WON" if is_cap else "ADVANCE",
-                    summary=(f"Capturou {cap['label']} em {to_sq}." if (is_cap and cap)
+                    summary=(f"Capturou {cap['label']} em {to_sq} após refutação comprovada." if (is_cap and cap)
                              else f"Posicionou '{att['role']}' em {to_sq}."),
-                    arbiter_verdict=att["epistemic_status"],
+                    arbiter_verdict=clash_info.get("verdict", "CONFRONTATION_WON") if (is_cap and clash_info) else att["epistemic_status"],
                 ).model_dump()
             )
 
@@ -456,13 +517,13 @@ class PlayMixin:
                 "source_status": "SOURCE_VERIFIED" if quote_txt else "UNVERIFIED",
             },
             argument_verdict={
-                "status": "INCONCLUSIVE" if is_cap else att.get("epistemic_status", "SOURCE_VERIFIED"),
+                "status": (clash_info.get("verdict") if clash_info else "CAPTURE_AUTHORIZED") if is_cap else att.get("epistemic_status", "SOURCE_VERIFIED"),
                 "reason": (
-                    "Captura no tabuleiro físico; refutação factual independente não avaliada nesta jogada."
+                    (clash_info.get("justification") if clash_info else "Captura autorizada por refutação documental.")
                     if is_cap
                     else f"Avanço posicional de {att['label']} no lance #{ply_idx}."
                 ) if att else "Movimento registrado.",
-                "reviewer": "arbiter_engine",
+                "reviewer": "semantic_clash_engine" if is_cap else "arbiter_engine",
                 "evaluated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             },
             board_outcome={

@@ -30,6 +30,7 @@ app.add_middleware(
 )
 
 session_manager = SessionManager()
+app.state.session_manager = session_manager
 
 app.include_router(capabilities_router)
 app.include_router(sessions_router)

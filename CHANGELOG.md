@@ -2,6 +2,37 @@
 
 Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 
+## [2.5.0-epistemic] — 2026-10-31
+
+### Adicionado e Aprimorado
+- **Xadrez Epistêmico — Variante Formal com Confronto Argumentativo**:
+  - Movimentação geométrica estritamente validada pelo `python-chess`.
+  - Capturas físicas condicionadas ao veredito de refutação documental pelo `SemanticClashEngine` (`CAPTURE_AUTHORIZED`, `DEFENSE_SUCCESSFUL`, `CONFRONTATION_INCONCLUSIVE`, `MOVE_ILLEGAL`).
+  - Quando a defesa é bem-sucedida, a peça defensora permanece no tabuleiro e a tentativa de captura falha é registrada em `confrontation_history`.
+- **Cofres Individuais com RBAC Documental Granular por Peça**:
+  - `DocumentVault` estendido com controle de acesso granular (`set_piece_permissions`, `get_piece_authorized_artifacts`, `requesting_piece_id`).
+  - Violações de leitura não autorizada de artefatos privados de outra peça levantam `PermissionDeniedError` / `DocumentAccessForbiddenError`.
+  - Peças do mesmo tipo defendem subteses heterogêneas e possuem visões isoladas do cofre.
+- **32 Peças com Identidades Heterogêneas Únicas**:
+  - Cada peça no tabuleiro 8×8 possui `piece_id`, `parent_thesis_id`, `claim_id` e subtese heterogênea especializada por papel e casa (Rei = tese central; Dama = sustentação principal; Torres = pilar normativo e institucional; Bispos = leituras conceituais e causais; Cavalos = hipóteses táticas e exceções; Peões = dados factuais atômicos).
+- **Invariante Epistêmico do Rei**:
+  - O Rei representa a tese central e não pode ser capturado nem sofrer confronto decisivo enquanto houver subteses defensivas ativas (`is_king_protected=True`), retornando `DEFENSE_SUCCESSFUL` com justificativa formal.
+- **Inspeção de Alcance e Capturabilidade na UI (2D e 3D)**:
+  - Clique em qualquer peça seleciona e consulta `GET /api/v1/sessions/{id}/pieces/{piece_id}/reachability`.
+  - Exibição de movimentos livres (pontos discretos cinza-grafite) e oponentes alcançáveis classificados por cores semânticas: autorizada (`#5BBFA7` menta), resistida (`#D86B75` carmim), pendente/inconclusiva (`#D5A65B` âmbar).
+  - Modal interativo de confronto argumentativo (`#confrontationModal`) com comparação direta de teses, fontes e justificativa do árbitro semântico.
+  - Cache SHA-256 no backend para avaliações repetidas de confronto.
+- **Go 9×9 com Matriz SWOT Dimensional**:
+  - As 12 pedras estratégicas de Go recebem classificação dimensional SWOT: Forças (`STRENGTH`), Fraquezas (`WEAKNESS`), Oportunidades (`OPPORTUNITY`) e Ameaças (`THREAT`).
+  - Sem divisão geográfica rígida; as liberdades e regras espaciais clássicas de Go permanecem 100% preservadas.
+  - Badges SWOT visuais com cores discretas na listagem e dossiês de peças.
+- **Erradicação Estrita de Emojis em Toda a Aplicação (Zero Emojis)**:
+  - 100% dos emojis removidos de botões, cabeçalhos, abas, badges de status, mensagens de notificação e relatórios.
+  - Substituição por ícones vetoriais SVG (Lucide) e glifos tipográficos clássicos de xadrez (`♔`, `♕`, etc.).
+- **Suíte de Testes e Validação Completa**:
+  - 96 testes Pytest aprovados (21 unitários + 8 v2.5 + 17 v2.2 + 7 v2.3 + 24 v2.1 + 19 integração).
+  - 6/6 verificações E2E CDP aprovadas em navegador real Chrome headless gerando 4 novas telas comprobatórias em `docs/screenshots/`.
+
 ## [2.4.1-polish] — 2026-10-31
 
 ### Adicionado e Aprimorado

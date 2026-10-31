@@ -1,4 +1,4 @@
-# Gambit Lab Nocturne (v2.4.1 Polish) — Framework Multiagente de Debate & Auditoria Orientado por Jogos
+# Gambit Lab Nocturne (v2.5.1 Polish) — Framework Multiagente de Debate & Auditoria Orientado por Jogos
 
 > **Princípio Central**: *O LLM propõe, as regras do jogo restringem, as evidências sustentam e o sistema audita.*
 
@@ -8,7 +8,7 @@ $$\text{Pergunta / Objeto} \longrightarrow \text{Teses / Requisitos} \longrighta
 
 ---
 
-## 1. Novidades da Versão v2.4 (Redesign & Consolidação de Produto)
+## 1. Novidades da Versão v2.5 (Redesign & Consolidação de Produto)
 
 - **3D Real (WebGL) como Apresentação Primária**:
   - 3D definido como modo padrão com enquadramento aproximado (`radius = 11.2`, `phi = 0.82`) e botão `↺ Câmera` para restaurar o ponto de vista ideal com um clique.
@@ -91,7 +91,7 @@ $$\text{Pergunta / Objeto} \longrightarrow \text{Teses / Requisitos} \longrighta
 
 ---
 
-## 3. Capturas Reais Verificadas v2.4 (Nocturne Redesign)
+## 3. Capturas Reais Verificadas v2.5 (Nocturne Redesign)
 
 | Home Simplificada (2 Modos) | Debate de Evidências (Xadrez 2D SVG) | Auditoria de Controles (Go 9×9 SVG) |
 | :---: | :---: | :---: |

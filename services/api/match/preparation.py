@@ -206,6 +206,118 @@ class PreparationMixin:
             return refs, False, 0.50
         return [], False, 0.42
 
+    def _generate_heterogeneous_subthesis(
+        self,
+        ptype: str,
+        sq: str,
+        color: str,
+        side: str,
+        mode: str,
+        topic: str,
+        r_entry: Dict[str, Any],
+        refs: List[PieceArtifactRefSchema],
+        mstate: Dict[str, Any],
+    ) -> str:
+        """Gera subtese individualizada e heterogênea para cada uma das 32 peças de xadrez (v2.5)."""
+        is_pro = (side == "pro")
+        quote_suffix = ""
+        if refs and refs[0].quote_text:
+            art_title = refs[0].title or "Documento verificado"
+            quote_suffix = f" [Fonte: '{art_title}' — \"{refs[0].quote_text[:90]}...\"]"
+
+        if ptype == "king":
+            return mstate["pro_thesis"] if is_pro else mstate["contra_thesis"]
+
+        if ptype == "queen":
+            direction = (
+                "Sustentação estrutural de alta relevância demonstrando viabilidade"
+                if is_pro
+                else "Contraprova principal evidenciando vulnerabilidades sistêmicas"
+            )
+            return f"{direction} para '{topic}' com base em evidências consolidadas.{quote_suffix}"
+
+        if ptype == "rook":
+            if sq in ("a1", "a8"):
+                focus = (
+                    "Pilar normativo e regulatório: diretrizes de governança e conformidade técnica"
+                    if is_pro
+                    else "Incompatibilidade normativa: conflitos de conformidade e lacunas regulatórias"
+                )
+            else:
+                focus = (
+                    "Marco institucional e processos: garantias operacionais e controle de ciclo de vida"
+                    if is_pro
+                    else "Barreiras institucionais e operacionais: atritos de implementação e custos ocultos"
+                )
+            return f"{focus} em '{topic}'.{quote_suffix}"
+
+        if ptype == "bishop":
+            if sq in ("c1", "c8"):
+                focus = (
+                    "Leitura conceitual e causal: mecanismos diretos de causa e efeito"
+                    if is_pro
+                    else "Crítica metodológica: falácias de correlação e premissas não demonstradas"
+                )
+            else:
+                focus = (
+                    "Análise de escopo e limites teóricos: premissas sistêmicas válidas"
+                    if is_pro
+                    else "Restrições de escopo: condições de contorno onde a tese falha"
+                )
+            return f"{focus} aplicados a '{topic}'.{quote_suffix}"
+
+        if ptype == "knight":
+            if sq in ("b1", "b8"):
+                focus = (
+                    "Dado empírico e benchmarks: medições quantitativas e métricas de campo"
+                    if is_pro
+                    else "Exceções operacionais e métricas adversas: dados que desafiam a tese"
+                )
+            else:
+                focus = (
+                    "Conexão tática e inovação: casos de sucesso atípicos e ganhos de escala"
+                    if is_pro
+                    else "Hipótese de ruptura e cenários de cauda: riscos de cauda e cisnes negros"
+                )
+            return f"{focus} documentados em '{topic}'.{quote_suffix}"
+
+        if ptype == "pawn":
+            pawn_focus = {
+                "a": "procedência de código e integridade de fontes" if is_pro else "riscos de supply-chain e dependências comprometidas",
+                "b": "tempo de mitigação (MTTR) e resposta rápida a incidentes" if is_pro else "demoras na remediação e débito técnico acumulado",
+                "c": "amostragem e testes empíricos em ambientes de produção" if is_pro else "ausência de testes automatizados e cobertura deficiente",
+                "d": "segregação de privilégios e controle de acesso granular" if is_pro else "privilégios excessivos e superfícies de ataque ampliadas",
+                "e": "rastreabilidade e histórico de auditorias bem-sucedidas" if is_pro else "recorrência de não-conformidades em ciclos anteriores",
+                "f": "validação cruzada e revisão por pares independente" if is_pro else "conflitos de interesse e ausência de supervisão isenta",
+                "g": "eficiência técnica e sustentabilidade operacional" if is_pro else "custos desproporcionais e complexidade excessiva",
+                "h": "resiliência a falhas e mecanismos de contingência" if is_pro else "pontos únicos de falha (SPOF) e ausência de redundância",
+            }
+            file_letter = sq[0].lower() if sq else "a"
+            aspect = pawn_focus.get(file_letter, "evidência atômica e medição pontual")
+            return f"Evidência pontual sobre {aspect} referente a '{topic}'.{quote_suffix}"
+
+        return r_entry.get("claim") or (mstate["pro_thesis"] if is_pro else mstate["contra_thesis"])
+
+    def _assign_go_swot_role(self, gtype: str, side: str, anchor: str) -> Tuple[str, str]:
+        """Classifica as 12 âncoras táticas de Go na matriz dimensional SWOT (v2.5)."""
+        swot_map = {
+            # Black / Pro
+            "E5": ("STRENGTH", "Força Central: capacidades operacionais demonstradas e maturidade dos controles em vigor."),
+            "C3": ("STRENGTH", "Base Territorial: consolidação de evidências primárias e rastreabilidade estruturada."),
+            "G7": ("OPPORTUNITY", "Oportunidade Estrutural: adoção de melhores práticas internacionais e ganhos de escala."),
+            "C7": ("OPPORTUNITY", "Oportunidade Tática: automação contínua de auditoria e redução de esforço humano."),
+            "G3": ("WEAKNESS", "Fragilidade Operacional: dependência de intervenções manuais e gargalos de comunicação."),
+            "E3": ("THREAT", "Ameaça Externa: pressões regulatórias crescentes e exigências de compliance mandatório."),
+            # White / Contra
+            "D4": ("THREAT", "Ameaça Adversarial: vetores de ataque externos e atores maliciosos avançados."),
+            "F6": ("WEAKNESS", "Lacuna de Controle: superfícies de risco residual e pontos cegos na governança."),
+            "D6": ("THREAT", "Risco de Terceiros: fragilidades na cadeia de suprimentos e APIs externas."),
+            "F4": ("WEAKNESS", "Débito Técnico: lentidão de atualização de dependências e sistemas legados."),
+            "E7": ("OPPORTUNITY", "Oportunidade de Remediação: planos corretivos estruturados e auditorias periódicas."),
+            "C5": ("STRENGTH", "Resiliência Comprovada: histórico satisfatório de contenção de incidentes."),
+        }
+        return swot_map.get(anchor, ("STRENGTH" if side == "pro" else "WEAKNESS", "Fator SWOT dimensional."))
+
     def _stage_4_assign_pieces(self, sess: Dict[str, Any], mstate: Dict[str, Any]) -> str:
         session_id = sess["id"]
         topic = sess["title"]
@@ -258,9 +370,7 @@ class PreparationMixin:
                 raw_roles = pro_raw.get("roles", {}) if side == "pro" else contra_raw.get("roles", {})
                 side_arts = pro_arts if side == "pro" else contra_arts
                 r_entry = raw_roles.get(ptype) or {}
-                claim_txt = r_entry.get("claim") or (
-                    mstate["pro_thesis"] if side == "pro" else mstate["contra_thesis"]
-                )
+                
                 # Diversifica artefato usado entre peças do mesmo tipo quando há múltiplas fontes no cofre
                 rotated_arts = side_arts[idx % len(side_arts):] + side_arts[:idx % len(side_arts)] if side_arts else []
                 refs, is_ver, base_conf = self._build_artifact_ref(
@@ -271,13 +381,35 @@ class PreparationMixin:
                     accessible_arts=rotated_arts,
                     topic=topic,
                 )
-                # v2.3 C01/C09: Trecho localizado = SOURCE_VERIFIED (sem SUPPORTED automático nem bônus de peça)
+
+                # Gera subtese heterogênea única por peça (v2.5)
+                claim_txt = self._generate_heterogeneous_subthesis(
+                    ptype=ptype,
+                    sq=sq,
+                    color=color,
+                    side=side,
+                    mode=sess.get("mode", "debate"),
+                    topic=topic,
+                    r_entry=r_entry,
+                    refs=refs,
+                    mstate=mstate,
+                )
+
+                piece_id = f"{color}_{ptype}_{sq}"
+                parent_thesis_id = f"{color}_central_thesis"
+                claim_id = f"claim_{color}_{ptype}_{sq}"
+                auth_art_ids = [r.artifact_id for r in refs]
+
+                # Registra controle de acesso granular de cofre por peça (RBAC v2.5)
+                if hasattr(self.sm.vault, "set_piece_permissions"):
+                    self.sm.vault.set_piece_permissions(session_id, piece_id, auth_art_ids)
+
                 conf = round(base_conf, 2)
                 ep_status = "SOURCE_VERIFIED" if is_ver else ("HYPOTHESIS" if (not side_arts or is_future_projection_topic(topic)) else "INSUFFICIENT")
 
                 pieces.append(
                     PieceDossierSchema(
-                        piece_id=f"{color}_{ptype}_{sq}",
+                        piece_id=piece_id,
                         side=side,
                         color=color,
                         piece_type=ptype,
@@ -288,9 +420,18 @@ class PreparationMixin:
                         current_coord=sq,
                         alive=True,
                         claim=claim_txt,
+                        parent_thesis_id=parent_thesis_id,
+                        claim_id=claim_id,
+                        authorized_artifact_ids=auth_art_ids,
+                        supporting_evidence_ids=[r.artifact_id for r in refs if r.verified],
+                        contradicting_evidence_ids=[],
+                        board_status="in_game",
                         supporting_artifacts=refs,
                         confidence_score=conf,
                         epistemic_status=ep_status,
+                        confrontation_history=[],
+                        swot_category=None,
+                        swot_rationale=None,
                     ).model_dump()
                 )
         else:
@@ -325,13 +466,23 @@ class PreparationMixin:
                     accessible_arts=rotated_arts,
                     topic=topic,
                 )
-                # v2.3 C01/C09: Trecho localizado = SOURCE_VERIFIED (sem SUPPORTED automático)
+
+                piece_id = f"{color}_{gtype}_{anchor.lower()}"
+                parent_thesis_id = f"{color}_central_thesis"
+                claim_id = f"claim_{color}_{gtype}_{anchor.lower()}"
+                auth_art_ids = [r.artifact_id for r in refs]
+
+                # Registra controle de acesso granular de cofre por peça (RBAC v2.5)
+                if hasattr(self.sm.vault, "set_piece_permissions"):
+                    self.sm.vault.set_piece_permissions(session_id, piece_id, auth_art_ids)
+
+                swot_cat, swot_rat = self._assign_go_swot_role(gtype, side, anchor)
                 conf = round(base_conf, 2)
                 ep_status = "SOURCE_VERIFIED" if is_ver else ("HYPOTHESIS" if (not side_arts or is_future_projection_topic(topic)) else "INSUFFICIENT")
 
                 pieces.append(
                     PieceDossierSchema(
-                        piece_id=f"{color}_{gtype}_{anchor.lower()}",
+                        piece_id=piece_id,
                         side=side,
                         color=color,
                         piece_type=gtype,
@@ -343,9 +494,18 @@ class PreparationMixin:
                         stones=[],
                         alive=True,
                         claim=claim_txt,
+                        parent_thesis_id=parent_thesis_id,
+                        claim_id=claim_id,
+                        authorized_artifact_ids=auth_art_ids,
+                        supporting_evidence_ids=[r.artifact_id for r in refs if r.verified],
+                        contradicting_evidence_ids=[],
+                        board_status="in_game",
                         supporting_artifacts=refs,
                         confidence_score=conf,
                         epistemic_status=ep_status,
+                        confrontation_history=[],
+                        swot_category=swot_cat,
+                        swot_rationale=swot_rat,
                     ).model_dump()
                 )
 
