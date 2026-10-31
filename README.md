@@ -1,154 +1,143 @@
-# Gambit Lab 2.0 — Framework Multiagente Orientado por Jogos
+# Gambit Lab Nocturne (R1.0 / v2.1) — Framework Multiagente Orientado por Jogos
 
 > **Princípio Central**: *O LLM propõe, as regras do jogo restringem, as evidências sustentam e o sistema registra.*
 
-O **Gambit Lab 2.0** é um framework de raciocínio multiagente guiado por jogos (*Game-Driven Multi-Agent System*), e não simplesmente um jogo com inteligência artificial. A plataforma estrutura investigações em sequências procedurais rigorosas de:
-$$\text{Pergunta} \longrightarrow \text{Hipótese} \longrightarrow \text{Busca} \longrightarrow \text{Citação} \longrightarrow \text{Contestação} \longrightarrow \text{Arbitragem} \longrightarrow \text{Registro Imutável}$$
+O **Gambit Lab Nocturne** é um framework de raciocínio, debate e auditoria multiagente guiado por motores formais de jogos (*Game-Driven Multi-Agent Epistemic System*). A plataforma estrutura investigações auditáveis em sequências procedurais rigorosas:
+
+$$\text{Pergunta} \longrightarrow \text{Hipótese} \longrightarrow \text{Busca / Cofre} \longrightarrow \text{Citação Literal} \longrightarrow \text{Contestação} \longrightarrow \text{Arbitragem} \longrightarrow \text{Event Store SHA-256}$$
 
 ---
 
-## 1. A Matriz 3×2 de Aplicações
+## 1. Novidades da Reengenharia Nocturne (`v2.1.0-nocturne`)
 
-Modalidade e Jogo são duas dimensões completamente ortogonais e independentes (**ADR-001**):
+- **Descoberta Real de Capacidades (`GET /api/v1/capabilities`)**: Expõe em tempo real a disponibilidade do Google Gemini e da Pesquisa Web pública, políticas ativas e orçamento padrão de etapas.
+- **Pesquisa Web Pública Opt-In com Anti-SSRF (`WebSearchAdapter`)**: Políticas explícitas `OWN_ONLY` (zero chamadas externas), `WEB_ONLY` e `HYBRID`, consultando fontes públicas HTTPS (OpenAlex + Wikimedia/Wikipedia + snapshots HTTPS validados) com bloqueio anti-SSRF estrito (`localhost`, RFC 1918, `169.254.169.254`, redirecionamentos e esquemas não-HTTPS) e registro `SHA-256`.
+- **Progressão Contínua sem Limite Artificial de 3 Lances (`POST /api/v1/sessions/{id}/advance`)**: Investigações avançam continuamente por 10+ lances legais em Xadrez 8×8 e Go 9×9 (padrão 12 etapas, configurável até 60), com `Idempotency-Key`, concorrência otimista (`expected_version` → `409 Conflict`) e controles `/pause`, `/resume` e `/cancel`.
+- **Separação Semântica entre Avanço e Replay**:
+  - **`▶ Continuar investigação`**: Executa novo ciclo real de pesquisa/arbitragem e aplica lance validado pelo motor determinístico.
+  - **`Replay histórico` (`GET /api/v1/sessions/{id}/replay?up_to_seq=N`)**: Reconstrói qualquer posição histórica do `EventStore` com **zero chamadas ao LLM**.
+- **Honestidade Radical de Execução e Telemetria**:
+  - Modos explícitos: `DEMO_OFFLINE`, `LIVE_DOCUMENTS`, `LIVE_WEB` e `LIVE_HYBRID`.
+  - Extração real de `usageMetadata` (`prompt_tokens`, `completion_tokens`, `tokens`) e `latency_ms` nas chamadas Gemini; `Não medido` quando offline.
+  - Proibição de fallback silencioso `LIVE → DEMO` em erros `HTTP 429` / `503`.
+  - Nenhuma alegação recebe `SUPPORTED` sem fonte anexada/recuperada e trecho literal verificado nos bytes do artefato (`DocumentVault.find_verified_quote_offset`).
+- **Identidade Visual Gambit Lab Nocturne**: Paleta de alto contraste (`#040405` / `#0B0C0F` / `#A68DFF`), alternância de tema `Nocturne / Cosmic`, WebGL 3D procedural nativo preservado + tabuleiro **2D Acessível (WCAG AA)** e 4 abas analíticas (`Conversa`, `Fontes`, `Auditoria`, `Histórico`).
 
-| Modalidade \ Jogo | Xadrez (8×8) | Go / Weiqi (9×9) |
+---
+
+## 2. Capturas Reais Verificadas (Chromium + WebGL)
+
+| Home Conversacional Nocturne | Workspace Xadrez 3D (6+ Lances) | Workspace Go 9×9 + Auditoria 3 Camadas |
+| :---: | :---: | :---: |
+| ![Home Nocturne](docs/screenshots/nocturne_home_desktop.png) | ![Xadrez 3D Nocturne](docs/screenshots/nocturne_chess_workspace_desktop.png) | ![Go 9x9 Nocturne](docs/screenshots/nocturne_go_workspace_desktop.png) |
+
+---
+
+## 3. A Matriz 3×2 de Aplicações e Pesquisa FUSION
+
+Modalidade e Jogo são duas dimensões ortogonais e independentes (**ADR-001**):
+
+| Modalidade \ Jogo | Xadrez (8×8 — `python-chess`) | Go / Weiqi (9×9 — `GoEngine9x9`) |
 | :--- | :--- | :--- |
-| **Pesquisa** | Gambitos e diferentes linhas de investigação orientam busca central, contraponto e risco de hipótese. | Cobertura temática, expansão por influência e aprofundamento territorial de fontes primárias. |
-| **Debate** | Confronto de evidências com capturas condicionadas; brancas iniciam; árbitro factual avalia refutações. | Disputa territorial com contestação de teses; pretas iniciam; captura é espacial e avaliação factual é separada. |
-| **Auditoria** | Peças representam controles, testes e riscos; confrontos capturam falhas de justificativa técnica. | Regiões representam requisitos, achados e lacunas de conformidade. |
+| **Pesquisa (`research`)** | Gambitos e linhas estratégicas orientam busca central, contraponto e exploração de hipóteses. | Cobertura temática, expansão por influência e aprofundamento territorial de fontes. |
+| **Debate (`debate`)** | Confronto de evidências com **capturas condicionadas** pelo árbitro factual e cofres privados isolados (`HTTP 403`). | Disputa territorial com contestação de teses; pretas iniciam; captura por liberdades e avaliação factual separada. |
+| **Auditoria (`audit`)** | Peças representam controles, testes e riscos; confrontos expõem lacunas de conformidade. | Regiões representam requisitos normativos, achados verificados e lacunas (`HYPOTHESIS` / `INSUFFICIENT`). |
+
+### Pesquisa FUSION (`POST /api/v1/sessions/{id}/fusion`)
+Combina de 1 a 3 estratégias simultâneas com **isolamento estrito de tabuleiros** (sem misturar estados de jogo incompatíveis) e **deduplicação criptográfica de fontes por `SHA-256`** antes da síntese unificada (`CONVERGENT`, `CONTRADICTORY`, `DIFFERENT_SCOPE`, `INSUFFICIENT`).
 
 ---
 
-## 2. Pesquisa FUSION (Investigação Multiestratégica)
-
-A **Pesquisa FUSION** permite investigar uma pergunta complexa a partir de 1 a 3 estratégias investigativas simultâneas:
-- **No Xadrez**: Gambito da Dama (equilíbrio), Gambito do Rei (exploração de hipóteses), Gambito Evans (descobertas rápidas).
-- **No Go**: Lente de Influência (cobertura ampla), Lente de Território (fontes primárias), Lente de Invasão (contestação adversarial), Lente de Conexão (interseção de domínios).
-
-### Pipeline Determinístico de Fusão:
-1. **Isolamento de Ramos**: Cada estratégia atua em seu próprio tabuleiro com seu próprio motor determinístico independente.
-2. **Normalização de Claims**: Alegações atômicas são extraídas com offsets, quotes e hashes de documentos.
-3. **Deduplicação de Fontes**: Múltiplos agentes citando o mesmo documento/URL contam como **1 única fonte independente** (evitando contagem de votos espúria).
-4. **Reconciliação e Matriz de Divergências**: Identifica achados `CONVERGENT`, `CONTRADICTORY`, `DIFFERENT_SCOPE` e `INSUFFICIENT`.
-5. **Síntese Unificada**: Emissão de relatório único auditável com níveis de evidência e limitações explícitas.
-
----
-
-## 3. Estrutura do Repositório
+## 4. Estrutura do Repositório e Entregáveis de Engenharia
 
 ```text
 Gambit_Lab/
 ├── apps/
-│   └── web/                   # Interface 3D (WebGL) + 2D Acessível, painéis e controles
+│   └── web/index.html             # UI Gambit Lab Nocturne (WebGL 3D procedural + 2D WCAG AA)
 ├── services/
-│   ├── api/                   # Backend FastAPI, modelos Pydantic, rotas REST
-│   │   ├── agents/            # Adaptador Gemini (BYOK) e Modo Demo Offline rotulado
-│   │   ├── engines/           # Orquestração de motores de jogo
-│   │   ├── fusion/            # Pipeline determinístico de fusão
-│   │   ├── models/            # Schemas tipados de dados
-│   │   ├── routes/            # Endpoints de Sessão, Ações, Artefatos, Replay, Relatórios
-│   │   └── storage/           # Event Store com hash SHA-256 e Cofres Privados
-│   └── worker/                # Jobs em segundo plano
+│   └── api/
+│       ├── agents/
+│       │   ├── gemini_adapter.py      # Adaptador Gemini real (usageMetadata, retries 429/503) + DEMO_OFFLINE honesto
+│       │   └── web_search_adapter.py  # Busca pública HTTPS (OpenAlex / Wikimedia) + proteção Anti-SSRF
+│       ├── fusion/pipeline.py         # Orquestrador FUSION com isolamento de ramos e deduplicação SHA-256
+│       ├── models/schemas.py          # Contratos Pydantic v2.1 (Capabilities, Advance, 3 Camadas Epistêmicas)
+│       ├── routes/                    # /capabilities, /sessions, /advance, /artifacts, /fusion, /replay, /reports
+│       └── storage/                   # SessionManager, EventStore SHA-256 encadeado e DocumentVault
 ├── packages/
-│   ├── contracts/             # Interfaces TypeScript e Schemas JSON
-│   └── game_rules/            # Motores determinísticos (python-chess e Go 9x9)
-├── docs/                      # Especificação Integral, ADRs e Catálogo de Requisitos
+│   └── game_rules/                # EpistemicChessEngine (python-chess) e GoEngine9x9
 ├── tests/
-│   ├── unit/                  # Testes dos motores Xadrez, Go, EventStore e FUSION
-│   └── integration/           # Testes dos endpoints FastAPI e das 6 combinações
-├── docker-compose.yml         # Orquestração de containers para deploy local
-├── .env.example               # Configurações de ambiente e variáveis
-└── README.md
+│   ├── unit/                      # Testes dos motores FIDE/Go, EventStore e FUSION
+│   ├── integration/               # Matriz 3x2, segurança, camadas epistêmicas e AT-01..AT-24 Nocturne
+│   └── live/                      # Testes ponta a ponta reais com Google Gemini e LIVE_WEB
+├── docs/screenshots/              # Capturas Desktop e Mobile verificadas via Chromium CDP
+├── AUDIT_REPORT.md                # Relatório técnico completo da auditoria (file:line, causas e correções)
+├── MIGRATION_PLAN.md              # Plano de migração controlada e máquina de estados
+├── TEST_MATRIX.md                 # Matriz de rastreabilidade dos 66 testes automatizados
+└── CHANGELOG.md                   # Histórico detalhado de versões
 ```
 
 ---
 
-## 4. Como Executar Localmente
+## 5. Como Executar Localmente
 
 ### Pré-requisitos
 - Python 3.12+
-- Node.js (opcional para desenvolvimento web separado)
 
-### Passo 1: Ativação do Ambiente Virtual
-```bash
-# No Windows (PowerShell):
+### Passo 1: Criar e ativar o ambiente virtual
+```powershell
+# Windows (PowerShell)
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-
-# No Linux / macOS:
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### Passo 2: Instalação das Dependências
-```bash
 pip install -r requirements.txt
 ```
 
-### Passo 3: Configurar Variáveis de Ambiente
-Copie o arquivo de exemplo:
-```bash
-cp .env.example .env
+### Passo 2: Configurar variáveis de ambiente
+```powershell
+Copy-Item .env.example .env
 ```
-> **Nota de Segurança**: Para executar no **Modo Demo Offline** (com fixtures sintéticas rotuladas), nenhuma chave de API é necessária. Para conectar o Google Gemini real, adicione sua chave `GEMINI_API_KEY` no `.env`. A chave nunca é exposta no frontend.
+- **Modo `DEMO_OFFLINE` (sem chave)**: Funciona imediatamente sem configurar `GEMINI_API_KEY`, rotulando todas as sessões de forma transparente como `DEMO_OFFLINE`.
+- **Modos `LIVE_DOCUMENTS` / `LIVE_WEB` / `LIVE_HYBRID`**: Preencha `GEMINI_API_KEY` no arquivo `.env` local (ignorado pelo Git). A chave nunca é enviada ao navegador.
 
-### Passo 4: Iniciar o Servidor
-```bash
-python -m uvicorn services.api.main:app --host 0.0.0.0 --port 8000 --reload
+### Passo 3: Iniciar o servidor FastAPI
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn services.api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-
-Acesse a aplicação no navegador em:
-- **Interface Visual Completa (3D / 2D)**: `http://localhost:8000/`
-- **Documentação Interativa Swagger / OpenAPI**: `http://localhost:8000/docs`
-- **Health Check**: `http://localhost:8000/health`
+Acesse:
+- **Aplicação Web Nocturne (3D WebGL + 2D WCAG)**: http://127.0.0.1:8000/
+- **Capacidades Ativas JSON**: http://127.0.0.1:8000/api/v1/capabilities
+- **Documentação OpenAPI / Swagger**: http://127.0.0.1:8000/docs
 
 ---
 
-## 5. Executando a Bateria de Testes Automatizados
+## 6. Executando a Suíte Completa de Testes (66 Testes)
 
-Para executar os 40 testes unitários e de integração (cobrindo as 6 combinações obrigatórias AC-01 a AC-06, lances especiais FIDE AC-21, FUSION AC-07, integridade de hash SHA-256 encadeado, isolamento de cofres privados e fluxo cósmico):
-
-```bash
-# Definindo PYTHONPATH para a raiz do repositório:
-$env:PYTHONPATH="."  # PowerShell
-pytest tests/ -v
+```powershell
+# Suíte completa (Unitários + Integração + AT-01..AT-24 + Live Gemini/Web):
+.\.venv\Scripts\python.exe -m pytest tests/unit tests/integration tests/live -v
 ```
 
----
-
-## 6. Gambit Lab Cosmic — Experiência em Duas Fases ("Pergunta Primeiro, Investigação Depois")
-
-A interface de usuário adota o paradigma cósmico:
-1. **Fase 1 (Home Screen / Compositor Central)**:
-   - Fundo espacial imersivo com estrelas em Canvas de baixo consumo de CPU e planetas flutuantes.
-   - Caixa de texto central inspirada em assistentes conversacionais modernos, com seletores compactos de Modo (Pesquisa, Debate, Auditoria), Jogo (Xadrez, Go) e Política de Fontes (`own_only` ou `web_opt_in` sinalizado como em desenvolvimento).
-   - Sugestões de cenários pré-configurados (Segurança em IA Autônoma NIST, Debate Demográfico 2030, Auditoria ISO 27001 / OWASP) e upload de arquivos diretamente para o cofre.
-   - Nenhum veredito factual ou selo de auditoria falso é exibido antes da sessão real existir no backend.
-
-2. **Fase 2 (Workspace de Investigação)**:
-   - Transição suave acionada assim que o backend confirma `POST /api/v1/sessions` com status `2xx`.
-   - Cabeçalho com a pergunta real em destaque, botão `✎ Refinar pergunta` (retorno reversível à caixa de busca) e `＋ Nova investigação`.
-   - **Arena do Tabuleiro**: Renderizador WebGL 3D nativo com shaders personalizados e peças esculpidas inspiradas nas silhuetas de alta fidelidade (Rei com Cruz Luminosa em cyan, Dama com coroa de pétalas, Cavalo modelado, Torre com ameias e peões em degraus; realces de lance em âmbar para origem e cyan para destino) ou alternância para **2D Acessível (WCAG AA)**.
-   - **Auditoria em Três Camadas (Problema 1 Solucionado)**:
-     - Camada 1: `integrity_status` (`INTEGRITY_VERIFIED` com hash SHA-256 encadeado).
-     - Camada 2: `source_status` (`SOURCE_VERIFIED` com verificação de citação exata nos bytes do documento ou `NO_SOURCES_ATTACHED`).
-     - Camada 3: `evidence_assessment` (`SUPPORTED`, `REFUTED`, `INSUFFICIENT` ou `HYPOTHESIS`). Sem documentos anexados, o sistema jamais emite `SUPPORTED`.
-   - **Rubrica do Árbitro Epistêmico**: Avaliação em 7 pontos (Identidade, Comparabilidade, Proveniência, Citação, etc.) para debates e auditorias.
-   - **Replay Determinístico do Event Store**: Navegação lance a lance pelo histórico de eventos criptograficamente encadeados sem refazer chamadas ao LLM.
-   - **Pesquisa FUSION**: Síntese unificada, deduplicação de fontes por hash e matriz de divergências entre múltiplos ramos investigativos independentes.
+Consulte [AUDIT_REPORT.md](AUDIT_REPORT.md) e [TEST_MATRIX.md](TEST_MATRIX.md) para o detalhamento individual dos 66 testes.
 
 ---
 
-## 7. Integridade Tripartida e Regras Fundamentais
+## 7. Principais Endpoints REST (`v2.1.0-nocturne`)
 
-1. **Placar do Jogo** (`game_result`): Decidido pelo motor determinístico (`python-chess` ou `GoEngine9x9`). O LLM não pode sobrepor rejeições.
-2. **Cofres Privados**: No debate, cada lado vê somente seus próprios documentos até o início da partida (`LOCKED`), comprovados por manifesto de hashes SHA-256. Acesso cruzado pré-início é bloqueado com `HTTP 403`.
-3. **Replay Determinístico**: Reconstitui o histórico de lances e vereditos aplicando os eventos canônicos diretamente sobre os motores formais, **sem chamar o LLM**.
-4. **Política de Fontes**: `own_only` garante zero chamadas de busca externa. `web_opt_in` é sinalizado como planejado / em desenvolvimento.
-5. **Segurança de Chaves (BYOK)**: `GEMINI_API_KEY` reside exclusivamente no `.env` do backend, nunca exposta ao JavaScript do navegador nem versionada no repositório.
+| Método | Rota | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/capabilities` | Estado real do Gemini, Pesquisa Web, políticas e limites. |
+| `POST` | `/api/v1/sessions` | Cria sessão (`mode`, `game`, `source_policy`, `max_steps`, `force_demo`). |
+| `GET` | `/api/v1/sessions/{id}` | Estado completo da sessão, contadores separados, claims, artefatos e eventos. |
+| `POST` | `/api/v1/sessions/{id}/advance` | Avança 1..5 etapas reais da investigação (`expected_version`, `Idempotency-Key`). |
+| `POST` | `/api/v1/sessions/{id}/pause` | Pausa a sessão em andamento. |
+| `POST` | `/api/v1/sessions/{id}/resume` | Retoma uma sessão pausada. |
+| `POST` | `/api/v1/sessions/{id}/cancel` | Cancela formalmente a sessão. |
+| `POST` | `/api/v1/sessions/{id}/artifacts` | Ingere documento no cofre (`public`, `white` ou `black`) com hash `SHA-256`. |
+| `POST` | `/api/v1/sessions/{id}/artifacts/web-snapshot` | Captura snapshot HTTPS público auditável com proteção Anti-SSRF. |
+| `GET` | `/api/v1/sessions/{id}/replay` | Replay determinístico integral ou parcial (`?up_to_seq=N`) sem chamadas ao LLM. |
+| `POST` | `/api/v1/sessions/{id}/fusion` | Executa Pesquisa FUSION multi-estratégia com deduplicação `SHA-256`. |
+| `GET` | `/api/v1/sessions/{id}/reports` | Exporta dossiê fiel da sessão em `json` ou `markdown`. |
 
 ---
 
 ## 8. Licença
-Projeto acadêmico e de engenharia de software distribuído sob a licença MIT.
-
+Distribuído sob a licença MIT.

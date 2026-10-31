@@ -53,6 +53,10 @@ class EpistemicChessEngine:
         return self.board.fullmove_number
 
     @property
+    def ply_count(self) -> int:
+        return len(self.move_history)
+
+    @property
     def is_game_over(self) -> bool:
         if self._impasse_declared:
             return True
@@ -208,11 +212,14 @@ class EpistemicChessEngine:
         )
 
     def to_dict(self) -> Dict[str, Any]:
+        last_move = self.move_history[-1]["uci"] if self.move_history else None
         return {
             "game": "chess",
             "fen": self.fen,
             "turn": self.turn,
             "fullmove": self.fullmove_number,
+            "ply_count": self.ply_count,
+            "last_move": last_move,
             "is_check": self.board.is_check(),
             "is_game_over": self.is_game_over,
             "game_result": self.get_game_result(),

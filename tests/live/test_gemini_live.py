@@ -64,3 +64,61 @@ def test_live_gemini_research_and_conflict_resolution():
     assert adjudication["verdict"] in ("NOT_COMPARABLE", "INCONCLUSIVE")
     assert adjudication["rubric"]["role_conflict_free"] is True
 
+
+@pytest.mark.skipif(not HAS_GEMINI_KEY, reason="Teste ponta a ponta LIVE_WEB exige GEMINI_API_KEY no ambiente.")
+def test_live_web_advance_and_real_telemetry():
+    """
+    Valida em modo LIVE_WEB real via FastAPI (sem mocks):
+    - Pesquisa web pública real (OpenAlex / Wikimedia HTTPS) com hash SHA-256 e domínio auditável
+    - Chamada real ao Google Gemini com extração de usageMetadata (tokens reais e latência real)
+    - Tratamento honesto de pergunta temática sem texto genérico predefinido
+    """
+    from starlette.testclient import TestClient
+    from services.api.main import app
+
+    client = TestClient(app)
+    caps_res = client.get("/api/v1/capabilities")
+    assert caps_res.status_code == 200
+    caps = caps_res.json()
+    assert caps["gemini"]["live_allowed"] is True
+    assert caps["web_search"]["available"] is True
+
+    create_res = client.post(
+        "/api/v1/sessions",
+        json={
+            "title": "Artificial intelligence safety and multi-agent alignment",
+            "mode": "research",
+            "game": "chess",
+            "source_policy": "WEB_ONLY",
+            "max_steps": 8,
+        },
+    )
+    assert create_res.status_code in (200, 201)
+    session = create_res.json()
+    assert session["execution_mode"] == "LIVE_WEB"
+
+    adv_res = client.post(
+        f"/api/v1/sessions/{session['id']}/advance",
+        json={"expected_version": session["version"], "max_actions": 1},
+    )
+    assert adv_res.status_code == 200
+    adv = adv_res.json()
+
+    assert adv["execution_mode"] == "LIVE_WEB"
+    assert adv["game"]["ply_count"] >= 1
+    assert adv["investigation"]["completed_steps"] >= 1
+    assert adv["artifacts_count"] >= 1
+    assert adv["provider_usage"]["source"] == "gemini_api"
+    assert (adv["provider_usage"]["tokens"] or 0) > 0
+    assert (adv["provider_usage"]["prompt_tokens"] or 0) > 0
+    assert (adv["provider_usage"]["completion_tokens"] or 0) > 0
+    assert (adv["provider_usage"]["latency_ms"] or 0) > 0
+
+    detail_res = client.get(f"/api/v1/sessions/{session['id']}")
+    assert detail_res.status_code == 200
+    artifacts = detail_res.json()["artifacts"]
+    assert len(artifacts) >= 1
+    assert all(a["url"].startswith("https://") for a in artifacts if a.get("url"))
+    assert all(len(a["sha256"]) == 64 for a in artifacts)
+
+

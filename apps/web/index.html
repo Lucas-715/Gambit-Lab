@@ -1,26 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="nocturne">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>Gambit Lab · Cosmic Research & Audit Framework</title>
+<title>Gambit Lab Nocturne · Game-Driven Epistemic Reasoning</title>
 <style>
 :root {
-  --bg: #05070e;
-  --panel: #0d1423dc;
-  --panel2: #121d2fe8;
-  --line: #27384a;
-  --text: #f2f6ff;
-  --muted: #9caec2;
-  --mint: #70f0d2;
-  --mint2: #49c5bd;
-  --accent: #a68cf7;
-  --warn: #f5c976;
-  --red: #f08e96;
-  --r: 16px;
+  color-scheme: dark;
+  --bg: #040405;
+  --panel: #0B0C0F;
+  --panel-elevated: #121319;
+  --sidebar: #070709;
+  --border: #242630;
+  --border-strong: #343746;
+  --text: #F4F4F6;
+  --muted: #9A9BA5;
+  --subtle: #666873;
+  --accent: #A68DFF;
+  --accent-soft: rgba(166, 141, 255, 0.14);
+  --success: #57D5B3;
+  --success-soft: rgba(87, 213, 179, 0.13);
+  --warning: #E0B66B;
+  --warning-soft: rgba(224, 182, 107, 0.14);
+  --danger: #EF8293;
+  --danger-soft: rgba(239, 130, 147, 0.14);
+  --square-dark: #282B35;
+  --square-light: #8C909D;
+  --go-wood: #A88D63;
+  --go-line: #2F2417;
+  --r: 12px;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
+
+html[data-theme="cosmic"] {
+  --bg: #05070e;
+  --panel: #0d1423eb;
+  --panel-elevated: #131e32f2;
+  --sidebar: #090e19d9;
+  --border: #27384a;
+  --border-strong: #3a536b;
+  --accent: #70f0d2;
+  --accent-soft: rgba(112, 240, 210, 0.14);
+}
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -28,18 +51,19 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
-button:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 2px solid var(--mint);
-  outline-offset: 3px;
+button:focus-visible, textarea:focus-visible, select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
-button:disabled { opacity: 0.35; cursor: not-allowed; }
-a { color: var(--mint); text-decoration: none; }
+button:disabled { opacity: 0.38; cursor: not-allowed; }
+a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* Canvas Cósmico & Planetas */
+/* Fundo Estelar Sutil (Nocturne: discreto na Home, <= 8% no Workspace, sem planetas competindo) */
 #space {
   position: fixed;
   inset: 0;
@@ -47,250 +71,272 @@ a:hover { text-decoration: underline; }
   width: 100%;
   height: 100%;
   pointer-events: none;
+  opacity: 0.34;
+  transition: opacity 0.4s ease;
 }
-body:before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -4;
-  background: radial-gradient(ellipse 58% 50% at 68% 25%, #18375c55, transparent 72%),
-              radial-gradient(ellipse 40% 38% at 25% 72%, #3d214b45, transparent 76%),
-              #05070e;
+body.in-workspace #space {
+  opacity: 0.08;
 }
+html[data-theme="cosmic"] #space {
+  opacity: 0.75;
+}
+body.in-workspace html[data-theme="cosmic"] #space {
+  opacity: 0.15;
+}
+
 .planet {
   position: fixed;
   z-index: -2;
   border-radius: 50%;
   pointer-events: none;
-  filter: drop-shadow(0 0 30px #4588be40);
-  animation: float 18s ease-in-out infinite alternate;
+  display: none;
+}
+html[data-theme="cosmic"] body:not(.in-workspace) .planet {
+  display: block;
 }
 .p1 {
-  width: 200px;
-  height: 200px;
-  right: 8%;
-  top: 13%;
+  width: 190px; height: 190px; right: 8%; top: 13%;
   background: radial-gradient(circle at 28% 25%, #d1e2e8 0%, #6c96b3 12%, #224869 47%, #0a192e 76%);
-  opacity: 0.65;
-  box-shadow: inset -27px -21px 45px #030710;
-}
-.p1:after {
-  content: '';
-  position: absolute;
-  inset: -17px -48px;
-  border: 3px solid #90d2da5c;
-  border-radius: 50%;
-  transform: rotate(-22deg) scaleY(.39);
+  opacity: 0.5;
 }
 .p2 {
-  width: 108px;
-  height: 108px;
-  left: 12%;
-  bottom: 8%;
+  width: 100px; height: 100px; left: 12%; bottom: 8%;
   background: radial-gradient(circle at 23% 18%, #c6a5bd, #7d537f 33%, #241830 75%);
-  opacity: 0.38;
-  animation-duration: 24s;
+  opacity: 0.32;
 }
 .p3 {
-  width: 44px;
-  height: 44px;
-  right: 25%;
-  bottom: 14%;
+  width: 42px; height: 42px; right: 25%; bottom: 14%;
   background: radial-gradient(circle at 25% 20%, #c2eae2, #246f7d 45%, #132438 88%);
-  opacity: 0.5;
-  animation-duration: 20s;
-}
-@keyframes float {
-  to { transform: translateY(28px) translateX(-12px); }
+  opacity: 0.4;
 }
 
-/* Layout Geral */
+/* Estrutura Principal */
 .app {
   display: flex;
   min-height: 100vh;
 }
 .rail {
-  width: 72px;
+  width: 64px;
   flex: none;
   position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  border-right: 1px solid #28384c86;
-  background: #090e19b5;
-  backdrop-filter: blur(20px);
+  left: 0; top: 0; bottom: 0;
+  border-right: 1px solid var(--border);
+  background: var(--sidebar);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 20px 10px;
-  z-index: 10;
+  gap: 10px;
+  padding: 16px 8px;
+  z-index: 20;
 }
 .logo {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
-  background: linear-gradient(140deg, #72ebd5, #267f95);
-  color: #06121c;
-  border-radius: 14px;
-  font-weight: 900;
-  font-size: 24px;
-  box-shadow: 0 5px 25px #4af4db38;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
 }
+.logo span { color: var(--accent); }
 .rail-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
-  color: #a4b8ce;
-  font-size: 19px;
-  transition: all 0.15s;
+  color: var(--muted);
+  font-size: 17px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .rail-btn:hover, .rail-btn.active {
-  background: #173344;
-  border-color: #33566b;
-  color: var(--mint);
+  background: var(--panel-elevated);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 .rail-bottom {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .main {
-  margin-left: 72px;
-  width: calc(100% - 72px);
+  margin-left: 64px;
+  width: calc(100% - 64px);
   min-width: 0;
 }
 
+/* Topbar Minimalista */
 .topbar {
-  height: 64px;
+  height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 clamp(20px, 3.5vw, 48px);
-  border-bottom: 1px solid #ffffff13;
-  gap: 16px;
+  padding: 0 clamp(18px, 3vw, 38px);
+  border-bottom: 1px solid var(--border);
+  background: rgba(4, 4, 5, 0.86);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  gap: 12px;
+}
+.brand-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 .brand {
-  font-weight: 800;
-  letter-spacing: .06em;
-  font-size: 13.5px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  font-size: 13px;
+  color: var(--text);
 }
-.brand span { color: var(--mint); }
+.brand span { color: var(--accent); }
 .tiny-tag {
-  font-size: 9.5px;
-  color: #9aafc0;
-  letter-spacing: .12em;
-  font-weight: 700;
+  font-size: 10px;
+  color: var(--subtle);
+  letter-spacing: 0.09em;
+  font-weight: 600;
+}
+.topbar-pills {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 .pill {
-  border: 1px solid #3a5360;
-  background: #0d2230db;
-  border-radius: 100px;
-  padding: 6px 12px;
-  color: #b0d9d8;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 999px;
+  padding: 5px 11px;
+  color: var(--muted);
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 .pill.ok {
-  color: #70f0d2;
-  border-color: #276963;
-  background: #0e292d;
+  color: var(--success);
+  border-color: rgba(87, 213, 179, 0.35);
+  background: var(--success-soft);
 }
 .pill.warn {
-  color: #ffdca0;
-  border-color: #6b502c;
-  background: #312616;
+  color: var(--warning);
+  border-color: rgba(224, 182, 107, 0.35);
+  background: var(--warning-soft);
+}
+.pill.accent {
+  color: var(--accent);
+  border-color: rgba(166, 141, 255, 0.35);
+  background: var(--accent-soft);
 }
 
+/* Botões Nocturne */
 .btn {
-  border: 1px solid #345165;
-  background: #142338e8;
-  color: #dfebf5;
-  padding: 10px 15px;
-  border-radius: 10px;
-  font-size: 12.5px;
-  font-weight: 650;
-  transition: transform .15s, background .15s;
+  border: 1px solid var(--border-strong);
+  background: var(--panel-elevated);
+  color: var(--text);
+  padding: 8px 13px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.14s, border-color 0.14s;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-.btn:hover {
-  background: #20384d;
-  transform: translateY(-1px);
+.btn:hover:not(:disabled) {
+  background: #1a1c24;
+  border-color: #494d60;
 }
 .btn.primary {
-  background: linear-gradient(100deg, #67e6d0, #83e6df);
-  color: #082532;
-  border: 0;
-  box-shadow: 0 4px 20px #37b5ae25;
+  background: var(--text);
+  color: #050507;
+  border-color: var(--text);
 }
-.btn.secondary { background: #0d182a; }
-.btn.gold {
-  background: linear-gradient(100deg, #f5c976, #e2b06e);
-  color: #261b07;
-  border: 0;
+.btn.primary:hover:not(:disabled) {
+  background: #dcdde4;
+}
+.btn.accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: rgba(166, 141, 255, 0.42);
+}
+.btn.accent:hover:not(:disabled) {
+  background: rgba(166, 141, 255, 0.22);
+}
+.btn.secondary {
+  background: var(--panel);
+  border-color: var(--border);
+  color: var(--muted);
+}
+.btn.secondary:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn.sm {
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 7px;
 }
 
-/* FASE 1: Tela de Entrada (Home) */
+/* FASE 1: Home Conversacional (Pergunta Primeiro) */
 .home {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 58px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 24px 80px;
-  transition: opacity .4s, transform .4s;
+  padding: 48px 20px 72px;
 }
 .home.hides { display: none !important; }
 .eyebrow {
-  color: var(--mint);
-  font-size: 11px;
-  letter-spacing: .2em;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 18px;
+  color: var(--accent);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
 .home h1 {
-  font-size: clamp(36px, 5.2vw, 72px);
+  font-size: clamp(32px, 4.4vw, 56px);
   text-align: center;
-  letter-spacing: -.05em;
-  line-height: 1.08;
-  margin: 0 0 16px;
-  font-weight: 800;
-  text-shadow: 0 5px 60px #0e2545;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin: 0 0 14px;
+  font-weight: 750;
+  color: var(--text);
 }
 .home h1 em {
   font-style: normal;
-  background: linear-gradient(100deg, #93efdb, #95abff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 .subtitle {
   text-align: center;
-  color: #b0c2d5;
+  color: var(--muted);
   line-height: 1.6;
-  max-width: 660px;
-  margin: 0 0 32px;
-  font-size: 14.5px;
+  max-width: 620px;
+  margin: 0 0 28px;
+  font-size: 14px;
 }
 
 .prompt-shell {
   width: min(780px, 100%);
-  background: linear-gradient(140deg, #151e30f5, #101b2df0);
-  border: 1px solid #4260709c;
-  box-shadow: 0 30px 95px #0009, 0 0 70px #64d9d516;
-  border-radius: 24px;
-  padding: 18px;
-  backdrop-filter: blur(22px);
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
+  border-radius: 18px;
+  padding: 16px 18px;
 }
 .prompt-shell textarea {
   display: block;
@@ -298,14 +344,15 @@ body:before {
   border: 0;
   outline: 0;
   resize: vertical;
-  min-height: 90px;
+  min-height: 82px;
   max-height: 200px;
   color: var(--text);
   background: transparent;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.55;
 }
-.prompt-shell textarea::placeholder { color: #8295ab; }
+.prompt-shell textarea::placeholder { color: var(--subtle); }
+
 .composer-controls {
   display: flex;
   align-items: center;
@@ -320,206 +367,261 @@ body:before {
   flex-wrap: wrap;
 }
 .selectwrap {
-  border: 1px solid #3c4d66;
-  background: #0b1425;
-  border-radius: 12px;
-  padding: 4px 9px;
+  border: 1px solid var(--border);
+  background: var(--panel-elevated);
+  border-radius: 10px;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 .selectwrap label {
   font-size: 10.5px;
-  color: #8faab9;
+  color: var(--subtle);
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 .selectwrap select {
   background: transparent;
-  color: #e3f5f3;
+  color: var(--text);
   border: 0;
-  max-width: 185px;
+  max-width: 215px;
   outline: 0;
   font-size: 12px;
-  padding: 4px 1px;
+  padding: 3px 0;
 }
-.selectwrap option { background: #101a29; color: #fff; }
+.selectwrap option { background: #121319; color: #F4F4F6; }
 
 .round-send {
   border: 0;
-  border-radius: 14px;
-  background: var(--mint);
-  color: #052530;
-  width: 44px;
-  height: 44px;
-  font-size: 22px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  transition: transform .15s, filter .15s;
+  border-radius: 11px;
+  background: var(--text);
+  color: #040405;
+  height: 38px;
+  padding: 0 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
 }
-.round-send:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
+.round-send:hover { background: #dcdde4; }
 
 .prompt-opts {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
   align-items: center;
-  margin-top: 14px;
-  color: #b3c4d5;
-  font-size: 12px;
-  border-top: 1px solid #203547;
-  padding-top: 12px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 11.5px;
+  border-top: 1px solid var(--border);
+  padding-top: 11px;
 }
 .prompt-opts label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
 }
-.prompt-opts input[type="checkbox"] { accent-color: var(--mint); width: 15px; height: 15px; }
-.mini-info { color: #8099af; font-size: 11px; }
+.prompt-opts input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; }
+.mini-info { color: var(--subtle); font-size: 11px; margin-left: auto; }
+
+.cap-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--subtle);
+}
 
 .suggestions {
   display: flex;
-  gap: 9px;
+  gap: 8px;
   flex-wrap: wrap;
   max-width: 800px;
   justify-content: center;
-  margin-top: 22px;
+  margin-top: 20px;
 }
 .suggestions button {
-  background: #0b1525a8;
-  border: 1px solid #2b4159;
-  color: #c0d1e3;
-  border-radius: 100px;
-  padding: 9px 14px;
-  font-size: 12px;
-  transition: all 0.15s;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 11.5px;
+  transition: border-color 0.15s, color 0.15s;
 }
 .suggestions button:hover {
-  color: var(--mint);
-  border-color: #549b93;
-  transform: translateY(-1px);
+  color: var(--text);
+  border-color: var(--border-strong);
 }
 .caption {
   font-size: 11px;
-  color: #829ab2;
+  color: var(--subtle);
   margin-top: 20px;
   text-align: center;
+  max-width: 640px;
   line-height: 1.5;
 }
 
-/* FASE 2: Espaço de Investigação (Workspace) */
+/* FASE 2: Workspace de Investigação Nocturne */
 .workspace {
   display: none;
-  padding: 24px clamp(18px, 2.8vw, 42px) 40px;
-  max-width: 1750px;
+  padding: 20px clamp(16px, 2.5vw, 36px) 36px;
+  max-width: 1720px;
   margin: 0 auto;
 }
-.workspace.active {
-  display: block;
-  animation: slideUp .45s ease both;
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.workspace.active { display: block; }
 
-.crumb {
-  color: var(--mint);
-  font-size: 11px;
-  letter-spacing: .16em;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
 .ws-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  margin: 0 0 22px;
+  gap: 16px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
+.crumb {
+  color: var(--accent);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
 .ws-head h2 {
-  font-size: clamp(20px, 2.2vw, 30px);
-  letter-spacing: -.03em;
-  margin: 0 0 6px;
+  font-size: clamp(18px, 1.9vw, 24px);
+  letter-spacing: -0.025em;
+  margin: 0 0 4px;
   line-height: 1.25;
-  color: #fff;
+  color: var(--text);
 }
 .ws-head p {
   margin: 0;
-  color: #a4b8cc;
-  font-size: 12.5px;
+  color: var(--muted);
+  font-size: 12px;
 }
 .head-actions {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
+/* Faixa de Métricas Honestas Separadas */
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.metric-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 13px;
+}
+.metric-card .m-label {
+  font-size: 10.5px;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 650;
+}
+.metric-card .m-val {
+  font-size: 15px;
+  font-weight: 750;
+  color: var(--text);
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.metric-card .m-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Grid Principal Workspace: Tabuleiro Protagonista + Painel de 4 Abas */
 .ws-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.95fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.38fr) minmax(350px, 1fr);
+  gap: 16px;
   align-items: start;
 }
 .surface {
-  background: linear-gradient(160deg, #101a2be8, #0c1523ed);
-  border: 1px solid #2c4154;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: var(--r);
-  box-shadow: 0 12px 40px #0004;
-  backdrop-filter: blur(16px);
-  margin-bottom: 18px;
   overflow: hidden;
 }
 .panel-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 18px;
-  gap: 12px;
+  padding: 11px 15px;
+  gap: 10px;
   flex-wrap: wrap;
-  border-bottom: 1px solid #253849;
+  border-bottom: 1px solid var(--border);
 }
 .panel-title {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 750;
-  font-size: 13.5px;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13px;
 }
 .panel-title .dot {
-  width: 8px;
-  height: 8px;
-  background: var(--mint);
-  box-shadow: 0 0 14px var(--mint);
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
   border-radius: 50%;
 }
+.toggle-group {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
 .toggle {
-  border: 1px solid #385267;
-  background: #0c1728;
-  color: #aec2d4;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 11.5px;
+  border: 1px solid var(--border);
+  background: var(--panel-elevated);
+  color: var(--muted);
+  border-radius: 7px;
+  padding: 5px 9px;
+  font-size: 11px;
   font-weight: 600;
 }
 .toggle.active {
-  background: #1b4b4c;
-  color: var(--mint);
-  border-color: #398f86;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: rgba(166, 141, 255, 0.45);
 }
 
-/* Arena do Tabuleiro 3D & 2D */
+/* Replay Banner */
+.replay-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 15px;
+  background: var(--warning-soft);
+  border-bottom: 1px solid rgba(224, 182, 107, 0.3);
+  color: var(--warning);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.replay-banner.active { display: flex; }
+
+/* Arena 3D WebGL & 2D WCAG */
 .stage {
-  min-height: 480px;
+  min-height: 468px;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(ellipse at center, #0b22326e, transparent 65%);
+  background: radial-gradient(circle at 50% 45%, #11131a 0%, #060608 75%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -527,28 +629,27 @@ body:before {
 #stage {
   display: block;
   width: 100%;
-  height: 480px;
+  height: 468px;
   cursor: grab;
 }
 #stage:active { cursor: grabbing; }
 
-/* 2D Board Accessible Grid */
 #board2D {
   display: none;
   width: 100%;
-  min-height: 480px;
+  min-height: 468px;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 18px;
 }
 .grid-2d {
   display: grid;
-  border: 3px solid #233e4f;
-  box-shadow: 0 10px 30px #000;
-  max-width: 440px;
+  border: 2px solid var(--border-strong);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
+  max-width: 432px;
   width: 100%;
   aspect-ratio: 1;
-  background: #0c1520;
+  background: var(--panel);
 }
 .cell-2d {
   display: flex;
@@ -557,133 +658,291 @@ body:before {
   font-size: 26px;
   cursor: pointer;
   user-select: none;
-  transition: background 0.15s;
   position: relative;
   border: 0;
   padding: 0;
 }
-.cell-2d:hover { filter: brightness(1.25); }
-.cell-2d.light { background: #b8d1cd; color: #101b24; }
-.cell-2d.dark { background: #285465; color: #fff8e6; }
+.cell-2d:hover { filter: brightness(1.14); }
+.cell-2d.light { background: var(--square-light); color: #0b0c10; }
+.cell-2d.dark { background: var(--square-dark); color: #f4f4f6; }
 .cell-2d.go-cell {
-  background: #c1a27c;
-  border-right: 1px solid #70543b;
-  border-bottom: 1px solid #70543b;
+  background: var(--go-wood);
+  border-right: 1px solid var(--go-line);
+  border-bottom: 1px solid var(--go-line);
 }
-.cell-2d.hl-origin { box-shadow: inset 0 0 0 4px #e2b06e; }
-.cell-2d.hl-dest { box-shadow: inset 0 0 0 4px #70f0d2; }
+.cell-2d.hl-origin { box-shadow: inset 0 0 0 3px var(--warning); }
+.cell-2d.hl-dest { box-shadow: inset 0 0 0 3px var(--accent); }
 .go-stone-2d {
-  width: 78%;
-  height: 78%;
+  width: 76%;
+  height: 76%;
   border-radius: 50%;
-  box-shadow: 2px 3px 5px rgba(0,0,0,0.6);
+  box-shadow: 1px 2px 5px rgba(0,0,0,0.65);
 }
-.go-stone-2d.black { background: radial-gradient(circle at 30% 25%, #677179, #12191e 55%, #020406); }
-.go-stone-2d.white { background: radial-gradient(circle at 30% 25%, #fff, #f1f0e7 50%, #9a9995); }
+.go-stone-2d.black { background: radial-gradient(circle at 30% 25%, #4d515a, #111317 60%, #030304); }
+.go-stone-2d.white { background: radial-gradient(circle at 30% 25%, #ffffff, #e8e9ee 55%, #9d9fa9); }
 
 .scene-note {
   position: absolute;
-  right: 14px;
-  bottom: 14px;
-  color: #8eafba;
+  right: 12px;
+  bottom: 12px;
+  color: var(--muted);
   font-size: 10.5px;
-  background: #081320bb;
-  border: 1px solid #243f50;
-  border-radius: 8px;
-  padding: 6px 10px;
+  background: rgba(11, 12, 15, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 9px;
   pointer-events: none;
 }
-.board-controls {
+
+/* Barra de Execução vs Barra de Replay (Separadas Semânticamente) */
+.action-bars {
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+.exec-bar {
   display: flex;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  padding: 14px 18px;
-  border-top: 1px solid #22394b;
-  align-items: center;
+  padding: 12px 15px;
 }
-.turn {
-  font-weight: 800;
-  font-size: 12px;
-  color: var(--mint);
+.turn-indicator {
   margin-left: auto;
-  align-self: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.replay-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px 15px;
+  border-top: 1px solid var(--border);
+  background: #08090c;
+  font-size: 11px;
+  color: var(--subtle);
+}
+.replay-bar .r-title {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-right: 4px;
 }
 .bottom-note {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  color: #a6b8cd;
+  color: var(--muted);
   font-size: 12px;
-  padding: 0 18px 16px;
+  padding: 10px 15px 13px;
+  border-top: 1px solid var(--border);
   line-height: 1.5;
 }
 
-/* Footer Editor (Refinamento) */
-.footer-editor {
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #101b2acc;
-  border: 1px solid #314a5c;
-  border-radius: 14px;
-  padding: 9px 12px;
-}
-.footer-editor input {
-  background: transparent;
-  border: 0;
-  color: #e9f5ff;
-  outline: 0;
-  flex: 1;
-  min-width: 80px;
-  font-size: 13px;
-}
-.footer-editor span {
-  color: #8ca3b7;
-  font-size: 11px;
-}
-
-/* Coluna Direita: Conversa, 3 Camadas e Linha do Tempo */
-.rightcol {
+/* Painel Direito: 4 Abas Nocturne (Conversa | Fontes | Auditoria | Histórico) */
+.tabs-surface {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  min-height: 615px;
+  max-height: 760px;
 }
-.thread { padding: 18px; }
-.thread h3 { font-size: 13.5px; margin: 0 0 14px; color: #fff; }
-.message {
-  border-radius: 12px;
-  border: 1px solid #2a3f52;
-  background: #101f2f;
-  padding: 12px 14px;
-  margin-bottom: 10px;
+.tab-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+  background: #08090c;
+}
+.tab-btn {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  padding: 12px 8px;
   font-size: 12px;
-  line-height: 1.6;
-  color: #c4d6e5;
+  font-weight: 650;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
-.message .name {
+.tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+.tab-btn.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+  background: var(--panel);
+}
+.tab-count {
   font-size: 10px;
-  color: var(--mint);
-  font-weight: 800;
-  letter-spacing: .08em;
-  margin-bottom: 4px;
-}
-.message.user {
-  background: #18283a;
-  border-color: #35536e;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  color: var(--muted);
 }
 
-/* 3-Tier Badges */
-.tier-panel {
-  padding: 18px;
+.tab-panel {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
 }
-.tier-panel h3 {
-  font-size: 13.5px;
-  margin: 0 0 12px;
-  color: #fff;
+.tab-panel.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Aba 1: Conversa */
+.chat-stream {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 2px;
+}
+.message {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel-elevated);
+  padding: 11px 13px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.message.user {
+  background: #151621;
+  border-color: rgba(166, 141, 255, 0.32);
+}
+.message.system {
+  background: #090a0e;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.msg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+.msg-author {
+  font-size: 10.5px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.msg-badges {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.chip.ok { color: var(--success); border-color: rgba(87, 213, 179, 0.35); background: var(--success-soft); }
+.chip.warn { color: var(--warning); border-color: rgba(224, 182, 107, 0.35); background: var(--warning-soft); }
+.chip.err { color: var(--danger); border-color: rgba(239, 130, 147, 0.35); background: var(--danger-soft); }
+
+.msg-quote {
+  margin-top: 7px;
+  padding: 7px 10px;
+  border-left: 2px solid var(--accent);
+  background: #090a0e;
+  border-radius: 0 6px 6px 0;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.msg-sub {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--subtle);
+}
+
+.chat-composer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+.chat-composer input {
+  flex: 1;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 8px 11px;
+  color: var(--text);
+  font-size: 12.5px;
+  outline: 0;
+}
+
+/* Aba 2: Fontes */
+.sources-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.source-box {
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 13px;
+  margin-bottom: 9px;
+  font-size: 12px;
+}
+.source-box b { color: var(--text); display: block; margin-bottom: 4px; }
+.source-box small {
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10.5px;
+  display: block;
+  word-break: break-all;
+  line-height: 1.45;
+}
+.source-tag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 6px;
+  margin-right: 5px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.empty-state {
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Aba 3: Auditoria em 3 Camadas */
+.audit-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 .tier-badges {
   display: flex;
@@ -691,85 +950,69 @@ body:before {
   gap: 8px;
 }
 .tier-badge {
-  background: #0d1a26;
-  border: 1px solid #273e51;
-  border-radius: 10px;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 9px;
   padding: 10px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   font-size: 11.5px;
 }
-.tier-badge span { color: #8faec2; }
-.tier-badge b { font-family: monospace; font-size: 11px; letter-spacing: 0.5px; }
-.tier-badge.ok { border-left: 4px solid var(--mint); }
-.tier-badge.ok b { color: var(--mint); }
-.tier-badge.warn { border-left: 4px solid var(--warn); }
-.tier-badge.warn b { color: var(--warn); }
-.tier-badge.err { border-left: 4px solid var(--red); }
-.tier-badge.err b { color: var(--red); }
+.tier-badge span { color: var(--muted); }
+.tier-badge b { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+.tier-badge.ok { border-left: 3px solid var(--success); }
+.tier-badge.ok b { color: var(--success); }
+.tier-badge.warn { border-left: 3px solid var(--warning); }
+.tier-badge.warn b { color: var(--warning); }
+.tier-badge.err { border-left: 3px solid var(--danger); }
+.tier-badge.err b { color: var(--danger); }
 
-/* Rubrica do Árbitro */
 .rubric-box {
-  background: #0d1e2b;
-  border: 1px solid #234f59;
-  border-radius: 10px;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: 9px;
   padding: 11px 13px;
   margin-top: 10px;
   font-size: 11.5px;
 }
-.rubric-box b { color: #70f0d2; display: block; margin-bottom: 4px; }
-.rubric-box small { color: #9bb7c7; line-height: 1.4; display: block; }
+.rubric-box b { color: var(--accent); display: block; margin-bottom: 4px; }
+.rubric-box small { color: var(--muted); line-height: 1.5; display: block; }
 
-/* Artefatos e Eventos */
-.source-box {
-  background: #0d1a27;
-  border: 1px solid #253d52;
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  font-size: 11.5px;
-}
-.source-box b { color: #eaf3f5; display: block; margin-bottom: 3px; }
-.source-box small { color: #8aa5b8; font-family: monospace; display: block; word-break: break-all; }
-.source-tag {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 9.5px;
-  font-weight: 700;
-  margin-top: 6px;
-  background: rgba(112, 240, 210, 0.12);
-  color: var(--mint);
-}
-
-.events { padding: 18px; }
-.events h3 { margin: 0 0 13px; font-size: 13.5px; color: #fff; }
+/* Aba 4: Histórico Imutável */
 .event-list {
-  max-height: 220px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 .event {
-  border-left: 2px solid #498f92;
-  padding: 4px 0 4px 10px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 10px;
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 10px;
   font-size: 11.5px;
-  line-height: 1.4;
-  color: #bfd1e0;
-  background: #0b152288;
+  line-height: 1.45;
+  color: var(--muted);
+  background: var(--panel-elevated);
 }
-.event strong { color: var(--mint); font-family: monospace; font-size: 11px; }
+.event strong {
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+  margin-right: 6px;
+}
 
 /* Modais */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 7, 12, 0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(2, 2, 4, 0.82);
+  backdrop-filter: blur(6px);
   z-index: 999;
   display: none;
   align-items: center;
@@ -777,78 +1020,88 @@ body:before {
   padding: 20px;
 }
 .modal-content {
-  background: #0f1924;
-  border: 1px solid #274154;
-  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
   max-width: 680px;
   width: 100%;
   max-height: 88vh;
   overflow-y: auto;
-  padding: 24px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  padding: 22px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.9);
 }
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  border-bottom: 1px solid #223749;
-  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
 }
-.modal-header h3 { margin: 0; font-size: 16px; color: #fff; }
+.modal-header h3 { margin: 0; font-size: 15px; color: var(--text); }
 .close-btn {
   background: transparent;
   border: 0;
-  color: #8da4b8;
+  color: var(--muted);
   font-size: 22px;
-  padding: 0;
+  padding: 0 4px;
 }
-.close-btn:hover { color: #fff; }
+.close-btn:hover { color: var(--text); }
+
+.form-field { margin-bottom: 12px; }
+.form-field label {
+  font-size: 11.5px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+}
 
 .toast {
   position: fixed;
-  bottom: 24px;
+  bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  background: #172c3d;
-  color: #eaf6f8;
-  border: 1px solid #3c7278;
-  border-radius: 12px;
-  padding: 12px 20px;
-  box-shadow: 0 10px 40px #000a;
-  font-size: 13px;
-  max-width: min(540px, 92vw);
-  animation: fadeIn 0.2s ease;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, 10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  background: var(--panel-elevated);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 10px 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.85);
+  font-size: 12.5px;
+  max-width: min(560px, 92vw);
 }
 
-@media(max-width: 1050px) {
+@media (max-width: 1080px) {
   .ws-grid { grid-template-columns: 1fr; }
-  .rightcol { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .stage { min-height: 400px; }
-  #stage { height: 400px; }
+  .metrics-strip { grid-template-columns: repeat(2, 1fr); }
+  .tabs-surface { min-height: 460px; max-height: none; }
+  .stage, #stage, #board2D { min-height: 400px; height: 400px; }
 }
-@media(max-width: 650px) {
-  .rail { width: 56px; padding: 14px 6px; }
-  .rail-btn { width: 40px; height: 40px; font-size: 17px; }
-  .main { margin-left: 56px; width: calc(100% - 56px); }
-  .topbar { padding: 0 14px; height: 56px; }
-  .topbar .tiny-tag { display: none; }
-  .home { padding: 40px 14px 60px; min-height: calc(100vh - 56px); }
-  .home h1 { font-size: 34px; }
-  .subtitle { font-size: 13px; }
-  .prompt-shell { padding: 14px; border-radius: 18px; }
-  .prompt-shell textarea { font-size: 14px; }
-  .rightcol { display: flex; flex-direction: column; }
-  .p1 { width: 130px; height: 130px; }
-  .stage { min-height: 340px; }
-  #stage { height: 340px; }
+@media (max-width: 680px) {
+  .rail { width: 52px; padding: 12px 4px; }
+  .rail-btn { width: 36px; height: 36px; font-size: 15px; }
+  .main { margin-left: 52px; width: calc(100% - 52px); }
+  .topbar { padding: 8px 12px; min-height: 52px; height: auto; flex-wrap: wrap; gap: 6px; }
+  .topbar-pills { flex-wrap: wrap; gap: 5px; }
+  .tiny-tag { display: none; }
+  .home { padding: 32px 12px 54px; }
+  .home h1 { font-size: 30px; }
+  .metrics-strip { grid-template-columns: 1fr 1fr; }
+  .stage, #stage, #board2D { min-height: 330px; height: 330px; }
+  .tab-btn { font-size: 11px; padding: 10px 4px; }
 }
-@media(prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   *, *:before, *:after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
@@ -864,40 +1117,41 @@ body:before {
 <div class="planet p3" aria-hidden="true"></div>
 
 <div class="app">
-  <!-- Sidebar Navigation Rail -->
-  <aside class="rail" aria-label="Navegação">
-    <div class="logo" title="Gambit Lab Cosmic">G</div>
+  <!-- Barra Lateral Minimalista -->
+  <aside class="rail" aria-label="Navegação principal">
+    <div class="logo" title="Gambit Lab Nocturne">G<span>·</span></div>
     <button class="rail-btn active" id="newBtn" title="Nova investigação" aria-label="Nova investigação">＋</button>
-    <button class="rail-btn" id="modeBtn" title="Trocar jogo (Xadrez / Go)" aria-label="Alternar jogo">♙</button>
-    <button class="rail-btn" id="historyBtn" title="Linha do tempo (Event Store)" aria-label="Ver linha do tempo">◷</button>
-    <button class="rail-btn" id="fusionRailBtn" title="Síntese FUSION" aria-label="Síntese FUSION">◇</button>
+    <button class="rail-btn" id="modeBtn" title="Alternar Xadrez / Go" aria-label="Alternar jogo">♙</button>
+    <button class="rail-btn" id="historyBtn" title="Replay Event Store" aria-label="Abrir replay do Event Store">◷</button>
+    <button class="rail-btn" id="fusionRailBtn" title="Síntese FUSION" aria-label="Abrir síntese FUSION">◇</button>
     <div class="rail-bottom">
-      <button class="rail-btn" id="infoBtn" title="Sobre o framework" aria-label="Sobre">ⓘ</button>
+      <button class="rail-btn" id="themeBtn" title="Alternar tema Nocturne / Cosmic" aria-label="Alternar tema visual">◐</button>
+      <button class="rail-btn" id="infoBtn" title="Princípios de honestidade epistêmica" aria-label="Sobre o Gambit Lab">ⓘ</button>
     </div>
   </aside>
 
-  <!-- Main Container -->
   <main class="main">
     <header class="topbar">
-      <div>
-        <div class="brand">GAMBIT <span>LAB</span> <span style="color:#647b95">/</span> COSMIC</div>
-        <div class="tiny-tag">GAME-DRIVEN MULTI-AGENT REASONING</div>
+      <div class="brand-wrap">
+        <div class="brand">GAMBIT <span>LAB</span> · NOCTURNE</div>
+        <div class="tiny-tag">EPISTEMIC MULTI-AGENT ENGINE</div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span class="pill ok" id="backendBadge">● BACKEND CONECTADO</span>
-        <span class="pill" id="topModeBadge">Pesquisa · Xadrez</span>
+      <div class="topbar-pills">
+        <span class="pill" id="backendBadge">● Verificando capacidades...</span>
+        <span class="pill" id="webCapBadge">○ Web: verificando</span>
+        <span class="pill accent" id="topModeBadge">Pesquisa · Xadrez</span>
       </div>
     </header>
 
-    <!-- FASE 1: Home Screen (Pergunta Primeiro) -->
+    <!-- FASE 1: Home Conversacional -->
     <section class="home" id="home">
-      <div class="eyebrow">UMA NOVA FORMA DE INVESTIGAR</div>
-      <h1>Uma pergunta.<br><em>Infinitas perspectivas.</em></h1>
-      <p class="subtitle">Pesquise, debata e audite ideias com a estratégia de Xadrez e Go. Evidências rastreáveis, regras determinísticas e vereditos auditáveis.</p>
+      <div class="eyebrow">GAMBIT LAB NOCTURNE · R1.0</div>
+      <h1>Pergunte primeiro.<br><em>Audite cada movimento.</em></h1>
+      <p class="subtitle">Investigação multiagente guiada por motores determinísticos de Xadrez e Go, pesquisa web pública opt-in com proteção anti-SSRF e verificação literal de citações.</p>
 
       <div class="prompt-shell">
-        <textarea id="question" maxlength="1000" aria-label="Pergunta da investigação" placeholder="O que você gostaria de investigar? (Ex.: Qual a arquitetura mais segura para IA?)" spellcheck="true"></textarea>
-        
+        <textarea id="question" maxlength="1000" aria-label="Pergunta da investigação" placeholder="O que você deseja pesquisar, debater ou auditar? (Ex.: Quais os riscos e controles essenciais para agentes de IA em produção?)" spellcheck="true"></textarea>
+
         <div class="composer-controls">
           <div class="selectors">
             <div class="selectwrap">
@@ -918,53 +1172,83 @@ body:before {
             <div class="selectwrap">
               <label for="sourceSelect">Fontes</label>
               <select id="sourceSelect">
-                <option value="own">Arquivos próprios (Cofre)</option>
-                <option value="web" disabled>Web + arquivos (planejado / em dev)</option>
+                <option value="OWN_ONLY">Somente arquivos próprios (Cofre)</option>
+                <option value="HYBRID">Híbrido (Arquivos + Web pública)</option>
+                <option value="WEB_ONLY">Somente Pesquisa Web pública</option>
               </select>
             </div>
           </div>
-          <button class="round-send" id="goBtn" title="Iniciar investigação" aria-label="Iniciar investigação">↑</button>
+          <button class="round-send" id="goBtn" title="Iniciar investigação" aria-label="Iniciar investigação">Iniciar ↑</button>
         </div>
 
         <div class="prompt-opts">
-          <label><input id="fusionCheck" type="checkbox" checked> FUSION — múltiplas estratégias</label>
-          <label style="cursor:pointer">＋ Anexar arquivo ao cofre <input type="file" id="uploadFile" multiple accept=".pdf,.txt,.md,.csv,.json" hidden></label>
-          <span class="mini-info" id="uploadsInfo">Nenhum arquivo anexado</span>
+          <label><input id="fusionCheck" type="checkbox" checked> FUSION (múltiplas estratégias)</label>
+          <label><input id="forceDemoCheck" type="checkbox"> Modo DEMO_OFFLINE (sem cota Gemini)</label>
+          <label style="color:var(--accent)">＋ Anexar arquivo <input type="file" id="uploadFile" multiple accept=".pdf,.txt,.md,.csv,.json" hidden></label>
+          <span class="mini-info" id="uploadsInfo">Nenhum arquivo local selecionado</span>
         </div>
       </div>
 
-      <div class="suggestions" aria-label="Perguntas sugeridas">
-        <button data-scenario="ia_seguranca" data-mode="research" data-game="chess">✦ Segurança em IA Autônoma (NIST RMF)</button>
-        <button data-scenario="eleicoes_2030" data-mode="debate" data-game="chess">♙ Debate Demográfico & Eleições 2030</button>
-        <button data-scenario="auditoria_controles" data-mode="audit" data-game="go">◉ Auditoria de Controles ISO 27001 / OWASP</button>
+      <div class="cap-strip" id="homeCapSummary">
+        Consultando capacidades reais do servidor (/api/v1/capabilities)...
+      </div>
+
+      <div class="suggestions" aria-label="Exemplos de investigação">
+        <button type="button" data-prompt="Qual a arquitetura mais segura para sistemas com IA autônoma?" data-mode="research" data-game="chess" data-policy="OWN_ONLY">♙ Arquitetura segura para IA autônoma (Cofre NIST)</button>
+        <button type="button" data-prompt="Governança e verificação formal de sistemas multiagente" data-mode="research" data-game="go" data-policy="WEB_ONLY">◉ Pesquisa Web pública em Go 9×9</button>
+        <button type="button" data-prompt="Quem vai ganhar as eleições presidenciais de 2030?" data-mode="debate" data-game="chess" data-policy="OWN_ONLY">♙ Projeção futura & incerteza (Eleições 2030)</button>
+        <button type="button" data-prompt="Auditoria de controles contra prompt injection e vazamento de segredos em LLMs" data-mode="audit" data-game="go" data-policy="HYBRID">◉ Auditoria Híbrida de Segurança em LLMs</button>
       </div>
 
       <p class="caption">
-        <strong>Princípio Epistêmico:</strong> O LLM propõe, as regras do jogo determinístico restringem, as evidências sustentam e o sistema registra.
+        <strong>Compromisso de Honestidade Epistêmica:</strong> Nenhuma alegação recebe <code>SUPPORTED</code> sem fonte anexada e trecho literal verificado. Modos <code>LIVE</code> e <code>DEMO_OFFLINE</code> são sempre exibidos de forma explícita.
       </p>
     </section>
 
-    <!-- FASE 2: Workspace de Investigação -->
+    <!-- FASE 2: Workspace Nocturne -->
     <section class="workspace" id="workspace">
-      <div class="crumb">ESPAÇO DE INVESTIGAÇÃO / <span id="crumbMode">PESQUISA ESTRATÉGICA</span></div>
-      
       <div class="ws-head">
         <div>
-          <h2 id="questionTitle">Qual a arquitetura mais segura para sistemas com IA autônoma?</h2>
-          <p id="workspaceSub">Sessão ativa no backend — lances determinísticos governam as asserções de agentes.</p>
+          <div class="crumb"><span id="crumbMode">PESQUISA ESTRATÉGICA</span> · <span id="crumbExecMode">DEMO_OFFLINE</span> · <span id="crumbPolicy">OWN_ONLY</span></div>
+          <h2 id="questionTitle">—</h2>
+          <p id="workspaceSub">Sessão sincronizada com motores determinísticos e Event Store SHA-256.</p>
         </div>
         <div class="head-actions">
-          <button class="btn secondary" id="editBtn">✎ Refinar pergunta</button>
-          <button class="btn primary" id="restartSession">＋ Nova investigação</button>
-          <button class="btn gold" id="wsFusionBtn" onclick="openFusionModal()">◇ Síntese FUSION</button>
-          <button class="btn secondary" id="wsReplayBtn" onclick="openReplayModal()">⎘ Replay Event Store</button>
-          <button class="btn secondary" onclick="openUploadModal()">＋ Ingerir Documento</button>
-          <button class="btn secondary" onclick="exportReport('markdown')">⬇ Relatório MD</button>
+          <button class="btn secondary" id="pauseResumeBtn" onclick="togglePauseSession()">⏸ Pausar</button>
+          <button class="btn accent" id="wsFusionBtn" onclick="openFusionModal()">◇ Síntese FUSION</button>
+          <button class="btn secondary" id="wsReplayBtn" onclick="openReplayModal()">⎘ Inspecionar Event Store</button>
+          <button class="btn secondary" onclick="openUploadModal()">＋ Fonte / Documento</button>
+          <button class="btn secondary" onclick="exportReport('markdown')">⬇ Exportar MD</button>
+          <button class="btn primary" id="restartSession">＋ Nova pergunta</button>
+        </div>
+      </div>
+
+      <!-- 4 Cartões de Métricas Separadas e Honestas -->
+      <div class="metrics-strip" aria-label="Métricas da sessão">
+        <div class="metric-card">
+          <div class="m-label">Lances do jogo</div>
+          <div class="m-val" id="metricPlies">0</div>
+          <div class="m-sub" id="turnLabel">Aguardando lance inicial</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Etapas de análise</div>
+          <div class="m-val" id="metricSteps">0 / 12</div>
+          <div class="m-sub" id="metricStatus">Fase: DRAFT</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Fontes no cofre</div>
+          <div class="m-val" id="metricSources">0</div>
+          <div class="m-sub" id="metricSourceStatus">NO_SOURCES_ATTACHED</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Telemetria Gemini</div>
+          <div class="m-val" id="metricUsage">Não medido</div>
+          <div class="m-sub" id="budgetTelemetry">Aguardando execução</div>
         </div>
       </div>
 
       <div class="ws-grid">
-        <!-- Coluna da Esquerda: Arena do Tabuleiro & Controles -->
+        <!-- Coluna Esquerda: Tabuleiro 3D WebGL / 2D WCAG + Barra de Avanço + Barra de Replay -->
         <div>
           <section class="surface">
             <div class="panel-top">
@@ -972,264 +1256,269 @@ body:before {
                 <span class="dot"></span>
                 <span id="boardTitle">Tabuleiro de Xadrez · 8×8</span>
               </div>
-              <div style="display:flex;gap:6px">
+              <div class="toggle-group">
                 <button class="toggle active" id="btn3D" onclick="setViewMode('3d')">3D Real (WebGL)</button>
                 <button class="toggle" id="btn2D" onclick="setViewMode('2d')">2D Acessível (WCAG)</button>
-                <button class="toggle" id="btnSwapGame" onclick="swapGame()">Trocar Jogo</button>
               </div>
+            </div>
+
+            <div class="replay-banner" id="replayBanner">
+              <span id="replayBannerText">Modo Replay: visualizando posição histórica (sem chamar IA)</span>
+              <button class="btn sm primary" onclick="replayJumpLatest()">Voltar ao estado atual ⏭</button>
             </div>
 
             <div class="stage">
-              <canvas id="stage" aria-label="Visualização 3D do tabuleiro de Xadrez ou Go com silhuetas e acentos luminosos"></canvas>
-              <div id="board2D" style="display:none"><div class="grid-2d" id="grid2D"></div></div>
-              <span class="scene-note" id="sceneNote">Clique numa peça/casa para ver evidência vinculada · Arraste para orbitar</span>
+              <canvas id="stage" aria-label="Tabuleiro 3D WebGL interativo de Xadrez e Go"></canvas>
+              <div id="board2D"><div class="grid-2d" id="grid2D"></div></div>
+              <span class="scene-note" id="sceneNote">Arraste para orbitar em 3D · Clique em casas no modo 2D para inspecionar claims</span>
             </div>
 
-            <div class="board-controls">
-              <button class="btn primary" id="nextBtn" onclick="nextStep()">▶ Próximo Lance</button>
-              <button class="btn" id="prevBtn" onclick="prevStep()">↶ Voltar</button>
-              <button class="btn" id="resetBtn" onclick="resetGame()">↻ Reiniciar</button>
-              <button class="btn" id="autoBtn" onclick="toggleAuto()">▷ Reproduzir</button>
-              <span class="turn" id="turnLabel">Lance 0 / 3</span>
+            <div class="action-bars">
+              <!-- Barra 1: Execução Real da Investigação (POST /advance) -->
+              <div class="exec-bar">
+                <button class="btn primary" id="continueBtn" onclick="continueInvestigation(1)">▶ Continuar investigação</button>
+                <button class="btn accent" id="advance3Btn" onclick="continueInvestigation(3)">⏭ +3 etapas</button>
+                <button class="btn secondary" id="passGoBtn" style="display:none" onclick="submitGoPass()">Passe (Go)</button>
+                <span class="turn-indicator" id="execHint">Pronto para gerar próximo ciclo</span>
+              </div>
+
+              <!-- Barra 2: Replay Determinístico (GET /replay?up_to_seq=... — ZERO chamadas ao Gemini) -->
+              <div class="replay-bar" aria-label="Controles de replay histórico">
+                <span class="r-title">Replay histórico:</span>
+                <button class="btn sm secondary" id="repFirstBtn" onclick="navigateMoveReplay('first')" disabled>⏮ Início</button>
+                <button class="btn sm secondary" id="repPrevBtn" onclick="navigateMoveReplay('prev')" disabled>← Anterior</button>
+                <button class="btn sm secondary" id="repNextBtn" onclick="navigateMoveReplay('next')" disabled>Próximo →</button>
+                <button class="btn sm secondary" id="repLiveBtn" onclick="replayJumpLatest()" disabled>⏭ Atual</button>
+                <span id="replayCursorLabel" style="margin-left:auto">Posição ao vivo</span>
+              </div>
             </div>
 
             <div class="bottom-note">
-              <span style="color:var(--mint);font-size:14px">✦</span>
-              <span id="explainLabel">Aguardando o primeiro lance da investigação...</span>
+              <span style="color:var(--accent)">◆</span>
+              <span id="explainLabel">Clique em "Continuar investigação" para executar o primeiro ciclo de análise e lance validado pelo motor.</span>
             </div>
           </section>
-
-          <div class="footer-editor">
-            <input id="refineInput" aria-label="Continuar investigação" placeholder="Pergunte algo ou refine a linha de investigação…">
-            <button class="btn primary" id="refineBtn" onclick="submitRefinement()">Enviar</button>
-          </div>
         </div>
 
-        <!-- Coluna da Direita: Agentes, 3 Camadas e Linha do Tempo -->
-        <div class="rightcol">
-          <!-- Conversa com Agentes -->
-          <section class="surface thread">
-            <h3>✦ Conversa & Agentes de Investigação</h3>
-            <div class="message user">
-              <div class="name">VOCÊ</div>
-              <div id="userBubble">Pergunta enviada.</div>
-            </div>
-            <div class="message">
-              <div class="name">ORQUESTRADOR · GEMINI ADAPTER</div>
-              <div id="orchestratorBubble">Sessão validada pelo motor determinístico. As evidências são auditadas antes de qualquer aprovação.</div>
-            </div>
-            <div class="message" id="agentPropositionBox" style="display:none">
-              <div class="name" id="agentPropName">PESQUISADOR · LANCE d4</div>
-              <div id="agentPropText">Proposição da tese central vinculada ao documento primário.</div>
-            </div>
-          </section>
+        <!-- Coluna Direita: 4 Abas Organizadas (Conversa | Fontes | Auditoria | Histórico) -->
+        <section class="tabs-surface" aria-label="Painel analítico da investigação">
+          <div class="tab-nav" role="tablist" aria-label="Abas de investigação">
+            <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tabPanelChat" id="tabBtnChat" onclick="switchTab('chat')">
+              Conversa <span class="tab-count" id="countChat">1</span>
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelSources" id="tabBtnSources" onclick="switchTab('sources')">
+              Fontes <span class="tab-count" id="countSources">0</span>
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelAudit" id="tabBtnAudit" onclick="switchTab('audit')">
+              Auditoria <span class="tab-count" id="countAudit">0</span>
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelHistory" id="tabBtnHistory" onclick="switchTab('history')">
+              Histórico <span class="tab-count" id="countHistory">1</span>
+            </button>
+          </div>
 
-          <!-- Auditoria em Três Camadas -->
-          <section class="surface tier-panel">
-            <h3>
-              <span>Auditoria em Três Camadas</span>
-              <small style="font-size:10px;color:var(--mint)" id="budgetTelemetry">Latência: 12ms | Custo: $0.0000</small>
-            </h3>
-            
+          <!-- ABA 1: Conversa entre Agentes -->
+          <div class="tab-panel active" role="tabpanel" id="tabPanelChat" aria-labelledby="tabBtnChat">
+            <div class="chat-stream" id="chatStream">
+              <div class="message user">
+                <div class="msg-head"><span class="msg-author">VOCÊ · PERGUNTA CENTRAL</span></div>
+                <div id="userBubble">—</div>
+              </div>
+            </div>
+            <div class="chat-composer">
+              <input id="refineInput" aria-label="Orientar próxima etapa da investigação" placeholder="Adicione uma subquestão ou foco para o próximo turno…">
+              <button class="btn primary" id="refineBtn" onclick="submitRefinementAndAdvance()">Orientar ▶</button>
+            </div>
+          </div>
+
+          <!-- ABA 2: Fontes (Cofre Local + Snapshots Web) -->
+          <div class="tab-panel" role="tabpanel" id="tabPanelSources" aria-labelledby="tabBtnSources">
+            <div class="sources-toolbar">
+              <button class="btn sm primary" onclick="openUploadModal()">＋ Ingerir documento local</button>
+              <button class="btn sm accent" id="btnWebSnap" onclick="openWebSnapshotModal()">＋ Capturar URL HTTPS</button>
+            </div>
+            <div id="artifactsContainer">
+              <div class="empty-state">Nenhuma fonte anexada ainda. As alegações serão tratadas honestamente como <code>HYPOTHESIS</code> até que documentos ou fontes web verificadas estejam presentes.</div>
+            </div>
+          </div>
+
+          <!-- ABA 3: Auditoria Epistêmica em 3 Camadas -->
+          <div class="tab-panel" role="tabpanel" id="tabPanelAudit" aria-labelledby="tabBtnAudit">
+            <div class="audit-head">
+              <strong style="font-size:12.5px">Verificação Epistêmica em 3 Camadas</strong>
+              <span class="chip" id="auditModeChip">DEMO_OFFLINE</span>
+            </div>
+
             <div class="tier-badges">
               <div class="tier-badge ok" id="badgeIntegrity">
-                <span>1. Integridade (SHA-256 / Chain)</span>
+                <span>1. Integridade Criptográfica (SHA-256 / Chain)</span>
                 <b id="valIntegrity">INTEGRITY_VERIFIED</b>
               </div>
               <div class="tier-badge warn" id="badgeSource">
-                <span>2. Fonte & Citação no Documento</span>
+                <span>2. Verificação de Fontes & Citação Literal</span>
                 <b id="valSource">NO_SOURCES_ATTACHED</b>
               </div>
               <div class="tier-badge warn" id="badgeEvidence">
                 <span>3. Avaliação Epistêmica Factual</span>
-                <b id="valEvidence">HYPOTHESIS</b>
+                <b id="valEvidence">NOT_ASSESSED</b>
               </div>
             </div>
 
-            <!-- Rubrica do Árbitro -->
             <div class="rubric-box" id="arbitratorCard">
-              <b>Rubrica do Árbitro Epistêmico (7 Pontos)</b>
-              <small id="rubricSummary">Identidade: OK | Comparabilidade: OK | Proveniência: OK | Citação: Verificada</small>
+              <b>Parecer do Árbitro Epistêmico</b>
+              <small id="rubricSummary">Nenhuma alegação avaliada nesta etapa inicial.</small>
             </div>
-          </section>
 
-          <!-- Documentos & Cofres -->
-          <section class="surface" style="padding:18px">
-            <h3 style="font-size:13.5px;margin:0 0 12px;color:#fff">Artefatos / Documentos no Cofre</h3>
-            <div id="artifactsContainer">
-              <div class="source-box">
-                <b id="artDocName">NIST_AI_RMF_Playbook_2026.txt</b>
-                <small id="artDocHash">SHA-256: 3a98c7e108f5... (Cofre Público / Congelado)</small>
-                <span class="source-tag">CONFERIDO NO BACKEND</span>
-              </div>
+            <h4 style="font-size:12px;margin:14px 0 8px;color:var(--muted)">Alegações Atômicas Registradas</h4>
+            <div id="claimsListContainer">
+              <div class="empty-state">Nenhuma alegação registrada ainda. Avance a investigação para gerar claims auditáveis.</div>
             </div>
-          </section>
+          </div>
 
-          <!-- Linha do Tempo (Event Store) -->
-          <section class="surface events" id="eventsCard">
-            <h3>◷ Linha do Tempo Imutável (Event Store)</h3>
-            <div class="event-list" id="eventsList">
-              <div class="event"><strong>01</strong><span>Sessão criada e hashes de gênese registrados.</span></div>
+          <!-- ABA 4: Histórico Imutável (Event Store) -->
+          <div class="tab-panel" role="tabpanel" id="tabPanelHistory" aria-labelledby="tabBtnHistory">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-size:11.5px;color:var(--muted)">Cadeia append-only encadeada por SHA-256</span>
+              <button class="btn sm secondary" onclick="openReplayModal()">Ver JSON / Hashes</button>
             </div>
-          </section>
-        </div>
+            <div class="event-list" id="eventsList"></div>
+          </div>
+        </section>
       </div>
     </section>
   </main>
 </div>
 
 <!-- Modal: FUSION Synthesis -->
-<div class="modal-overlay" id="fusionModal">
+<div class="modal-overlay" id="fusionModal" role="dialog" aria-modal="true" aria-labelledby="fusionModalTitle">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>◇ FUSION Research — Relatório de Síntese Unificada</h3>
-      <button class="close-btn" onclick="closeModal('fusionModal')">&times;</button>
+      <h3 id="fusionModalTitle">◇ FUSION Research — Conciliação Multi-Estratégia</h3>
+      <button class="close-btn" onclick="closeModal('fusionModal')" aria-label="Fechar">&times;</button>
     </div>
-    <div id="fusionModalBody">Carregando síntese dos ramos...</div>
+    <div id="fusionModalBody">Executando ramos isolados...</div>
   </div>
 </div>
 
-<!-- Modal: Ingestão de Documento -->
-<div class="modal-overlay" id="uploadModal">
+<!-- Modal: Ingestão de Documento Local -->
+<div class="modal-overlay" id="uploadModal" role="dialog" aria-modal="true" aria-labelledby="uploadModalTitle">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>＋ Ingerir Documento no Cofre</h3>
-      <button class="close-btn" onclick="closeModal('uploadModal')">&times;</button>
+      <h3 id="uploadModalTitle">＋ Ingerir Documento no Cofre SHA-256</h3>
+      <button class="close-btn" onclick="closeModal('uploadModal')" aria-label="Fechar">&times;</button>
     </div>
-    <div>
-      <label style="font-size:11.5px;color:#8daec2;display:block;margin-bottom:4px">Nome do Arquivo</label>
-      <input id="upDocName" value="Novo_Estudo_Seguranca.pdf" style="width:100%;background:#09131d;border:1px solid #273e51;color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:12px">
-      
-      <label style="font-size:11.5px;color:#8daec2;display:block;margin-bottom:4px">Lado Proprietário / Cofre</label>
-      <select id="upDocOwner" style="width:100%;background:#09131d;border:1px solid #273e51;color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:12px">
-        <option value="public">Público (ambos os lados têm acesso)</option>
-        <option value="white">Cofre Brancas / Propositor (privado)</option>
-        <option value="black">Cofre Pretas / Auditor (privado)</option>
+    <div class="form-field">
+      <label for="upDocName">Nome do Documento</label>
+      <input id="upDocName" value="Diretriz_Tecnica_Auditavel.txt">
+    </div>
+    <div class="form-field">
+      <label for="upDocOwner">Cofre Proprietário (Isolamento de Debate)</label>
+      <select id="upDocOwner">
+        <option value="public">Público (acessível a todos os agentes)</option>
+        <option value="white">Cofre Privado Lado A / Brancas (bloqueado para Lado B com HTTP 403)</option>
+        <option value="black">Cofre Privado Lado B / Pretas (bloqueado para Lado A com HTTP 403)</option>
       </select>
-      
-      <label style="font-size:11.5px;color:#8daec2;display:block;margin-bottom:4px">Conteúdo / Extrato Textual</label>
-      <textarea id="upDocContent" rows="5" style="width:100%;background:#09131d;border:1px solid #273e51;color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:14px;resize:vertical">Pipelines de auditoria determinísticos reduzem o risco de alucinações e garantem rastreabilidade estrita.</textarea>
-      
-      <button class="btn primary" style="width:100%" onclick="submitArtifactUpload()">Salvar e Calcular Hash SHA-256</button>
     </div>
+    <div class="form-field">
+      <label for="upDocContent">Conteúdo Textual Integral (para verificação literal de citações)</label>
+      <textarea id="upDocContent" rows="5">Sistemas multiagente críticos exigem separação formal entre proposição generativa, motores determinísticos de validação e verificação literal de citações por hash SHA-256.</textarea>
+    </div>
+    <button class="btn primary" style="width:100%" onclick="submitArtifactUpload()">Registrar no Cofre e Calcular SHA-256</button>
   </div>
 </div>
 
-<!-- Modal: Replay Event Store -->
-<div class="modal-overlay" id="replayModal">
+<!-- Modal: Captura Segura de URL HTTPS (Anti-SSRF) -->
+<div class="modal-overlay" id="webSnapModal" role="dialog" aria-modal="true" aria-labelledby="webSnapTitle">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>⎘ Replay Determinístico a partir do Event Store</h3>
-      <button class="close-btn" onclick="closeModal('replayModal')">&times;</button>
+      <h3 id="webSnapTitle">＋ Capturar Snapshot Web HTTPS (Proteção Anti-SSRF)</h3>
+      <button class="close-btn" onclick="closeModal('webSnapModal')" aria-label="Fechar">&times;</button>
     </div>
-    <div id="replayModalBody">Carregando eventos imutáveis...</div>
+    <div class="form-field">
+      <label for="snapUrlInput">URL Pública (estritamente HTTPS; IPs privados/localhost/metadata são bloqueados)</label>
+      <input id="snapUrlInput" placeholder="https://pt.wikipedia.org/wiki/Intelig%C3%AAncia_artificial">
+    </div>
+    <div class="form-field">
+      <label for="snapTitleInput">Título de Referência (opcional)</label>
+      <input id="snapTitleInput" placeholder="Snapshot Web Auditável">
+    </div>
+    <button class="btn primary" style="width:100%" onclick="submitWebSnapshot()">Validar Anti-SSRF, Capturar e Calcular SHA-256</button>
   </div>
 </div>
 
-<!-- Modal: Inspeção Epistêmica de Peça -->
-<div class="modal-overlay" id="inspectModal">
+<!-- Modal: Replay Event Store Completo -->
+<div class="modal-overlay" id="replayModal" role="dialog" aria-modal="true" aria-labelledby="replayModalTitle">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 id="inspectTitle">Inspeção Epistêmica da Casa</h3>
-      <button class="close-btn" onclick="closeModal('inspectModal')">&times;</button>
+      <h3 id="replayModalTitle">⎘ Auditoria Criptográfica do Event Store</h3>
+      <button class="close-btn" onclick="closeModal('replayModal')" aria-label="Fechar">&times;</button>
     </div>
-    <div id="inspectBody">Detalhes da alegação...</div>
+    <div id="replayModalBody">Carregando cadeia de eventos...</div>
+  </div>
+</div>
+
+<!-- Modal: Inspeção de Casa/Interseção -->
+<div class="modal-overlay" id="inspectModal" role="dialog" aria-modal="true" aria-labelledby="inspectTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="inspectTitle">Inspeção Epistêmica da Posição</h3>
+      <button class="close-btn" onclick="closeModal('inspectModal')" aria-label="Fechar">&times;</button>
+    </div>
+    <div id="inspectBody"></div>
   </div>
 </div>
 
 <script>
 'use strict';
 /**
- * Gambit Lab Cosmic — Web Client Engine
- * Suporta WebGL 3D nativo inspirado na imagem_pecas_xadrez.jpg (silhuetas refinadas, cruz luminosa,
- * coroas estilizadas e acentos cyan/âmbar), 2D Acessível, FUSION e comunicação com FastAPI REST API.
+ * Gambit Lab Nocturne (R1.0) — Frontend Client
+ * Preserva 100% da renderização WebGL 3D procedural das peças e pedras de Go,
+ * elimina limites artificiais de 3 lances e telemetria falsa, integra GET /api/v1/capabilities,
+ * separa Continuar Investigação (POST /advance) de Replay Histórico (GET /replay?up_to_seq=...)
+ * e organiza o painel analítico nas 4 abas: Conversa, Fontes, Auditoria e Histórico.
  */
 
-// Estado Global da Aplicação
+let serverCapabilities = {
+  gemini: { configured: false, live_allowed: false, model: null },
+  web_search: { available: false, provider: null, reason: 'CHECKING' }
+};
+
 let mode = 'research';
 let game = 'chess';
 let viewMode = '3d';
+let activeSession = null;
 let activeSessionId = null;
 let currentVersion = 1;
 let activeQuestion = '';
 let attachedFiles = [];
-let stepIndex = 0;
-let autoTimer = null;
+let isAdvancing = false;
+
+// Estado de Replay vs Estado Ao Vivo
+let sessionEvents = [];
+let moveEventSeqs = []; // lista de seqs de CHESS_MOVE / GO_MOVE para navegação de lances
+let replayCursor = -1;  // -1 significa "Ao vivo (última posição confirmada)"
+let isReplayActive = false;
+
 let selectedCell = null;
 let lastMoveOrigin = null;
 let lastMoveDest = null;
-let fusionBranches = [];
-let fusionReportData = null;
 
-// Cenários Pré-configurados (Ground Truth & Fontes Primárias)
-const SCENARIOS = {
-  ia_seguranca: {
-    topic: "Qual a arquitetura mais segura para sistemas com IA autônoma?",
-    docName: "NIST_AI_RMF_Playbook_2026.txt",
-    docDetail: "Seção 3.2 — Rastreabilidade e Governança de Agentes",
-    quote: "exigem a separação estrita entre o módulo de proposição (LLM) e o módulo de validação de regras (motores determinísticos).",
-    claim: "Pipelines de IA segura exigem separação estrita entre proposição do LLM e validação formal por motores determinísticos.",
-    movesChess: [
-      { uci: 'd2d4', san: 'd4', from: [3, 6], to: [3, 4], desc: 'As brancas introduzem a tese central: separação entre proposição e validação.', quote: 'NIST AI RMF 3.2: Agentes autônomos exigem módulo determinístico independente.' },
-      { uci: 'd7d5', san: 'd5', from: [3, 1], to: [3, 3], desc: 'O crítico formula contraponto: custo de latência de múltiplos validadores.', quote: 'Estudo empírico: 18% de acréscimo de tempo em troca de 64% menos alucinações.' },
-      { uci: 'c2c4', san: 'c4', from: [2, 6], to: [2, 4], desc: 'Gambito da Dama: sacrifício de velocidade para garantir integridade auditável.', quote: 'A integridade de hash SHA-256 é comprovada antes do consumo do veredito.' }
-    ],
-    movesGo: [
-      { coord: 'E5', col: 4, row: 4, desc: 'Lente de Influência: cobertura ampla do centro conceitual de governança.', quote: 'Mapeamento de 8 domínios de conformidade necessários para auditoria contínua.' },
-      { coord: 'D4', col: 3, row: 5, desc: 'Expansão de fronteiras temáticas em direção à segurança em camadas.', quote: 'Separação entre ambiente de dados e execução de agentes.' },
-      { coord: 'F6', col: 5, row: 3, desc: 'Conexão de diretrizes entre áreas correlatas de autenticação e logs.', quote: 'Intersecção comprovada entre requisitos de privacidade e logs imutáveis.' }
-    ]
-  },
-  eleicoes_2030: {
-    topic: "Projeções eleitorais e governança institucional para 2030",
-    docName: "Cenarios_Demograficos_Eleicoes_2030.txt",
-    docDetail: "Análise Prospectiva de Tendências Eleitorais",
-    quote: "Nenhuma afirmação declarando um vencedor antecipado para 2030 é factualmente sustentável; trata-se de projeção com alta incerteza.",
-    claim: "Projeções para 2030 constituem cenários com alta incerteza, não fatos consumados.",
-    movesChess: [
-      { uci: 'e2e4', san: 'e4', from: [4, 6], to: [4, 4], desc: 'Hipótese exploratória: Cenário 1 de polarização demográfica.', quote: 'Transições geracionais aumentam participação de eleitores digitais em 12%.' },
-      { uci: 'e7e5', san: 'e5', from: [4, 1], to: [4, 3], desc: 'Contraponto: volatilidade econômica e fragmentação partidária.', quote: 'Volatilidade regional impede antecipação factual de maiorias consolidadas.' },
-      { uci: 'f2f4', san: 'f4', from: [5, 6], to: [5, 4], desc: 'Gambito do Rei: teste de vulnerabilidade sob hipóteses adversariais.', quote: 'Eventos futuros não constituem fatos consumados; o sistema rotula como PROJEÇÃO INCERTA.' }
-    ],
-    movesGo: [
-      { coord: 'C3', col: 2, row: 6, desc: 'Lente Territorial: consolidação de bases empíricas históricas.', quote: 'Tendências de participação eleitoral nos últimos 20 anos.' },
-      { coord: 'G7', col: 6, row: 2, desc: 'Lente de Invasão: teste de cenários disruptivos de novas tecnologias.', quote: 'Impacto de redes sociais descentralizadas na formação de opinião.' },
-      { coord: 'E5', col: 4, row: 4, desc: 'Equilíbrio central: modelagem de incertezas sistêmicas.', quote: 'Relatório formal destaca ausência de vencedor antecipado.' }
-    ]
-  },
-  auditoria_controles: {
-    topic: "Auditoria de Controles ISO 27001 e OWASP LLM Top 10",
-    docName: "Checklist_Controles_Seguranca_Cloud.txt",
-    docDetail: "Controle A.12.4.1 (Logs de Eventos) e Segregação",
-    quote: "Registros de auditoria que registram atividades do usuário, exceções e eventos devem ser mantidos e protegidos contra adulteração por encadeamento de hash criptográfico.",
-    claim: "Logs de auditoria devem ser protegidos contra adulteração por encadeamento criptográfico de hash.",
-    movesChess: [
-      { uci: 'd2d4', san: 'd4', from: [3, 6], to: [3, 4], desc: 'Inspeção do Controle A.12.4.1: Registros de logs e hashes.', quote: 'Evidência: Event store com SHA-256 encadeado e verificação de integridade.' },
-      { uci: 'g8f6', san: 'Nf6', from: [6, 0], to: [5, 2], desc: 'Defensor apresenta contraprova: registros de rotação e retenção.', quote: 'Retenção configurada de acordo com políticas de privacidade e LGPD.' },
-      { uci: 'c2c4', san: 'c4', from: [2, 6], to: [2, 4], desc: 'Auditor testa segregação de acessos em cofres pré-partida.', quote: 'Acesso cruzado pré-início bloqueado com HTTP 403.' }
-    ],
-    movesGo: [
-      { coord: 'C3', col: 2, row: 6, desc: 'Domínio 1: Autenticação e Gestão de Segredos.', quote: 'Chaves de API confinadas exclusivamente ao backend.' },
-      { coord: 'G7', col: 6, row: 2, desc: 'Domínio 2: Proteção contra Prompt Injection em PDFs.', quote: 'Conteúdo de terceiros tratado estritamente como dado não confiável.' },
-      { coord: 'C7', col: 2, row: 2, desc: 'Domínio 3: Mitigação de SSRF em fontes externas.', quote: 'URLs de rede local bloqueadas na política own_only.' }
-    ]
-  }
-};
-
-let currentScenario = SCENARIOS.ia_seguranca;
+const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 let boardState = {
-  chessFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+  chessFen: INITIAL_FEN,
   goStones: []
 };
 
-// Canvas Cósmico de Estrelas
+/* =========================================================================
+   1. Fundo Estelar Sutil + Alternador Nocturne / Cosmic
+   ========================================================================= */
 const spaceCanvas = document.getElementById('space');
 const spaceCtx = spaceCanvas.getContext('2d');
 let stars = [];
 
 function initStars() {
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let w = window.innerWidth, h = window.innerHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth, h = window.innerHeight;
   spaceCanvas.width = w * dpr;
   spaceCanvas.height = h * dpr;
   spaceCanvas.style.width = w + 'px';
@@ -1241,11 +1530,11 @@ function initStars() {
     seed = (seed * 1664525 + 1013904223) >>> 0;
     return seed / 4294967296;
   }
-  stars = Array.from({ length: Math.min(220, Math.floor(w * h / 5000)) }, () => ({
+  stars = Array.from({ length: Math.min(160, Math.floor(w * h / 7500)) }, () => ({
     x: rand() * w,
     y: rand() * h,
-    r: 0.35 + rand() * 1.3,
-    a: 0.15 + rand() * 0.65,
+    r: 0.35 + rand() * 1.05,
+    a: 0.14 + rand() * 0.5,
     p: rand() * 6.28
   }));
 }
@@ -1254,27 +1543,44 @@ function drawStars(t) {
   spaceCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   for (const s of stars) {
     spaceCtx.beginPath();
-    spaceCtx.fillStyle = `rgba(205, 230, 255, ${s.a * (0.85 + 0.15 * Math.sin(t * 0.0006 + s.p))})`;
+    spaceCtx.fillStyle = `rgba(220, 224, 245, ${s.a * (0.88 + 0.12 * Math.sin(t * 0.0005 + s.p))})`;
     spaceCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
     spaceCtx.fill();
   }
 }
 
-let spaceRaf = 0;
 function starLoop(t) {
   drawStars(t);
-  spaceRaf = requestAnimationFrame(starLoop);
+  requestAnimationFrame(starLoop);
 }
 initStars();
 window.addEventListener('resize', initStars);
 if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  spaceRaf = requestAnimationFrame(starLoop);
+  requestAnimationFrame(starLoop);
+} else {
+  drawStars(0);
 }
 
-// Motor Gráfico 3D WebGL (imagem_pecas_xadrez.jpg)
+function toggleVisualTheme() {
+  const htmlEl = document.documentElement;
+  const next = htmlEl.getAttribute('data-theme') === 'nocturne' ? 'cosmic' : 'nocturne';
+  htmlEl.setAttribute('data-theme', next);
+  try { localStorage.setItem('gambit_theme', next); } catch (_) {}
+  notify(`Tema visual alterado para ${next === 'nocturne' ? 'Nocturne (Obsidian)' : 'Cosmic'}.`);
+}
+try {
+  const savedTheme = localStorage.getItem('gambit_theme');
+  if (savedTheme === 'cosmic' || savedTheme === 'nocturne') {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+} catch (_) {}
+
+/* =========================================================================
+   2. Motor Gráfico 3D WebGL Nativo (100% das malhas procedurais preservadas)
+   ========================================================================= */
 const canvas3D = document.getElementById('stage');
 const gl = canvas3D.getContext('webgl', { antialias: true });
-let theta = 0, phi = 0.88, radius = 13.5, camTarget = [0, 0, 0];
+let theta = 0, phi = 0.86, radius = 13.4, camTarget = [0, 0, 0];
 
 const VERT = `
 attribute vec3 p;
@@ -1298,130 +1604,128 @@ uniform vec3 emissive;
 varying vec3 fn;
 varying vec3 fp;
 void main(){
-  vec3 L = normalize(vec3(-0.55, 0.95, 0.72));
-  vec3 V = normalize(vec3(0.0, 5.0, 10.0) - fp);
+  vec3 L = normalize(vec3(-0.52, 0.96, 0.68));
+  vec3 V = normalize(vec3(0.0, 5.5, 10.0) - fp);
   vec3 H = normalize(L + V);
   float lam = max(dot(normalize(fn), L), 0.0);
-  float spec = pow(max(dot(normalize(fn), H), 0.0), 24.0);
+  float spec = pow(max(dot(normalize(fn), H), 0.0), 28.0);
   float rim = pow(1.0 - max(dot(normalize(fn), vec3(0.0, 0.6, 0.8)), 0.0), 3.0);
-  vec3 c = color * (0.35 + 0.65 * lam) + vec3(0.85) * spec * 0.45 + emissive * 0.8 + vec3(0.0, 0.6, 0.7) * rim * 0.35;
+  vec3 c = color * (0.36 + 0.64 * lam) + vec3(0.9) * spec * 0.42 + emissive * 0.82 + vec3(0.45, 0.38, 0.78) * rim * 0.24;
   gl_FragColor = vec4(c, 1.0);
 }
 `;
 
-function createShader(type, src) {
-  let s = gl.createShader(type);
-  gl.shaderSource(s, src);
-  gl.compileShader(s);
-  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(s));
+let program = null, loc = null;
+let cube, sphere, pawnMesh, rookMesh, knightBaseMesh, bishopMesh, queenMesh, kingMesh;
+
+if (gl) {
+  function createShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
   }
-  return s;
+  program = gl.createProgram();
+  gl.attachShader(program, createShader(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(program, createShader(gl.FRAGMENT_SHADER, FRAG));
+  gl.linkProgram(program);
+  gl.useProgram(program);
+
+  loc = {
+    p: gl.getAttribLocation(program, 'p'),
+    n: gl.getAttribLocation(program, 'n'),
+    vp: gl.getUniformLocation(program, 'vp'),
+    model: gl.getUniformLocation(program, 'model'),
+    color: gl.getUniformLocation(program, 'color'),
+    emissive: gl.getUniformLocation(program, 'emissive')
+  };
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.CULL_FACE);
+
+  function makeMesh(verts) {
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+    return { buf, count: verts.length / 6 };
+  }
+  function addTri(a, b, c, n, arr) { for (const v of [a, b, c]) arr.push(...v, ...n); }
+  function boxMesh() {
+    const v = [], q = [[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
+    for (const [idx, no] of [[[4,5,6,7],[0,0,1]],[[1,0,3,2],[0,0,-1]],[[0,4,7,3],[-1,0,0]],[[5,1,2,6],[1,0,0]],[[3,7,6,2],[0,1,0]],[[0,1,5,4],[0,-1,0]]]) {
+      addTri(q[idx[0]], q[idx[1]], q[idx[2]], no, v);
+      addTri(q[idx[0]], q[idx[2]], q[idx[3]], no, v);
+    }
+    return makeMesh(v);
+  }
+  function latheMesh(prof, seg = 20) {
+    const v = [];
+    for (let i = 0; i < prof.length - 1; i++) {
+      const [r0, y0] = prof[i], [r1, y1] = prof[i + 1], dy = y1 - y0, dr = r1 - r0;
+      for (let j = 0; j < seg; j++) {
+        const a = 2 * Math.PI * j / seg, b = 2 * Math.PI * (j + 1) / seg;
+        const p0 = [r0 * Math.cos(a), y0, r0 * Math.sin(a)], p1 = [r0 * Math.cos(b), y0, r0 * Math.sin(b)];
+        const p2 = [r1 * Math.cos(b), y1, r1 * Math.sin(b)], p3 = [r1 * Math.cos(a), y1, r1 * Math.sin(a)];
+        const no = norm([Math.cos((a + b) / 2) * dy, -dr, Math.sin((a + b) / 2) * dy]);
+        addTri(p0, p2, p1, no, v);
+        addTri(p0, p3, p2, no, v);
+      }
+    }
+    return makeMesh(v);
+  }
+
+  cube = boxMesh();
+  sphere = latheMesh(Array.from({ length: 15 }, (_, i) => {
+    const a = -Math.PI / 2 + i * Math.PI / 14;
+    return [Math.max(.002, Math.cos(a)), Math.sin(a)];
+  }), 22);
+  pawnMesh = latheMesh([[.34,0],[.38,.06],[.30,.12],[.21,.20],[.14,.45],[.19,.50],[.18,.56],[.12,.60],[0,.62]], 20);
+  rookMesh = latheMesh([[.36,0],[.39,.08],[.31,.16],[.24,.22],[.23,.68],[.32,.72],[.34,.88],[.34,.96],[.18,.96],[.18,.88],[0,.88]], 22);
+  knightBaseMesh = latheMesh([[.35,0],[.38,.08],[.29,.16],[.22,.24],[.18,.45],[.22,.52],[0,.55]], 20);
+  bishopMesh = latheMesh([[.35,0],[.38,.08],[.28,.16],[.19,.26],[.14,.55],[.25,.65],[.23,.78],[.14,.92],[.07,1.02],[0,1.06]], 22);
+  queenMesh = latheMesh([[.37,0],[.41,.09],[.30,.18],[.20,.30],[.15,.60],[.28,.78],[.34,.90],[.31,.98],[.16,1.00],[0,1.02]], 24);
+  kingMesh = latheMesh([[.38,0],[.42,.09],[.32,.19],[.22,.32],[.17,.68],[.29,.85],[.34,.96],[.30,1.04],[.14,1.06],[0,1.08]], 24);
 }
-let program = gl.createProgram();
-gl.attachShader(program, createShader(gl.VERTEX_SHADER, VERT));
-gl.attachShader(program, createShader(gl.FRAGMENT_SHADER, FRAG));
-gl.linkProgram(program);
-gl.useProgram(program);
 
-const loc = {
-  p: gl.getAttribLocation(program, 'p'),
-  n: gl.getAttribLocation(program, 'n'),
-  vp: gl.getUniformLocation(program, 'vp'),
-  model: gl.getUniformLocation(program, 'model'),
-  color: gl.getUniformLocation(program, 'color'),
-  emissive: gl.getUniformLocation(program, 'emissive')
-};
-gl.enable(gl.DEPTH_TEST);
-gl.enable(gl.CULL_FACE);
-
-// Operações Matriciais 3D
 function identity() { return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]; }
-function mult(a,b) {
-  let o = new Array(16).fill(0);
-  for(let j=0; j<4; j++) for(let i=0; i<4; i++) for(let k=0; k<4; k++) o[j*4+i] += a[k*4+i]*b[j*4+k];
+function mult(a, b) {
+  const o = new Array(16).fill(0);
+  for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) for (let k = 0; k < 4; k++) o[j*4+i] += a[k*4+i] * b[j*4+k];
   return o;
 }
-function trans(x,y,z) { let a=identity(); a[12]=x; a[13]=y; a[14]=z; return a; }
-function scale(x,y,z) { let a=identity(); a[0]=x; a[5]=y; a[10]=z; return a; }
-function rotY(t) { let c=Math.cos(t), s=Math.sin(t); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]; }
+function trans(x, y, z) { const a = identity(); a[12] = x; a[13] = y; a[14] = z; return a; }
+function scale(x, y, z) { const a = identity(); a[0] = x; a[5] = y; a[10] = z; return a; }
+function rotY(t) { const c = Math.cos(t), s = Math.sin(t); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]; }
 function persp(fov, asp, n, f) {
-  let k=1/Math.tan(fov/2);
+  const k = 1 / Math.tan(fov / 2);
   return [k/asp,0,0,0, 0,k,0,0, 0,0,(f+n)/(n-f),-1, 0,0,2*f*n/(n-f),0];
 }
-function sub(a,b){ return a.map((v,i)=>v-b[i]); }
-function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
-function dot(a,b){ return a.reduce((s,v,i)=>s+v*b[i], 0); }
-function norm(a){ return a.map(x=>x/Math.max(1e-9, Math.sqrt(dot(a,a)))); }
+function sub(a, b) { return a.map((v, i) => v - b[i]); }
+function cross(a, b) { return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+function dot(a, b) { return a.reduce((s, v, i) => s + v * b[i], 0); }
+function norm(a) { return a.map(x => x / Math.max(1e-9, Math.sqrt(dot(a, a)))); }
 function lookAt(eye, at) {
-  let z=norm(sub(eye,at)), x=norm(cross([0,1,0],z)), y=cross(z,x);
+  const z = norm(sub(eye, at)), x = norm(cross([0,1,0], z)), y = cross(z, x);
   return [x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0, -dot(x,eye),-dot(y,eye),-dot(z,eye),1];
 }
-function makeMesh(verts) {
-  let buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
-  return { buf, count: verts.length / 6 };
-}
-function addTri(a,b,c,n,arr){ for(let v of [a,b,c]) arr.push(...v,...n); }
-function boxMesh() {
-  let v=[], q=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];
-  for(let [idx,no] of [[[4,5,6,7],[0,0,1]],[[1,0,3,2],[0,0,-1]],[[0,4,7,3],[-1,0,0]],[[5,1,2,6],[1,0,0]],[[3,7,6,2],[0,1,0]],[[0,1,5,4],[0,-1,0]]]){
-    addTri(q[idx[0]],q[idx[1]],q[idx[2]],no,v); addTri(q[idx[0]],q[idx[2]],q[idx[3]],no,v);
-  }
-  return makeMesh(v);
-}
-function latheMesh(prof, seg=20) {
-  let v=[];
-  for(let i=0; i<prof.length-1; i++){
-    let [r0,y0]=prof[i], [r1,y1]=prof[i+1], dy=y1-y0, dr=r1-r0;
-    for(let j=0; j<seg; j++){
-      let a=2*Math.PI*j/seg, b=2*Math.PI*(j+1)/seg;
-      let p0=[r0*Math.cos(a),y0,r0*Math.sin(a)], p1=[r0*Math.cos(b),y0,r0*Math.sin(b)];
-      let p2=[r1*Math.cos(b),y1,r1*Math.sin(b)], p3=[r1*Math.cos(a),y1,r1*Math.sin(a)];
-      let no=norm([Math.cos((a+b)/2)*dy, -dr, Math.sin((a+b)/2)*dy]);
-      addTri(p0,p2,p1,no,v); addTri(p0,p3,p2,no,v);
-    }
-  }
-  return makeMesh(v);
-}
 
-// Procedural 3D Meshes (imagem_pecas_xadrez.jpg)
-const cube = boxMesh();
-const sphere = latheMesh(Array.from({length:15},(_,i)=>{let a=-Math.PI/2+i*Math.PI/14;return [Math.max(.002,Math.cos(a)),Math.sin(a)]}), 22);
-const pawnMesh = latheMesh([
-  [.34,0],[.38,.06],[.30,.12],[.21,.20],[.14,.45],[.19,.50],[.18,.56],[.12,.60],[0,.62]
-], 20);
-const rookMesh = latheMesh([
-  [.36,0],[.39,.08],[.31,.16],[.24,.22],[.23,.68],[.32,.72],[.34,.88],[.34,.96],[.18,.96],[.18,.88],[0,.88]
-], 22);
-const knightBaseMesh = latheMesh([
-  [.35,0],[.38,.08],[.29,.16],[.22,.24],[.18,.45],[.22,.52],[0,.55]
-], 20);
-const bishopMesh = latheMesh([
-  [.35,0],[.38,.08],[.28,.16],[.19,.26],[.14,.55],[.25,.65],[.23,.78],[.14,.92],[.07,1.02],[0,1.06]
-], 22);
-const queenMesh = latheMesh([
-  [.37,0],[.41,.09],[.30,.18],[.20,.30],[.15,.60],[.28,.78],[.34,.90],[.31,.98],[.16,1.00],[0,1.02]
-], 24);
-const kingMesh = latheMesh([
-  [.38,0],[.42,.09],[.32,.19],[.22,.32],[.17,.68],[.29,.85],[.34,.96],[.30,1.04],[.14,1.06],[0,1.08]
-], 24);
-
-const colors = {
-  wood: [.08, .14, .18],
-  lightTile: [.58, .74, .74],
-  darkTile: [.16, .32, .38],
-  whitePiece: [.88, .92, .95],
-  blackPiece: [.12, .18, .24],
-  whiteGo: [.94, .95, .90],
-  blackGo: [.06, .08, .10],
-  cyanGlow: [.22, .93, .82],
-  originHighlight: [.89, .70, .28],
-  destHighlight: [.37, .91, .82]
+// Paleta 3D Nocturne de alto contraste e elegância editorial
+const colors3D = {
+  frame: [0.07, 0.08, 0.11],
+  lightTile: [0.55, 0.57, 0.63],   // --square-light #8C909D
+  darkTile: [0.16, 0.17, 0.22],    // --square-dark #282B35
+  goTile: [0.66, 0.55, 0.39],      // --go-wood #A88D63
+  goTileAlt: [0.62, 0.51, 0.36],
+  whitePiece: [0.93, 0.94, 0.97],
+  blackPiece: [0.11, 0.12, 0.16],
+  whiteGo: [0.95, 0.95, 0.93],
+  blackGo: [0.07, 0.08, 0.10],
+  accentGlow: [0.65, 0.55, 1.0],   // --accent #A68DFF
+  originHighlight: [0.88, 0.71, 0.42],
+  destHighlight: [0.65, 0.55, 1.0]
 };
 
-function drawMesh(m, modelMat, col, emissiveCol=[0,0,0]) {
+function drawMesh(m, modelMat, col, emissiveCol = [0, 0, 0]) {
+  if (!gl || !m) return;
   gl.bindBuffer(gl.ARRAY_BUFFER, m.buf);
   gl.enableVertexAttribArray(loc.p);
   gl.vertexAttribPointer(loc.p, 3, gl.FLOAT, false, 24, 0);
@@ -1433,77 +1737,22 @@ function drawMesh(m, modelMat, col, emissiveCol=[0,0,0]) {
   gl.drawArrays(gl.TRIANGLES, 0, m.count);
 }
 
-function render3DScene() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = Math.floor(canvas3D.clientWidth * dpr);
-  const h = Math.floor(canvas3D.clientHeight * dpr);
-  if (canvas3D.width !== w || canvas3D.height !== h) {
-    canvas3D.width = w; canvas3D.height = h; gl.viewport(0, 0, w, h);
-  }
-  gl.clearColor(0.04, 0.07, 0.11, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  let eye = [radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(phi), radius*Math.cos(theta)*Math.sin(phi)];
-  let vp = mult(persp(Math.PI/4, w/h, 0.1, 100), lookAt(eye, camTarget));
-  gl.uniformMatrix4fv(loc.vp, false, new Float32Array(vp));
-
-  let size = game === 'go' ? 9 : 8;
-  let offset = (size - 1) / 2;
-
-  // Tabuleiro base
-  drawMesh(cube, mult(trans(0, -0.16, 0), scale(size+1.2, 0.25, size+1.2)), colors.wood);
-
-  for (let r=0; r<size; r++) {
-    for (let c=0; c<size; c++) {
-      let x = c - offset, z = r - offset;
-      let col = game === 'go' ? colors.lightTile : ((r+c)%2 ? colors.darkTile : colors.lightTile);
-      let em = [0, 0, 0];
-
-      // Destaques de Origem (âmbar) e Destino (cyan)
-      if (lastMoveOrigin && lastMoveOrigin[0] === c && lastMoveOrigin[1] === r) {
-        col = colors.originHighlight; em = [0.4, 0.3, 0.1];
-      } else if (lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r) {
-        col = colors.destHighlight; em = [0.1, 0.5, 0.4];
-      } else if (selectedCell && selectedCell[0] === c && selectedCell[1] === r) {
-        col = colors.cyanGlow; em = [0.3, 0.6, 0.6];
-      }
-
-      drawMesh(cube, mult(trans(x, 0.04, z), scale(0.98, 0.07, 0.98)), col, em);
-    }
-  }
-
-  // Peças e Pedras
-  if (game === 'go') {
-    for (let s of boardState.goStones) {
-      let x = s.col - 4, z = s.row - 4;
-      let col = s.color === 'B' ? colors.blackGo : colors.whiteGo;
-      drawMesh(sphere, mult(trans(x, 0.16, z), scale(0.43, 0.18, 0.43)), col);
-    }
-  } else {
-    renderChessFen3D(boardState.chessFen);
-  }
-
-  if (viewMode === '3d' && document.getElementById('workspace').classList.contains('active')) {
-    requestAnimationFrame(render3DScene);
-  }
-}
-
 function renderChessPieceDetailed(type, isWhite, x, z) {
-  let baseCol = isWhite ? colors.whitePiece : colors.blackPiece;
-  let glowCol = isWhite ? colors.cyanGlow : [0.1, 0.3, 0.4];
+  const baseCol = isWhite ? colors3D.whitePiece : colors3D.blackPiece;
+  const glowCol = isWhite ? colors3D.accentGlow : [0.34, 0.28, 0.56];
 
   if (type === 'p') {
     drawMesh(pawnMesh, mult(trans(x, 0.08, z), scale(0.85, 0.85, 0.85)), baseCol);
     drawMesh(sphere, mult(trans(x, 0.68, z), scale(0.18, 0.18, 0.18)), baseCol);
   } else if (type === 'r') {
     drawMesh(rookMesh, mult(trans(x, 0.08, z), scale(0.9, 0.9, 0.9)), baseCol);
-    for (let i=0; i<4; i++) {
-      let ang = i * Math.PI / 2;
-      drawMesh(cube, mult(trans(x + 0.22*Math.cos(ang), 0.98, z + 0.22*Math.sin(ang)), scale(0.12, 0.14, 0.12)), baseCol);
+    for (let i = 0; i < 4; i++) {
+      const ang = i * Math.PI / 2;
+      drawMesh(cube, mult(trans(x + 0.22 * Math.cos(ang), 0.98, z + 0.22 * Math.sin(ang)), scale(0.12, 0.14, 0.12)), baseCol);
     }
   } else if (type === 'n') {
     drawMesh(knightBaseMesh, mult(trans(x, 0.08, z), scale(0.9, 0.9, 0.9)), baseCol);
-    let rot = isWhite ? 0 : Math.PI;
+    const rot = isWhite ? 0 : Math.PI;
     drawMesh(cube, mult(trans(x, 0.58, z), mult(rotY(rot), scale(0.24, 0.42, 0.38))), baseCol);
     drawMesh(cube, mult(trans(x, 0.70, z + (isWhite ? 0.18 : -0.18)), scale(0.18, 0.18, 0.22)), baseCol);
     drawMesh(cube, mult(trans(x - 0.08, 0.92, z), scale(0.06, 0.14, 0.08)), baseCol);
@@ -1513,9 +1762,9 @@ function renderChessPieceDetailed(type, isWhite, x, z) {
     drawMesh(sphere, mult(trans(x, 1.08, z), scale(0.08, 0.08, 0.08)), baseCol);
   } else if (type === 'q') {
     drawMesh(queenMesh, mult(trans(x, 0.08, z), scale(0.95, 0.95, 0.95)), baseCol);
-    for (let i=0; i<6; i++) {
-      let a = i * Math.PI / 3;
-      drawMesh(sphere, mult(trans(x + 0.28*Math.cos(a), 1.02, z + 0.28*Math.sin(a)), scale(0.065, 0.065, 0.065)), glowCol, glowCol);
+    for (let i = 0; i < 6; i++) {
+      const a = i * Math.PI / 3;
+      drawMesh(sphere, mult(trans(x + 0.28 * Math.cos(a), 1.02, z + 0.28 * Math.sin(a)), scale(0.065, 0.065, 0.065)), glowCol, glowCol);
     }
     drawMesh(sphere, mult(trans(x, 1.04, z), scale(0.11, 0.11, 0.11)), baseCol);
   } else if (type === 'k') {
@@ -1527,24 +1776,77 @@ function renderChessPieceDetailed(type, isWhite, x, z) {
 }
 
 function renderChessFen3D(fen) {
-  let parts = fen.split(' ')[0].split('/');
-  for (let r=0; r<8; r++) {
-    let rowStr = parts[r] || '8';
+  const parts = (fen || INITIAL_FEN).split(' ')[0].split('/');
+  for (let r = 0; r < 8; r++) {
+    const rowStr = parts[r] || '8';
     let c = 0;
-    for (let ch of rowStr) {
+    for (const ch of rowStr) {
       if (ch >= '1' && ch <= '8') {
-        c += parseInt(ch);
+        c += parseInt(ch, 10);
       } else {
-        let isWhite = ch === ch.toUpperCase();
-        let x = c - 3.5, z = r - 3.5;
-        renderChessPieceDetailed(ch.toLowerCase(), isWhite, x, z);
+        const isWhite = ch === ch.toUpperCase();
+        renderChessPieceDetailed(ch.toLowerCase(), isWhite, c - 3.5, r - 3.5);
         c++;
       }
     }
   }
 }
 
-// Controles de Câmera 3D
+function render3DScene() {
+  if (!gl) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.floor(canvas3D.clientWidth * dpr));
+  const h = Math.max(1, Math.floor(canvas3D.clientHeight * dpr));
+  if (canvas3D.width !== w || canvas3D.height !== h) {
+    canvas3D.width = w; canvas3D.height = h; gl.viewport(0, 0, w, h);
+  }
+  gl.clearColor(0.025, 0.027, 0.035, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  const eye = [radius * Math.sin(theta) * Math.sin(phi), radius * Math.cos(phi), radius * Math.cos(theta) * Math.sin(phi)];
+  const vp = mult(persp(Math.PI / 4, w / h, 0.1, 100), lookAt(eye, camTarget));
+  gl.uniformMatrix4fv(loc.vp, false, new Float32Array(vp));
+
+  const size = game === 'go' ? 9 : 8;
+  const offset = (size - 1) / 2;
+
+  drawMesh(cube, mult(trans(0, -0.16, 0), scale(size + 1.15, 0.25, size + 1.15)), colors3D.frame);
+
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      const x = c - offset, z = r - offset;
+      let col = game === 'go'
+        ? ((r + c) % 2 ? colors3D.goTile : colors3D.goTileAlt)
+        : ((r + c) % 2 ? colors3D.darkTile : colors3D.lightTile);
+      let em = [0, 0, 0];
+
+      if (lastMoveOrigin && lastMoveOrigin[0] === c && lastMoveOrigin[1] === r) {
+        col = colors3D.originHighlight; em = [0.35, 0.26, 0.10];
+      } else if (lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r) {
+        col = colors3D.destHighlight; em = [0.24, 0.18, 0.45];
+      } else if (selectedCell && selectedCell[0] === c && selectedCell[1] === r) {
+        col = colors3D.accentGlow; em = [0.28, 0.22, 0.5];
+      }
+
+      drawMesh(cube, mult(trans(x, 0.04, z), scale(0.97, 0.07, 0.97)), col, em);
+    }
+  }
+
+  if (game === 'go') {
+    for (const s of (boardState.goStones || [])) {
+      const x = s.col - 4, z = s.row - 4;
+      const col = s.color === 'B' ? colors3D.blackGo : colors3D.whiteGo;
+      drawMesh(sphere, mult(trans(x, 0.16, z), scale(0.43, 0.18, 0.43)), col);
+    }
+  } else {
+    renderChessFen3D(boardState.chessFen);
+  }
+
+  if (viewMode === '3d' && document.getElementById('workspace').classList.contains('active')) {
+    requestAnimationFrame(render3DScene);
+  }
+}
+
 let isDragging = false, px = 0, py = 0;
 canvas3D.addEventListener('pointerdown', e => {
   isDragging = true; px = e.clientX; py = e.clientY;
@@ -1553,7 +1855,7 @@ canvas3D.addEventListener('pointerdown', e => {
 canvas3D.addEventListener('pointermove', e => {
   if (!isDragging) return;
   theta -= (e.clientX - px) * 0.008;
-  phi = Math.max(0.18, Math.min(1.45, phi + (e.clientY - py) * 0.006));
+  phi = Math.max(0.20, Math.min(1.42, phi + (e.clientY - py) * 0.006));
   px = e.clientX; py = e.clientY;
 });
 canvas3D.addEventListener('pointerup', () => { isDragging = false; });
@@ -1562,8 +1864,43 @@ canvas3D.addEventListener('wheel', e => {
   radius = Math.max(8.5, Math.min(22, radius + e.deltaY * 0.012));
 }, { passive: false });
 
-// Renderizador do Tabuleiro 2D Acessível
+/* =========================================================================
+   3. Tabuleiro 2D Acessível (WCAG AA) e Helpers de Coordenadas Reais
+   ========================================================================= */
 const glyph = { K:'♔', Q:'♕', R:'♖', B:'♗', N:'♘', P:'♙', k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' };
+const GO_COLS = 'ABCDEFGHJ';
+
+function parseUciSquares(uci) {
+  if (!uci || uci.length < 4) return { from: null, to: null };
+  const fc = 'abcdefgh'.indexOf(uci[0].toLowerCase());
+  const fr = 8 - parseInt(uci[1], 10);
+  const tc = 'abcdefgh'.indexOf(uci[2].toLowerCase());
+  const tr = 8 - parseInt(uci[3], 10);
+  if (fc < 0 || tc < 0 || isNaN(fr) || isNaN(tr)) return { from: null, to: null };
+  return { from: [fc, fr], to: [tc, tr] };
+}
+
+function parseGoCoord(coord) {
+  if (!coord || coord.toUpperCase() === 'PASS') return null;
+  const c = GO_COLS.indexOf(coord[0].toUpperCase());
+  const rNum = parseInt(coord.slice(1), 10);
+  if (c < 0 || isNaN(rNum) || rNum < 1 || rNum > 9) return null;
+  return [c, 9 - rNum];
+}
+
+function parseFenToMap(fen) {
+  const map = {};
+  const rows = (fen || INITIAL_FEN).split(' ')[0].split('/');
+  for (let r = 0; r < 8; r++) {
+    const rowStr = rows[r] || '8';
+    let c = 0;
+    for (const ch of rowStr) {
+      if (ch >= '1' && ch <= '8') c += parseInt(ch, 10);
+      else { map['abcdefgh'[c] + (8 - r)] = ch; c++; }
+    }
+  }
+  return map;
+}
 
 function render2DBoard() {
   const grid = document.getElementById('grid2D');
@@ -1572,24 +1909,23 @@ function render2DBoard() {
   if (game === 'chess') {
     grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
     grid.style.gridTemplateRows = 'repeat(8, 1fr)';
-    let fenMap = parseFenToMap(boardState.chessFen);
+    const fenMap = parseFenToMap(boardState.chessFen);
 
-    for (let r=0; r<8; r++) {
-      for (let c=0; c<8; c++) {
-        let sq = 'abcdefgh'[c] + (8 - r);
-        let piece = fenMap[sq];
-        let isLight = (r + c) % 2 === 0;
-        let isHlOrigin = lastMoveOrigin && lastMoveOrigin[0] === c && lastMoveOrigin[1] === r;
-        let isHlDest = lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r;
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const sq = 'abcdefgh'[c] + (8 - r);
+        const piece = fenMap[sq];
+        const isLight = (r + c) % 2 === 0;
+        const isHlOrigin = lastMoveOrigin && lastMoveOrigin[0] === c && lastMoveOrigin[1] === r;
+        const isHlDest = lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r;
 
-        let btn = document.createElement('button');
+        const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = `cell-2d ${isLight ? 'light' : 'dark'} ${isHlOrigin ? 'hl-origin' : ''} ${isHlDest ? 'hl-dest' : ''}`;
-        btn.setAttribute('aria-label', `${sq}: ${piece ? piece : 'vazia'}`);
+        btn.setAttribute('aria-label', `Casa ${sq}: ${piece ? piece : 'vazia'}`);
         btn.title = sq;
-        if (piece) {
-          btn.textContent = glyph[piece] || piece;
-        }
-        btn.onclick = () => inspectCell(c, r, sq, piece);
+        if (piece) btn.textContent = glyph[piece] || piece;
+        btn.onclick = () => inspectCell(c, r, sq);
         grid.appendChild(btn);
       }
     }
@@ -1597,44 +1933,27 @@ function render2DBoard() {
     grid.style.gridTemplateColumns = 'repeat(9, 1fr)';
     grid.style.gridTemplateRows = 'repeat(9, 1fr)';
 
-    for (let r=0; r<9; r++) {
-      for (let c=0; c<9; c++) {
-        let coord = `${String.fromCharCode(65 + c)}${9 - r}`;
-        let stone = boardState.goStones.find(s => s.col === c && s.row === r);
-        let isHlDest = lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const coord = `${GO_COLS[c]}${9 - r}`;
+        const stone = (boardState.goStones || []).find(s => s.col === c && s.row === r);
+        const isHlDest = lastMoveDest && lastMoveDest[0] === c && lastMoveDest[1] === r;
 
-        let btn = document.createElement('button');
+        const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = `cell-2d go-cell ${isHlDest ? 'hl-dest' : ''}`;
-        btn.setAttribute('aria-label', `Interseção ${coord}`);
+        btn.setAttribute('aria-label', `Interseção ${coord}${stone ? (stone.color === 'B' ? ': pedra preta' : ': pedra branca') : ''}`);
         btn.title = coord;
         if (stone) {
-          let sEl = document.createElement('div');
+          const sEl = document.createElement('div');
           sEl.className = `go-stone-2d ${stone.color === 'B' ? 'black' : 'white'}`;
           btn.appendChild(sEl);
         }
-        btn.onclick = () => inspectCell(c, r, coord, stone ? (stone.color === 'B' ? 'Pedra Preta' : 'Pedra Branca') : null);
+        btn.onclick = () => inspectCell(c, r, coord);
         grid.appendChild(btn);
       }
     }
   }
-}
-
-function parseFenToMap(fen) {
-  let map = {};
-  let rows = fen.split(' ')[0].split('/');
-  for (let r=0; r<8; r++) {
-    let rowStr = rows[r] || '8';
-    let c = 0;
-    for (let ch of rowStr) {
-      if (ch >= '1' && ch <= '8') {
-        c += parseInt(ch);
-      } else {
-        map['abcdefgh'[c] + (8 - r)] = ch;
-        c++;
-      }
-    }
-  }
-  return map;
 }
 
 function setViewMode(v) {
@@ -1647,60 +1966,94 @@ function setViewMode(v) {
   else requestAnimationFrame(render3DScene);
 }
 
-// Inspeção Epistêmica de Peça ou Interseção
-function inspectCell(c, r, label, pieceOrStone) {
+function inspectCell(c, r, label) {
   selectedCell = [c, r];
-  let title = document.getElementById('inspectTitle');
-  let body = document.getElementById('inspectBody');
-  title.textContent = `Inspeção da Posição · ${label}`;
-
-  let moves = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
-  let moveMatched = moves.find(m => {
-    if (game === 'chess') return m.san === label || (m.to[0] === c && m.to[1] === r);
-    return m.coord === label || (m.col === c && m.row === r);
+  document.getElementById('inspectTitle').textContent = `Inspeção Epistêmica · Posição ${label}`;
+  const claims = (activeSession && activeSession.claims) || [];
+  const matched = claims.filter(cl => {
+    const bc = (cl.binding_coord || '').toLowerCase();
+    return bc === label.toLowerCase() || bc.endsWith(label.toLowerCase());
   });
 
-  if (moveMatched) {
-    body.innerHTML = `
-      <div class="source-box" style="border-left:3px solid var(--mint)">
-        <b>Alegação Epistêmica Vinculada:</b>
-        <p style="color:#fff;margin:6px 0;font-size:13px">${moveMatched.desc}</p>
-        <small style="color:#70f0d2">Citação Primária: "${moveMatched.quote}"</small>
-      </div>
-      <div style="background:#0b141e;padding:10px;border-radius:8px;border:1px solid #233c4f;margin-top:10px">
-        <small style="color:#9bb7c7;display:block"><b>Fonte:</b> ${currentScenario.docName}</small>
-        <small style="color:#9bb7c7;display:block"><b>Hash SHA-256 do Registro:</b> <code style="color:var(--mint)">e3b0c44298fc1c149afbf4c8996fb924...</code></small>
-        <small style="color:#9bb7c7;display:block"><b>Método de Validação:</b> Motor Determinístico FIDE / Tromp-Taylor + Árbitro Epistêmico</small>
-      </div>
-    `;
+  const body = document.getElementById('inspectBody');
+  if (matched.length > 0) {
+    body.innerHTML = matched.map(cl => {
+      const citHtml = (cl.citations || []).map(ct => `
+        <div class="msg-quote">
+          "${escapeHtml(ct.quote_text)}"<br>
+          <small>Fonte: ${escapeHtml(ct.artifact_name)} (${escapeHtml(ct.page_or_offset)}) · ${ct.quote_verified ? 'VERIFICADA' : 'QUOTE_MISMATCH'}</small>
+        </div>
+      `).join('');
+      return `
+        <div class="source-box">
+          <b>[${escapeHtml(cl.status)}] Etapa #${cl.step_index ?? '—'} · Lance ${escapeHtml(cl.binding_coord || label)}</b>
+          <p style="margin:6px 0;color:var(--text)">${escapeHtml(cl.statement)}</p>
+          ${citHtml || '<small>Sem citação documental anexada a este lance.</small>'}
+        </div>
+      `;
+    }).join('');
   } else {
-    body.innerHTML = `
-      <p style="color:#b2c5d4;font-size:12.5px">
-        Esta posição (${label}) é válida segundo as regras determinísticas do jogo, mas ainda não possui lance/evidência executado nesta rodada.
-      </p>
-    `;
+    body.innerHTML = `<div class="empty-state">Nenhuma alegação vinculada diretamente à coordenada <strong>${escapeHtml(label)}</strong> até o momento.</div>`;
   }
   document.getElementById('inspectModal').style.display = 'flex';
 }
 
-// Troca de Jogo
-function swapGame() {
-  game = game === 'chess' ? 'go' : 'chess';
-  document.getElementById('gameSelect').value = game;
-  updateGameView();
+/* =========================================================================
+   4. Capabilities Reais (/api/v1/capabilities) & Criação de Sessão
+   ========================================================================= */
+async function loadCapabilities() {
+  try {
+    const resp = await fetch('/api/v1/capabilities');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    serverCapabilities = await resp.json();
+
+    const g = serverCapabilities.gemini || {};
+    const w = serverCapabilities.web_search || {};
+
+    const bBadge = document.getElementById('backendBadge');
+    if (g.live_allowed) {
+      bBadge.className = 'pill ok';
+      bBadge.textContent = `● Gemini LIVE (${g.model || 'ativo'})`;
+    } else if (g.configured) {
+      bBadge.className = 'pill warn';
+      bBadge.textContent = '● Gemini configurado (DEMO forçado)';
+    } else {
+      bBadge.className = 'pill warn';
+      bBadge.textContent = '● Modo DEMO_OFFLINE (sem chave)';
+    }
+
+    const wBadge = document.getElementById('webCapBadge');
+    const srcSelect = document.getElementById('sourceSelect');
+    const optHybrid = srcSelect.querySelector('option[value="HYBRID"]');
+    const optWeb = srcSelect.querySelector('option[value="WEB_ONLY"]');
+
+    if (w.available) {
+      wBadge.className = 'pill ok';
+      wBadge.textContent = '● Pesquisa Web: Ativa';
+      if (optHybrid) { optHybrid.disabled = false; optHybrid.textContent = 'Híbrido (Arquivos + Web pública)'; }
+      if (optWeb) { optWeb.disabled = false; optWeb.textContent = 'Somente Pesquisa Web pública'; }
+    } else {
+      wBadge.className = 'pill warn';
+      wBadge.textContent = `○ Web indisponível (${w.reason || 'desabilitada'})`;
+      if (optHybrid) { optHybrid.disabled = true; optHybrid.textContent = `Híbrido (indisponível: ${w.reason || 'config'})`; }
+      if (optWeb) { optWeb.disabled = true; optWeb.textContent = `Somente Web (indisponível: ${w.reason || 'config'})`; }
+      srcSelect.value = 'OWN_ONLY';
+    }
+
+    document.getElementById('homeCapSummary').textContent =
+      `Servidor conectado · Gemini: ${g.live_allowed ? 'LIVE (' + g.model + ')' : 'DEMO_OFFLINE'} · Pesquisa Web: ${w.available ? 'Habilitada (' + w.provider + ')' : 'Desabilitada (' + w.reason + ')'} · Limite padrão: ${serverCapabilities.default_max_steps || 12} etapas.`;
+  } catch (err) {
+    const bBadge = document.getElementById('backendBadge');
+    bBadge.className = 'pill warn';
+    bBadge.textContent = '○ Backend inacessível';
+    document.getElementById('homeCapSummary').textContent = 'Não foi possível consultar /api/v1/capabilities.';
+  }
 }
 
-function updateGameView() {
-  document.getElementById('boardTitle').textContent = game === 'chess' ? 'Tabuleiro de Xadrez · 8×8' : 'Go / Weiqi · 9×9';
-  document.getElementById('topModeBadge').textContent = `${mode === 'research' ? 'Pesquisa' : (mode === 'debate' ? 'Debate' : 'Auditoria')} · ${game === 'chess' ? 'Xadrez' : 'Go'}`;
-  resetGame();
-}
-
-// Transição Cósmica: FASE 1 -> FASE 2
 async function startInvestigation() {
   const q = document.getElementById('question').value.trim();
   if (!q) {
-    notify('Por favor, escreva uma pergunta para iniciar a investigação.');
+    notify('Digite uma pergunta de investigação antes de iniciar.');
     document.getElementById('question').focus();
     return;
   }
@@ -1708,429 +2061,661 @@ async function startInvestigation() {
   activeQuestion = q;
   mode = document.getElementById('modeSelect').value;
   game = document.getElementById('gameSelect').value;
-  let sourcePolicy = document.getElementById('sourceSelect').value === 'web' ? 'web_opt_in' : 'own_only';
-  let fusionEnabled = document.getElementById('fusionCheck').checked;
-
-  notify('Criando sessão segura no backend...');
+  const sourcePolicy = document.getElementById('sourceSelect').value;
+  const fusionEnabled = document.getElementById('fusionCheck').checked;
+  const forceDemo = document.getElementById('forceDemoCheck').checked;
 
   try {
-    let resp = await fetch('/api/v1/sessions', {
+    const resp = await fetch('/api/v1/sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: q,
         mode: mode,
         game: game,
-        source_policy: sourcePolicy
+        source_policy: sourcePolicy,
+        force_demo: forceDemo ? true : null,
+        max_steps: 12
       })
     });
 
-    if (resp.ok) {
-      let data = await resp.json();
-      activeSessionId = data.id;
-      currentVersion = data.version;
-
-      // Ingerir arquivos anexados se existirem
-      if (attachedFiles.length > 0) {
-        for (let f of attachedFiles) {
-          try {
-            await fetch(`/api/v1/sessions/${activeSessionId}/artifacts`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: f.name,
-                content: f.content || "Documento fornecido pelo usuário no cofre de investigação.",
-                owner_side: "public"
-              })
-            });
-          } catch(err) {
-            console.warn('Erro ao anexar arquivo:', err);
-          }
-        }
-      }
-
-      // Atualiza Badges com a resposta factual do backend
-      updateVerificationBadges(
-        data.integrity_status === 'INTEGRITY_VERIFIED',
-        data.source_status === 'SOURCE_VERIFIED',
-        data.evidence_assessment === 'SUPPORTED'
-      );
-    } else {
-      activeSessionId = `sess_local_${Date.now()}`;
-      currentVersion = 1;
-      updateVerificationBadges(true, attachedFiles.length > 0, false);
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      notify(`Falha ao criar sessão: ${errBody.detail || resp.statusText}`);
+      return;
     }
-  } catch(e) {
-    console.warn('Backend indisponível, executando sessão em modo local.', e);
-    activeSessionId = `sess_local_${Date.now()}`;
-    currentVersion = 1;
-    updateVerificationBadges(true, attachedFiles.length > 0, false);
+
+    let sess = await resp.json();
+    activeSessionId = sess.id;
+
+    // Envia arquivos locais selecionados na Home para o cofre da sessão
+    if (attachedFiles.length > 0) {
+      for (const f of attachedFiles) {
+        await fetch(`/api/v1/sessions/${activeSessionId}/artifacts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: f.name,
+            content: f.content,
+            owner_side: 'public'
+          })
+        });
+      }
+      const refreshed = await fetch(`/api/v1/sessions/${activeSessionId}`);
+      if (refreshed.ok) sess = await refreshed.json();
+    }
+
+    document.body.classList.add('in-workspace');
+    document.getElementById('home').classList.add('hides');
+    document.getElementById('workspace').classList.add('active');
+    document.getElementById('wsFusionBtn').style.display = fusionEnabled ? 'inline-flex' : 'inline-flex';
+    document.getElementById('passGoBtn').style.display = game === 'go' ? 'inline-flex' : 'none';
+    document.getElementById('btnWebSnap').style.display = sess.normalized_source_policy === 'OWN_ONLY' ? 'none' : 'inline-flex';
+
+    isReplayActive = false;
+    replayCursor = -1;
+    applySessionStateToUI(sess);
+    await refreshEventsList();
+
+    if (viewMode === '3d') requestAnimationFrame(render3DScene);
+    else render2DBoard();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    notify('Erro de comunicação com o servidor FastAPI: ' + err.message);
   }
-
-  // Transição de Interface
-  document.getElementById('home').classList.add('hides');
-  document.getElementById('workspace').classList.add('active');
-
-  document.getElementById('crumbMode').textContent = (mode === 'research' ? 'PESQUISA ESTRATÉGICA' : (mode === 'debate' ? 'DEBATE DE EVIDÊNCIAS' : 'AUDITORIA DE CONTROLES'));
-  document.getElementById('questionTitle').textContent = q;
-  document.getElementById('userBubble').textContent = q;
-  document.getElementById('topModeBadge').textContent = `${mode === 'research' ? 'Pesquisa' : (mode === 'debate' ? 'Debate' : 'Auditoria')} · ${game === 'chess' ? 'Xadrez' : 'Go'}`;
-  document.getElementById('wsFusionBtn').style.display = fusionEnabled ? 'inline-flex' : 'none';
-
-  // Configura Cenário
-  if (q.toLowerCase().includes('elei') || q.toLowerCase().includes('demogr')) {
-    currentScenario = SCENARIOS.eleicoes_2030;
-  } else if (q.toLowerCase().includes('audit') || q.toLowerCase().includes('iso') || q.toLowerCase().includes('owasp')) {
-    currentScenario = SCENARIOS.auditoria_controles;
-  } else {
-    currentScenario = SCENARIOS.ia_seguranca;
-  }
-
-  document.getElementById('artDocName').textContent = currentScenario.docName;
-  document.getElementById('artDocHash').textContent = `SHA-256: 3a98c7e108f5... (${currentScenario.docDetail})`;
-  document.getElementById('orchestratorBubble').textContent = `Sessão iniciada (${activeSessionId}). As asserções dos agentes são governadas pelas regras de ${game === 'chess' ? 'Xadrez FIDE' : 'Go 9x9'}.`;
-
-  resetGame();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function backToHome(clearPrompt = false) {
-  if (autoTimer) toggleAuto();
+  document.body.classList.remove('in-workspace');
   document.getElementById('workspace').classList.remove('active');
   document.getElementById('home').classList.remove('hides');
   if (clearPrompt) {
     document.getElementById('question').value = '';
     activeQuestion = '';
-  } else {
-    document.getElementById('question').value = activeQuestion;
+    attachedFiles = [];
+    document.getElementById('uploadsInfo').textContent = 'Nenhum arquivo local selecionado';
   }
   document.getElementById('question').focus();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Avanço de Lances Determinísticos
-async function nextStep() {
-  let moves = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
-  if (stepIndex >= moves.length) {
-    if (autoTimer) toggleAuto();
-    return;
-  }
-
-  let m = moves[stepIndex];
-  stepIndex++;
-
-  if (game === 'chess') {
-    lastMoveOrigin = m.from;
-    lastMoveDest = m.to;
+/* =========================================================================
+   5. Sincronização Integral de Estado da UI com o Backend (Zero Hardcoding)
+   ========================================================================= */
+function applyBoardFromBackend(boardObj) {
+  if (!boardObj) return;
+  if (boardObj.game === 'chess') {
+    boardState.chessFen = boardObj.fen || INITIAL_FEN;
+    const sqs = parseUciSquares(boardObj.last_move);
+    lastMoveOrigin = sqs.from;
+    lastMoveDest = sqs.to;
   } else {
+    boardState.goStones = boardObj.stones || [];
     lastMoveOrigin = null;
-    lastMoveDest = [m.col, m.row];
+    lastMoveDest = parseGoCoord(boardObj.last_move);
+  }
+  if (viewMode === '2d') render2DBoard();
+}
+
+function applySessionStateToUI(sess) {
+  activeSession = sess;
+  currentVersion = sess.version;
+  game = sess.game;
+  mode = sess.mode;
+
+  const modeNames = { research: 'PESQUISA ESTRATÉGICA', debate: 'DEBATE DE EVIDÊNCIAS', audit: 'AUDITORIA DE CONTROLES' };
+  const shortModes = { research: 'Pesquisa', debate: 'Debate', audit: 'Auditoria' };
+
+  document.getElementById('crumbMode').textContent = modeNames[mode] || mode.toUpperCase();
+  document.getElementById('crumbExecMode').textContent = sess.execution_mode || 'DEMO_OFFLINE';
+  document.getElementById('crumbPolicy').textContent = sess.normalized_source_policy || sess.source_policy;
+  document.getElementById('questionTitle').textContent = sess.title;
+  document.getElementById('userBubble').textContent = sess.title;
+  document.getElementById('topModeBadge').textContent = `${shortModes[mode] || mode} · ${game === 'chess' ? 'Xadrez' : 'Go'}`;
+  document.getElementById('boardTitle').textContent = game === 'chess' ? 'Tabuleiro de Xadrez · 8×8' : 'Tabuleiro Go / Weiqi · 9×9';
+  document.getElementById('auditModeChip').textContent = sess.execution_mode || 'DEMO_OFFLINE';
+
+  // Métrica 1: Lances do jogo (independente de etapas)
+  const plies = sess.ply_count ?? (sess.board && sess.board.ply_count) ?? 0;
+  document.getElementById('metricPlies').textContent = String(plies);
+  const toMovePt = (sess.board && sess.board.to_move === 'black') ? 'Pretas' : 'Brancas';
+  document.getElementById('turnLabel').textContent = sess.board && sess.board.is_game_over
+    ? `Encerrado (${sess.board.game_result || 'fim'})`
+    : `Vez: ${toMovePt}`;
+
+  // Métrica 2: Etapas de investigação
+  const steps = sess.investigation_step_index ?? 0;
+  const maxSteps = sess.max_steps ?? 12;
+  document.getElementById('metricSteps').textContent = `${steps} / ${maxSteps}`;
+  document.getElementById('metricStatus').textContent = `Fase: ${sess.status}`;
+
+  // Botão Pausar / Retomar e estado de avanço
+  const prBtn = document.getElementById('pauseResumeBtn');
+  prBtn.textContent = sess.status === 'PAUSED' ? '▶ Retomar' : '⏸ Pausar';
+  const terminal = ['COMPLETED', 'FINISHED', 'CANCELLED', 'BUDGET_EXHAUSTED'].includes(sess.status) || (sess.board && sess.board.is_game_over);
+  document.getElementById('continueBtn').disabled = terminal || sess.status === 'PAUSED' || isReplayActive || isAdvancing;
+  document.getElementById('advance3Btn').disabled = terminal || sess.status === 'PAUSED' || isReplayActive || isAdvancing;
+
+  // Métrica 3: Fontes no cofre
+  const arts = sess.artifacts || [];
+  document.getElementById('metricSources').textContent = String(arts.length);
+  document.getElementById('metricSourceStatus').textContent = sess.source_status || 'NO_SOURCES_ATTACHED';
+  document.getElementById('countSources').textContent = String(arts.length);
+
+  // Métrica 4: Telemetria Honesta do Gemini (jamais exibe 12ms ou $0.0000 fictícios)
+  const usage = sess.provider_usage || {};
+  const bgt = sess.budget || {};
+  if (usage.source === 'gemini_api' && usage.tokens != null) {
+    const totalTok = bgt.current_tokens || usage.tokens;
+    document.getElementById('metricUsage').textContent = `${totalTok} tokens`;
+    const costStr = bgt.estimated_cost_usd != null ? ` · ~$${bgt.estimated_cost_usd.toFixed(5)}` : '';
+    document.getElementById('budgetTelemetry').textContent = `Última latência: ${usage.latency_ms} ms${costStr}`;
+  } else if (sess.execution_mode === 'DEMO_OFFLINE') {
+    document.getElementById('metricUsage').textContent = 'DEMO_OFFLINE';
+    document.getElementById('budgetTelemetry').textContent = 'Sem chamadas externas ao Gemini';
+  } else {
+    document.getElementById('metricUsage').textContent = 'Não medido';
+    document.getElementById('budgetTelemetry').textContent = 'Aguardando 1ª chamada LIVE ao Gemini';
   }
 
-  // Tenta submeter ação ao backend FastAPI
-  if (activeSessionId) {
-    try {
-      let payloadAction = game === 'go'
-        ? { kind: 'place_stone', coord: m.coord }
-        : { kind: 'move_piece', coord: m.uci };
+  if (!isReplayActive) {
+    applyBoardFromBackend(sess.board);
+  }
 
-      let resp = await fetch(`/api/v1/sessions/${activeSessionId}/actions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expected_version: currentVersion, action: payloadAction })
-      });
-      if (resp.ok) {
-        let resData = await resp.json();
-        currentVersion = resData.version;
-      }
-    } catch(e) {
-      console.warn('API local indisponível, simulando avanço local.', e);
+  renderChatMessages(sess);
+  renderSourcesPanel(arts);
+  renderAuditPanel(sess);
+}
+
+function renderChatMessages(sess) {
+  const stream = document.getElementById('chatStream');
+  const msgs = sess.messages || [];
+  document.getElementById('countChat').textContent = String(msgs.length + 1);
+
+  let html = `
+    <div class="message user">
+      <div class="msg-head"><span class="msg-author">VOCÊ · PERGUNTA CENTRAL</span></div>
+      <div id="userBubble">${escapeHtml(sess.title)}</div>
+    </div>
+  `;
+
+  for (const m of msgs) {
+    if (m.role === 'system') {
+      html += `
+        <div class="message system">
+          <div class="msg-head"><span class="msg-author">${escapeHtml(m.agent_label || 'Sistema')}</span></div>
+          <div>${escapeHtml(m.text || m.statement || '')}</div>
+        </div>
+      `;
+      continue;
     }
+    const vClass = m.verdict === 'SUPPORTED' ? 'ok' : (m.verdict === 'REFUTED' ? 'err' : 'warn');
+    const cits = (m.citations || []).map(ct => `
+      <div class="msg-quote">
+        "${escapeHtml(ct.quote_text)}"<br>
+        <small>${escapeHtml(ct.artifact_name)} (${escapeHtml(ct.page_or_offset)}) ${ct.url ? `· <a href="${escapeAttr(ct.url)}" target="_blank" rel="noopener noreferrer">abrir fonte ↗</a>` : ''}</small>
+      </div>
+    `).join('');
+
+    html += `
+      <div class="message">
+        <div class="msg-head">
+          <span class="msg-author">${escapeHtml(m.agent_label || m.role)} · Etapa #${m.step_index}</span>
+          <div class="msg-badges">
+            ${m.move ? `<span class="chip">Lance ${escapeHtml(m.move)}</span>` : ''}
+            ${m.verdict ? `<span class="chip ${vClass}">${escapeHtml(m.verdict)}</span>` : ''}
+          </div>
+        </div>
+        <div>${escapeHtml(m.statement || '')}</div>
+        ${m.commentary ? `<div class="msg-sub">${escapeHtml(m.commentary)}</div>` : ''}
+        ${cits}
+        ${m.rationale ? `<div class="msg-sub"><strong>Árbitro:</strong> ${escapeHtml(m.rationale)}</div>` : ''}
+      </div>
+    `;
   }
-
-  // Atualização do Estado do Tabuleiro
-  if (game === 'go') {
-    boardState.goStones.push({ col: m.col, row: m.row, color: stepIndex % 2 ? 'B' : 'W' });
-  } else {
-    if (stepIndex === 1) boardState.chessFen = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1';
-    if (stepIndex === 2) boardState.chessFen = 'rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2';
-    if (stepIndex === 3) boardState.chessFen = 'rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2';
-  }
-
-  // Atualização de Textos e Telemetria
-  document.getElementById('turnLabel').textContent = `Lance ${stepIndex} / ${moves.length}`;
-  document.getElementById('explainLabel').textContent = m.desc;
-  
-  // Bolha do Agente
-  let agBox = document.getElementById('agentPropositionBox');
-  agBox.style.display = 'block';
-  document.getElementById('agentPropName').textContent = `${stepIndex % 2 ? 'PROPOSITOR' : 'CRÍTICO'} · LANCE ${m.san || m.coord}`;
-  document.getElementById('agentPropText').textContent = `${m.desc} Citação: "${m.quote}"`;
-
-  // Badges em 3 Camadas
-  updateVerificationBadges(true, true, true);
-  addEventTimeline(stepIndex, `${m.san || m.coord}: ${m.desc}`);
-
-  if (viewMode === '2d') render2DBoard();
+  stream.innerHTML = html;
+  stream.scrollTop = stream.scrollHeight;
 }
 
-function prevStep() {
-  if (stepIndex <= 0) return;
-  if (autoTimer) toggleAuto();
-  stepIndex--;
-
-  let moves = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
-  if (game === 'go') {
-    boardState.goStones.pop();
-    let last = boardState.goStones[boardState.goStones.length - 1];
-    lastMoveDest = last ? [last.col, last.row] : null;
-  } else {
-    if (stepIndex === 0) boardState.chessFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-    if (stepIndex === 1) boardState.chessFen = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1';
-    if (stepIndex === 2) boardState.chessFen = 'rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2';
-    let prevMove = moves[stepIndex - 1];
-    lastMoveOrigin = prevMove ? prevMove.from : null;
-    lastMoveDest = prevMove ? prevMove.to : null;
-  }
-
-  document.getElementById('turnLabel').textContent = `Lance ${stepIndex} / ${moves.length}`;
-  document.getElementById('explainLabel').textContent = stepIndex > 0 ? moves[stepIndex - 1].desc : 'Posição inicial restaurada.';
-  if (stepIndex === 0) document.getElementById('agentPropositionBox').style.display = 'none';
-
-  if (viewMode === '2d') render2DBoard();
-}
-
-function resetGame() {
-  if (autoTimer) toggleAuto();
-  stepIndex = 0;
-  boardState.chessFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-  boardState.goStones = [];
-  lastMoveOrigin = null;
-  lastMoveDest = null;
-  selectedCell = null;
-
-  let moves = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
-  document.getElementById('turnLabel').textContent = `Lance 0 / ${moves.length}`;
-  document.getElementById('explainLabel').textContent = 'O tabuleiro aguarda o primeiro lance da investigação.';
-  document.getElementById('agentPropositionBox').style.display = 'none';
-
-  if (viewMode === '2d') render2DBoard();
-  else requestAnimationFrame(render3DScene);
-}
-
-function toggleAuto() {
-  if (autoTimer) {
-    clearInterval(autoTimer);
-    autoTimer = null;
-    document.getElementById('autoBtn').textContent = '▷ Reproduzir';
+function renderSourcesPanel(artifacts) {
+  const container = document.getElementById('artifactsContainer');
+  if (!artifacts || artifacts.length === 0) {
+    container.innerHTML = `<div class="empty-state">Nenhuma fonte anexada ou recuperada nesta sessão (<code>NO_SOURCES_ATTACHED</code>). Use os botões acima para anexar documentos ou ative uma política Web/Híbrida.</div>`;
     return;
   }
-  let moves = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
-  if (stepIndex >= moves.length) resetGame();
-  
-  autoTimer = setInterval(() => {
-    let mList = game === 'go' ? currentScenario.movesGo : currentScenario.movesChess;
-    if (stepIndex < mList.length) nextStep();
-    else toggleAuto();
-  }, 1250);
-  document.getElementById('autoBtn').textContent = 'Ⅱ Pausar';
+
+  container.innerHTML = artifacts.map(art => {
+    const isWeb = art.source_type === 'web';
+    const urlLine = art.canonical_url
+      ? `<small>URL: <a href="${escapeAttr(art.canonical_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(art.canonical_url)}</a></small>`
+      : '';
+    const timeLine = art.retrieved_at ? `<small>Recuperado em: ${escapeHtml(art.retrieved_at)}</small>` : '';
+    return `
+      <div class="source-box">
+        <b>${escapeHtml(art.name)}</b>
+        ${urlLine}
+        <small>SHA-256: ${escapeHtml(art.sha256)}</small>
+        ${timeLine}
+        ${art.content_preview ? `<p style="font-size:11.5px;color:var(--muted);margin:6px 0 2px">${escapeHtml(art.content_preview)}…</p>` : ''}
+        <span class="source-tag">${isWeb ? 'WEB PÚBLICA' : 'DOCUMENTO COFRE'}</span>
+        <span class="source-tag">COFRE: ${escapeHtml((art.owner_side || 'public').toUpperCase())}</span>
+      </div>
+    `;
+  }).join('');
 }
 
-function updateVerificationBadges(intOk, srcOk, eviOk) {
-  let bInt = document.getElementById('badgeIntegrity');
-  let bSrc = document.getElementById('badgeSource');
-  let bEvi = document.getElementById('badgeEvidence');
+function renderAuditPanel(sess) {
+  const intVal = sess.integrity_status || 'NOT_ASSESSED';
+  const srcVal = sess.source_status || 'NO_SOURCES_ATTACHED';
+  const eviVal = sess.evidence_assessment || 'NOT_ASSESSED';
 
-  bInt.className = `tier-badge ${intOk ? 'ok' : 'err'}`;
-  document.getElementById('valIntegrity').textContent = intOk ? 'INTEGRITY_VERIFIED' : 'INTEGRITY_COMPROMISED';
+  const bInt = document.getElementById('badgeIntegrity');
+  const bSrc = document.getElementById('badgeSource');
+  const bEvi = document.getElementById('badgeEvidence');
 
-  bSrc.className = `tier-badge ${srcOk ? 'ok' : 'warn'}`;
-  document.getElementById('valSource').textContent = srcOk ? 'SOURCE_VERIFIED' : 'NO_SOURCES_ATTACHED';
+  bInt.className = `tier-badge ${intVal === 'INTEGRITY_VERIFIED' ? 'ok' : (intVal === 'INTEGRITY_COMPROMISED' ? 'err' : 'warn')}`;
+  document.getElementById('valIntegrity').textContent = intVal;
 
-  bEvi.className = `tier-badge ${eviOk ? 'ok' : 'warn'}`;
-  document.getElementById('valEvidence').textContent = eviOk ? 'SUPPORTED' : 'HYPOTHESIS';
+  bSrc.className = `tier-badge ${srcVal === 'SOURCE_VERIFIED' ? 'ok' : (srcVal === 'QUOTE_MISMATCH' ? 'err' : 'warn')}`;
+  document.getElementById('valSource').textContent = srcVal;
+
+  bEvi.className = `tier-badge ${eviVal === 'SUPPORTED' ? 'ok' : (eviVal === 'REFUTED' ? 'err' : 'warn')}`;
+  document.getElementById('valEvidence').textContent = eviVal;
+
+  const judgments = sess.judgments || [];
+  const claims = sess.claims || [];
+  document.getElementById('countAudit').textContent = String(claims.length);
+
+  if (judgments.length > 0) {
+    const lastJ = judgments[judgments.length - 1];
+    const r = lastJ.rubric || {};
+    document.getElementById('rubricSummary').textContent =
+      `Veredito: ${lastJ.verdict} · Citação literal: ${r.excerpt_verification ? 'Verificada' : 'Não verificada'} · Incerteza reconhecida: ${r.uncertainty_recognized ? 'Sim' : 'Não'} — ${lastJ.rationale}`;
+  } else {
+    document.getElementById('rubricSummary').textContent =
+      sess.diagnostic_reason || 'Nenhuma alegação submetida ao Árbitro Epistêmico ainda.';
+  }
+
+  const cList = document.getElementById('claimsListContainer');
+  if (claims.length === 0) {
+    cList.innerHTML = `<div class="empty-state">Nenhuma alegação registrada ainda.</div>`;
+  } else {
+    cList.innerHTML = claims.slice().reverse().map(c => {
+      const cls = c.status === 'SUPPORTED' ? 'ok' : (c.status === 'REFUTED' ? 'err' : 'warn');
+      return `
+        <div class="source-box">
+          <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:4px">
+            <span class="chip ${cls}">${escapeHtml(c.status)}</span>
+            <span class="chip">Incerteza: ${escapeHtml(c.uncertainty_level || 'UNCERTAIN')}</span>
+          </div>
+          <div style="color:var(--text);font-size:12px">${escapeHtml(c.statement)}</div>
+          ${c.binding_coord ? `<small style="margin-top:4px">Lance vinculado: ${escapeHtml(c.binding_coord)}</small>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
 }
 
-function addEventTimeline(stepNum, text) {
-  let list = document.getElementById('eventsList');
-  let div = document.createElement('div');
-  div.className = 'event';
-  div.innerHTML = `<strong>${String(stepNum).padStart(2,'0')}</strong><span>${text}</span>`;
-  list.prepend(div);
+/* =========================================================================
+   6. Continuar Investigação (POST /advance) vs Replay (GET /replay)
+   ========================================================================= */
+async function continueInvestigation(maxActions = 1, userNote = null) {
+  if (!activeSessionId || isAdvancing) return;
+  if (isReplayActive) {
+    await replayJumpLatest();
+  }
+
+  isAdvancing = true;
+  document.getElementById('continueBtn').disabled = true;
+  document.getElementById('advance3Btn').disabled = true;
+  document.getElementById('execHint').textContent = 'Executando ciclo multiagente + motor determinístico...';
+
+  const idemKey = `adv_${activeSessionId}_v${currentVersion}_${Date.now()}`;
+  try {
+    const resp = await fetch(`/api/v1/sessions/${activeSessionId}/advance`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idemKey
+      },
+      body: JSON.stringify({
+        expected_version: currentVersion,
+        intent: 'CONTINUE_INVESTIGATION',
+        max_actions: maxActions,
+        user_note: userNote || null
+      })
+    });
+
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      notify(`Não foi possível avançar (${resp.status}): ${errData.detail || resp.statusText}`);
+      const sResp = await fetch(`/api/v1/sessions/${activeSessionId}`);
+      if (sResp.ok) applySessionStateToUI(await sResp.json());
+      return;
+    }
+
+    const advData = await resp.json();
+    const sResp = await fetch(`/api/v1/sessions/${activeSessionId}`);
+    if (sResp.ok) {
+      const fullSess = await sResp.json();
+      applySessionStateToUI(fullSess);
+    }
+
+    const latestMsg = advData.investigation && advData.investigation.latest_message;
+    if (latestMsg) {
+      document.getElementById('explainLabel').textContent =
+        `Etapa #${latestMsg.step_index} (${latestMsg.agent_label}, lance ${latestMsg.move}): ${latestMsg.statement}`;
+    }
+    document.getElementById('execHint').textContent = `Versão v${advData.version} confirmada`;
+    await refreshEventsList();
+  } catch (err) {
+    notify('Falha de rede ao avançar investigação: ' + err.message);
+  } finally {
+    isAdvancing = false;
+    if (activeSession) applySessionStateToUI(activeSession);
+  }
 }
 
-function submitRefinement() {
-  let input = document.getElementById('refineInput');
-  let val = input.value.trim();
-  if (!val) return;
-  activeQuestion = val;
-  document.getElementById('questionTitle').textContent = val;
-  document.getElementById('userBubble').textContent = val;
+async function submitRefinementAndAdvance() {
+  const input = document.getElementById('refineInput');
+  const note = input.value.trim();
+  if (!note) return;
   input.value = '';
-  notify('Investigação refinada com a nova questão.');
+  await continueInvestigation(1, note);
 }
 
-// Modais FUSION, Replay & Upload
+async function submitGoPass() {
+  if (!activeSessionId || game !== 'go') return;
+  const resp = await fetch(`/api/v1/sessions/${activeSessionId}/actions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ expected_version: currentVersion, action: { kind: 'pass' } })
+  });
+  if (resp.ok) {
+    const sResp = await fetch(`/api/v1/sessions/${activeSessionId}`);
+    if (sResp.ok) applySessionStateToUI(await sResp.json());
+    await refreshEventsList();
+    notify('Passe registrado no motor Go 9×9.');
+  }
+}
+
+async function togglePauseSession() {
+  if (!activeSessionId || !activeSession) return;
+  const endpoint = activeSession.status === 'PAUSED' ? 'resume' : 'pause';
+  const resp = await fetch(`/api/v1/sessions/${activeSessionId}/${endpoint}`, { method: 'POST' });
+  if (resp.ok) {
+    const sess = await resp.json();
+    applySessionStateToUI(sess);
+    await refreshEventsList();
+    notify(sess.status === 'PAUSED' ? 'Investigação pausada.' : 'Investigação retomada.');
+  }
+}
+
+/* Replay Histórico Determinístico (Zero chamadas ao Gemini) */
+async function refreshEventsList() {
+  if (!activeSessionId) return;
+  const resp = await fetch(`/api/v1/sessions/${activeSessionId}/events`);
+  if (!resp.ok) return;
+  sessionEvents = await resp.json();
+  document.getElementById('countHistory').textContent = String(sessionEvents.length);
+
+  // Índices de eventos de movimento (inclui seq 1 = posição inicial antes de qualquer lance)
+  const moveEvts = sessionEvents.filter(e => e.event_type === 'CHESS_MOVE' || e.event_type === 'GO_MOVE');
+  moveEventSeqs = [1, ...moveEvts.map(e => e.seq)];
+  updateReplayControlsState();
+
+  const list = document.getElementById('eventsList');
+  list.innerHTML = sessionEvents.slice().reverse().map(ev => `
+    <div class="event">
+      <div>
+        <strong>#${String(ev.seq).padStart(2, '0')} ${escapeHtml(ev.event_type)}</strong>
+        <div>Hash: <code>${escapeHtml((ev.event_hash || '').slice(0, 18))}…</code></div>
+      </div>
+      <button class="btn sm secondary" onclick="replayToSeq(${ev.seq})">Replay ↺</button>
+    </div>
+  `).join('');
+}
+
+function updateReplayControlsState() {
+  const hasMoves = moveEventSeqs.length > 1;
+  const totalIdx = moveEventSeqs.length - 1;
+  const effectiveIdx = isReplayActive ? replayCursor : totalIdx;
+
+  document.getElementById('repFirstBtn').disabled = !hasMoves || effectiveIdx <= 0;
+  document.getElementById('repPrevBtn').disabled = !hasMoves || effectiveIdx <= 0;
+  document.getElementById('repNextBtn').disabled = !isReplayActive || effectiveIdx >= totalIdx;
+  document.getElementById('repLiveBtn').disabled = !isReplayActive;
+
+  const banner = document.getElementById('replayBanner');
+  banner.classList.toggle('active', isReplayActive);
+
+  if (isReplayActive) {
+    document.getElementById('replayCursorLabel').textContent = `Replay lance ${effectiveIdx} / ${totalIdx}`;
+    document.getElementById('replayBannerText').textContent =
+      `Modo Replay Histórico: visualizando lance ${effectiveIdx} de ${totalIdx} (reconstruído do Event Store sem chamar Gemini)`;
+  } else {
+    document.getElementById('replayCursorLabel').textContent = `Ao vivo (${totalIdx} lances)`;
+  }
+
+  if (activeSession) {
+    const terminal = ['COMPLETED', 'FINISHED', 'CANCELLED', 'BUDGET_EXHAUSTED'].includes(activeSession.status)
+      || (activeSession.board && activeSession.board.is_game_over);
+    document.getElementById('continueBtn').disabled = terminal || activeSession.status === 'PAUSED' || isReplayActive || isAdvancing;
+    document.getElementById('advance3Btn').disabled = terminal || activeSession.status === 'PAUSED' || isReplayActive || isAdvancing;
+  }
+}
+
+async function navigateMoveReplay(dir) {
+  if (moveEventSeqs.length <= 1) return;
+  const maxIdx = moveEventSeqs.length - 1;
+  let idx = isReplayActive ? replayCursor : maxIdx;
+
+  if (dir === 'first') idx = 0;
+  else if (dir === 'prev') idx = Math.max(0, idx - 1);
+  else if (dir === 'next') idx = Math.min(maxIdx, idx + 1);
+
+  if (idx >= maxIdx) {
+    await replayJumpLatest();
+    return;
+  }
+  replayCursor = idx;
+  await replayToSeq(moveEventSeqs[idx], idx);
+}
+
+async function replayToSeq(seq, knownMoveIdx = null) {
+  if (!activeSessionId) return;
+  const resp = await fetch(`/api/v1/sessions/${activeSessionId}/replay?up_to_seq=${seq}`);
+  if (!resp.ok) return;
+  const rep = await resp.json();
+
+  isReplayActive = true;
+  if (knownMoveIdx !== null) {
+    replayCursor = knownMoveIdx;
+  } else {
+    const foundIdx = moveEventSeqs.findIndex(s => s >= seq);
+    replayCursor = foundIdx >= 0 ? foundIdx : 0;
+  }
+
+  applyBoardFromBackend(rep.board);
+  updateReplayControlsState();
+}
+
+async function replayJumpLatest() {
+  isReplayActive = false;
+  replayCursor = -1;
+  if (activeSession) applyBoardFromBackend(activeSession.board);
+  updateReplayControlsState();
+}
+
+/* =========================================================================
+   7. Navegação de Abas e Modais (FUSION, Upload, Web Snapshot, Replay JSON)
+   ========================================================================= */
+function switchTab(key) {
+  const map = {
+    chat: ['tabBtnChat', 'tabPanelChat'],
+    sources: ['tabBtnSources', 'tabPanelSources'],
+    audit: ['tabBtnAudit', 'tabPanelAudit'],
+    history: ['tabBtnHistory', 'tabPanelHistory']
+  };
+  for (const [k, [btnId, panelId]] of Object.entries(map)) {
+    const active = k === key;
+    const btn = document.getElementById(btnId);
+    const panel = document.getElementById(panelId);
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    panel.classList.toggle('active', active);
+  }
+}
+
 async function openFusionModal() {
-  let b = document.getElementById('fusionModalBody');
-  b.innerHTML = '<p style="color:#9bb7c7">Consultando ramos de FUSION no backend...</p>';
+  if (!activeSessionId) return;
+  const b = document.getElementById('fusionModalBody');
+  b.innerHTML = '<p style="color:var(--muted)">Executando estratégias isoladas no pipeline FUSION...</p>';
   document.getElementById('fusionModal').style.display = 'flex';
 
-  let strats = game === 'go' ? ['influence', 'territory'] : ['queen', 'king', 'evans'];
+  const strats = game === 'go' ? ['influence', 'territory', 'invasion'] : ['queen', 'king', 'evans'];
   try {
-    let resp = await fetch(`/api/v1/sessions/${activeSessionId || 'default'}/research/fusion`, {
+    const resp = await fetch(`/api/v1/sessions/${activeSessionId}/research/fusion`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ strategies: strats })
     });
-    if (resp.ok) {
-      let data = await resp.json();
-      renderFusionReport(data.branches, data.report);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      b.innerHTML = `<div class="empty-state">Falha na síntese FUSION (${resp.status}): ${escapeHtml(err.detail || resp.statusText)}</div>`;
       return;
     }
-  } catch(e) {
-    console.warn('API FUSION offline, gerando síntese demonstrativa.', e);
+    const data = await resp.json();
+    const sResp = await fetch(`/api/v1/sessions/${activeSessionId}`);
+    if (sResp.ok) applySessionStateToUI(await sResp.json());
+    await refreshEventsList();
+    renderFusionReport(data.branches, data.report);
+  } catch (err) {
+    b.innerHTML = `<div class="empty-state">Erro ao executar FUSION: ${escapeHtml(err.message)}</div>`;
   }
-
-  // Fallback demonstrativo
-  let mockBranches = strats.map((st, i) => ({
-    branch_id: `br_${i}`,
-    title: `Ramo ${st.toUpperCase()}`,
-    focus: `Estratégia ${st}`
-  }));
-  let mockReport = {
-    question: activeQuestion,
-    deduplicated_sources_count: 3,
-    unified_synthesis: 'A investigação FUSION conciliou os 3 ramos independentes. As evidências convergem para a separação obrigatória entre proposição por LLM e restrição determinística pelos motores de jogo, deduplicando fontes por hash SHA-256.',
-    divergences: [
-      { topic: 'Mapeamento de Riscos', classification: 'CONVERGENT', details: 'Rastreabilidade de citações com offset estrito comprovada em todos os ramos.' },
-      { topic: 'Orçamento Computacional', classification: 'DIFFERENT_SCOPE', details: 'Ramo Dama priorizou exaustividade formal; Ramo Evans priorizou velocidade exploratória.' }
-    ]
-  };
-  renderFusionReport(mockBranches, mockReport);
 }
 
 function renderFusionReport(branches, report) {
-  let b = document.getElementById('fusionModalBody');
+  const b = document.getElementById('fusionModalBody');
   b.innerHTML = `
-    <div class="source-box" style="border-left:3px solid var(--mint)">
-      <b>Pergunta Central:</b>
-      <p style="font-size:13px;color:#fff;margin:4px 0">${report.question || activeQuestion}</p>
-      <span class="source-tag">${branches.length} RAMOS INVESTIGADOS</span>
-      <span class="source-tag" style="margin-left:6px">${report.deduplicated_sources_count} FONTES INDEPENDENTES DEDUPLICADAS</span>
+    <div class="source-box">
+      <b>Pergunta Investigada: ${escapeHtml(report.question)}</b>
+      <span class="source-tag">${branches.length} RAMOS ISOLADOS</span>
+      <span class="source-tag">${report.deduplicated_sources_count} FONTE(S) ÚNICA(S) POR SHA-256</span>
+      <span class="source-tag">EVIDÊNCIA: ${escapeHtml(report.evidence_level)}</span>
     </div>
-    <h4 style="color:#70f0d2;margin:16px 0 8px">Matriz de Divergências & Reconciliação</h4>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      ${report.divergences.map(d => `
-        <div class="source-box">
-          <b>${d.topic} — <span style="color:var(--mint)">${d.classification}</span></b>
-          <small>${d.details}</small>
-        </div>
-      `).join('')}
-    </div>
-    <h4 style="color:#70f0d2;margin:16px 0 8px">Síntese Unificada Auditável</h4>
-    <div class="source-box" style="background:#132634">
-      <p style="color:#e6f8f6;font-size:12.5px;line-height:1.6">${report.unified_synthesis}</p>
-    </div>
-  `;
-}
-
-let replayEvents = [];
-let replayIndex = 0;
-
-async function openReplayModal() {
-  let b = document.getElementById('replayModalBody');
-  b.innerHTML = '<p style="color:#9bb7c7">Carregando cadeia imutável de eventos...</p>';
-  document.getElementById('replayModal').style.display = 'flex';
-
-  try {
-    let resp = await fetch(`/api/v1/sessions/${activeSessionId || 'default'}/events`);
-    if (resp.ok) {
-      replayEvents = await resp.json();
-    } else {
-      replayEvents = [];
-    }
-  } catch(e) {
-    replayEvents = [];
-  }
-
-  if (!replayEvents || replayEvents.length === 0) {
-    replayEvents = [
-      { seq: 1, event_type: "SESSION_CREATED", prev_hash: "GENESIS_HASH_GAMBIT_LAB_V2", event_hash: "3a98c7e108f5d09b62f7...", payload: { title: activeQuestion, mode: mode, game: game } },
-      { seq: 2, event_type: game==='chess'?"CHESS_MOVE":"GO_MOVE", prev_hash: "3a98c7e108f5d09b62f7...", event_hash: "7f83b1657ff1fc53b92c...", payload: { uci: "d2d4", coord: "d4", san: "d4" } }
-    ];
-  }
-  replayIndex = 0;
-  renderReplayView();
-}
-
-function renderReplayView() {
-  let ev = replayEvents[replayIndex];
-  let b = document.getElementById('replayModalBody');
-  b.innerHTML = `
-    <div class="source-box" style="border-left:3px solid var(--mint)">
-      <b>Evento #${ev.seq} de ${replayEvents.length}: <span style="color:var(--mint)">${ev.event_type}</span></b>
-      <small style="font-family:monospace;margin-top:6px;word-break:break-all;color:#70f0d2">Hash Atual: ${ev.event_hash}</small>
-      <small style="font-family:monospace;margin-top:2px;word-break:break-all;color:#8ba5b5">Hash Anterior: ${ev.prev_hash}</small>
-      <div style="background:#09131d;padding:8px;border-radius:6px;margin-top:8px;border:1px solid #1f3444">
-        <b style="color:#eaf6f8;font-size:11px">Payload do Evento:</b>
-        <pre style="margin:4px 0 0;font-size:10.5px;color:#9bb5c6;white-space:pre-wrap">${JSON.stringify(ev.payload, null, 2)}</pre>
+    <h4 style="font-size:12.5px;color:var(--accent);margin:14px 0 8px">Matriz de Convergências e Divergências</h4>
+    ${(report.divergences || []).map(d => `
+      <div class="source-box">
+        <b>${escapeHtml(d.topic)} · <span style="color:var(--accent)">${escapeHtml(d.classification)}</span></b>
+        <small>${escapeHtml(d.details)}</small>
       </div>
+    `).join('')}
+    <h4 style="font-size:12.5px;color:var(--accent);margin:14px 0 8px">Síntese Unificada Auditável</h4>
+    <div class="source-box">
+      <p style="margin:0;line-height:1.6">${escapeHtml(report.unified_synthesis)}</p>
     </div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn secondary" style="flex:1" onclick="stepReplay(-1)" ${replayIndex === 0 ? 'disabled' : ''}>⏮ Anterior</button>
-      <button class="btn primary" style="flex:1" onclick="stepReplay(1)" ${replayIndex >= replayEvents.length - 1 ? 'disabled' : ''}>Próximo ⏭</button>
-    </div>
-    <button class="btn secondary" style="width:100%;margin-top:8px" onclick="closeModal('replayModal')">Fechar Replay</button>
   `;
 }
 
-function stepReplay(delta) {
-  replayIndex = Math.max(0, Math.min(replayEvents.length - 1, replayIndex + delta));
-  let ev = replayEvents[replayIndex];
-  if (ev.payload && ev.payload.fen) {
-    boardState.chessFen = ev.payload.fen;
-    if (viewMode === '2d') render2DBoard();
-  }
-  renderReplayView();
+let modalReplayIdx = 0;
+async function openReplayModal() {
+  await refreshEventsList();
+  document.getElementById('replayModal').style.display = 'flex';
+  modalReplayIdx = Math.max(0, sessionEvents.length - 1);
+  renderModalReplayEvent();
 }
 
-function openUploadModal() {
-  document.getElementById('uploadModal').style.display = 'flex';
+function renderModalReplayEvent() {
+  const b = document.getElementById('replayModalBody');
+  if (!sessionEvents.length) {
+    b.innerHTML = '<div class="empty-state">Nenhum evento registrado.</div>';
+    return;
+  }
+  const ev = sessionEvents[modalReplayIdx];
+  b.innerHTML = `
+    <div class="source-box">
+      <b>Evento #${ev.seq} de ${sessionEvents.length} · <span style="color:var(--accent)">${escapeHtml(ev.event_type)}</span></b>
+      <small>event_hash: ${escapeHtml(ev.event_hash)}</small>
+      <small>prev_hash:  ${escapeHtml(ev.prev_hash)}</small>
+      <pre style="margin:8px 0 0;padding:10px;background:#07080b;border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);white-space:pre-wrap;max-height:260px;overflow:auto">${escapeHtml(JSON.stringify(ev.payload, null, 2))}</pre>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn secondary" style="flex:1" onclick="stepModalReplay(-1)" ${modalReplayIdx <= 0 ? 'disabled' : ''}>← Evento anterior</button>
+      <button class="btn secondary" style="flex:1" onclick="stepModalReplay(1)" ${modalReplayIdx >= sessionEvents.length - 1 ? 'disabled' : ''}>Próximo evento →</button>
+    </div>
+  `;
 }
+
+function stepModalReplay(delta) {
+  modalReplayIdx = Math.max(0, Math.min(sessionEvents.length - 1, modalReplayIdx + delta));
+  renderModalReplayEvent();
+}
+
+function openUploadModal() { document.getElementById('uploadModal').style.display = 'flex'; }
+function openWebSnapshotModal() { document.getElementById('webSnapModal').style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
 async function submitArtifactUpload() {
-  let name = document.getElementById('upDocName').value;
-  let content = document.getElementById('upDocContent').value;
-  let owner = document.getElementById('upDocOwner').value;
+  if (!activeSessionId) return;
+  const name = document.getElementById('upDocName').value.trim() || 'Documento.txt';
+  const content = document.getElementById('upDocContent').value.trim();
+  const owner = document.getElementById('upDocOwner').value;
+  if (!content) { notify('Informe o conteúdo textual do documento.'); return; }
 
-  try {
-    let resp = await fetch(`/api/v1/sessions/${activeSessionId || 'default'}/artifacts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, content, owner_side: owner })
-    });
-    if (resp.ok) {
-      let art = await resp.json();
-      notify(`Artefato '${name}' ingerido no cofre (SHA-256: ${art.sha256.slice(0,8)}...)`);
-      updateVerificationBadges(true, true, true);
-    }
-  } catch(e) {
-    notify(`Artefato '${name}' ingerido localmente.`);
-    updateVerificationBadges(true, true, true);
+  const resp = await fetch(`/api/v1/sessions/${activeSessionId}/artifacts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, content, owner_side: owner })
+  });
+  if (resp.ok) {
+    const art = await resp.json();
+    closeModal('uploadModal');
+    const sResp = await fetch(`/api/v1/sessions/${activeSessionId}`);
+    if (sResp.ok) applySessionStateToUI(await sResp.json());
+    switchTab('sources');
+    notify(`Documento '${name}' registrado com SHA-256 ${art.sha256.slice(0, 12)}…`);
   }
-  closeModal('uploadModal');
+}
+
+async function submitWebSnapshot() {
+  if (!activeSessionId) return;
+  const url = document.getElementById('snapUrlInput').value.trim();
+  const title = document.getElementById('snapTitleInput').value.trim() || null;
+  if (!url) { notify('Informe uma URL HTTPS pública.'); return; }
+
+  const resp = await fetch(`/api/v1/sessions/${activeSessionId}/web-snapshot`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, title })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    notify(`Captura bloqueada/falhou (${resp.status}): ${err.detail || resp.statusText}`);
+    return;
+  }
+  const snap = await resp.json();
+  closeModal('webSnapModal');
+  const sResp = await fetch(`/api/v1/sessions/${activeSessionId}`);
+  if (sResp.ok) applySessionStateToUI(await sResp.json());
+  switchTab('sources');
+  notify(`Snapshot Web capturado (${snap.domain}) · SHA-256 ${snap.sha256.slice(0, 12)}…`);
 }
 
 function exportReport(fmt) {
-  window.open(`/api/v1/sessions/${activeSessionId || 'default'}/report?format=${fmt}`, '_blank');
+  if (!activeSessionId) return;
+  window.open(`/api/v1/sessions/${activeSessionId}/report?format=${fmt}`, '_blank');
 }
 
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
+function escapeAttr(str) { return escapeHtml(str); }
 
-let toastTimer;
+let toastTimer = null;
 function notify(msg) {
   document.querySelector('.toast')?.remove();
   const div = document.createElement('div');
@@ -2139,10 +2724,12 @@ function notify(msg) {
   div.textContent = msg;
   document.body.appendChild(div);
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => div.remove(), 4000);
+  toastTimer = setTimeout(() => div.remove(), 4200);
 }
 
-// Event Listeners
+/* =========================================================================
+   8. Listeners de Teclado, Sugestões e Upload Local
+   ========================================================================= */
 document.getElementById('goBtn').addEventListener('click', startInvestigation);
 document.getElementById('question').addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -2150,66 +2737,68 @@ document.getElementById('question').addEventListener('keydown', e => {
     startInvestigation();
   }
 });
+document.getElementById('refineInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    submitRefinementAndAdvance();
+  }
+});
 
-document.querySelectorAll('[data-scenario]').forEach(b => {
-  b.addEventListener('click', () => {
-    let sc = SCENARIOS[b.dataset.scenario];
-    document.getElementById('question').value = sc.topic;
-    document.getElementById('modeSelect').value = b.dataset.mode;
-    document.getElementById('gameSelect').value = b.dataset.game;
+document.getElementById('newBtn').addEventListener('click', () => backToHome(false));
+document.getElementById('restartSession').addEventListener('click', () => backToHome(true));
+document.getElementById('modeBtn').addEventListener('click', () => {
+  const gs = document.getElementById('gameSelect');
+  gs.value = gs.value === 'chess' ? 'go' : 'chess';
+  notify(`Jogo selecionado para próxima sessão: ${gs.value === 'chess' ? 'Xadrez 8×8' : 'Go 9×9'}`);
+});
+document.getElementById('historyBtn').addEventListener('click', () => {
+  if (activeSessionId) openReplayModal();
+  else notify('Inicie uma sessão primeiro para inspecionar o Event Store.');
+});
+document.getElementById('fusionRailBtn').addEventListener('click', () => {
+  if (activeSessionId) openFusionModal();
+  else notify('Inicie uma sessão primeiro para executar a síntese FUSION.');
+});
+document.getElementById('themeBtn').addEventListener('click', toggleVisualTheme);
+document.getElementById('infoBtn').addEventListener('click', () => {
+  notify('Gambit Lab Nocturne R1.0 — Motores determinísticos (python-chess & Go 9×9) + Event Store SHA-256 + Busca Web Anti-SSRF.');
+});
+
+document.querySelectorAll('.suggestions button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('question').value = btn.dataset.prompt || '';
+    if (btn.dataset.mode) document.getElementById('modeSelect').value = btn.dataset.mode;
+    if (btn.dataset.game) document.getElementById('gameSelect').value = btn.dataset.game;
+    if (btn.dataset.policy) {
+      const opt = document.querySelector(`#sourceSelect option[value="${btn.dataset.policy}"]`);
+      if (opt && !opt.disabled) document.getElementById('sourceSelect').value = btn.dataset.policy;
+    }
     document.getElementById('question').focus();
   });
 });
 
-document.getElementById('uploadFile').addEventListener('change', e => {
-  let files = [...e.target.files];
+document.getElementById('uploadFile').addEventListener('change', async e => {
+  const files = Array.from(e.target.files || []);
   attachedFiles = [];
-  let pending = files.length;
-  if (!pending) {
-    document.getElementById('uploadsInfo').textContent = 'Nenhum arquivo anexado';
-    return;
+  for (const f of files) {
+    const txt = await f.text().catch(() => '');
+    attachedFiles.push({ name: f.name, content: txt || `Arquivo ${f.name} anexado pelo usuário.` });
   }
-  for (let f of files) {
-    let reader = new FileReader();
-    reader.onload = ev => {
-      attachedFiles.push({ name: f.name, content: ev.target.result });
-      pending--;
-      if (pending === 0) {
-        document.getElementById('uploadsInfo').textContent = `${attachedFiles.length} arquivo(s) anexado(s) ao cofre`;
-        notify(`${attachedFiles.length} arquivo(s) carregados e prontos para o cofre.`);
-      }
-    };
-    reader.readAsText(f);
+  document.getElementById('uploadsInfo').textContent = attachedFiles.length
+    ? `${attachedFiles.length} arquivo(s) pronto(s) para o cofre`
+    : 'Nenhum arquivo local selecionado';
+});
+
+document.querySelectorAll('.modal-overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.style.display = 'none'; });
+});
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay').forEach(ov => { ov.style.display = 'none'; });
   }
 });
 
-document.getElementById('editBtn').addEventListener('click', () => backToHome(false));
-document.getElementById('restartSession').addEventListener('click', () => backToHome(true));
-document.getElementById('newBtn').addEventListener('click', () => backToHome(true));
-document.getElementById('modeBtn').addEventListener('click', swapGame);
-document.getElementById('historyBtn').addEventListener('click', () => {
-  if (document.getElementById('workspace').classList.contains('active')) {
-    openReplayModal();
-  } else {
-    notify('Inicie uma investigação para visualizar o histórico.');
-  }
-});
-document.getElementById('fusionRailBtn').addEventListener('click', () => {
-  if (document.getElementById('workspace').classList.contains('active')) {
-    openFusionModal();
-  } else {
-    notify('Inicie uma investigação para ver a síntese FUSION.');
-  }
-});
-document.getElementById('infoBtn').addEventListener('click', () => {
-  notify('Gambit Lab 2.0 Cosmic: O LLM propõe, o motor determinístico restringe, as evidências sustentam e o sistema registra.');
-});
-document.getElementById('refineInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') submitRefinement();
-});
-
-// Inicialização
-requestAnimationFrame(render3DScene);
+loadCapabilities();
 </script>
 </body>
 </html>

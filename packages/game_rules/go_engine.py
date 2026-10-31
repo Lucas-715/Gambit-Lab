@@ -52,6 +52,48 @@ class GoEngine9x9:
         # Histórico de posições para detecção de superko posicional
         self.position_history: Set[str] = {self._board_hash(self.grid)}
 
+    @property
+    def ply_count(self) -> int:
+        return len(self.move_history)
+
+    def get_legal_moves(self, limit: int = 30) -> List[str]:
+        """
+        Retorna coordenadas legais para o jogador da vez (sem suicídio e sem violação de superko),
+        priorizando pontos estratégicos de 9x9 (centro, hoshi, cantos e bordas) seguidos das demais interseções e PASS.
+        """
+        if self.is_game_over:
+            return []
+        preferred = [
+            "E5", "D4", "F6", "D6", "F4", "C3", "G7", "C7", "G3",
+            "E3", "E7", "C5", "G5", "D5", "F5", "E4", "E6",
+            "C4", "D3", "F3", "G4", "G6", "F7", "D7", "C6",
+            "B3", "C2", "G2", "H3", "H7", "G8", "C8", "B7", "E2", "E8", "B5", "H5"
+        ]
+        seen: Set[str] = set()
+        legal: List[str] = []
+        for coord in preferred:
+            parsed = self.parse_coord(coord)
+            if parsed is not None:
+                c, r = parsed
+                ok, _, _ = self.is_legal_move(c, r, self.turn)
+                if ok:
+                    legal.append(coord)
+                    seen.add(coord)
+                    if len(legal) >= limit:
+                        return legal
+        for r in range(self.size):
+            for c in range(self.size):
+                coord = self.format_coord(c, r)
+                if coord not in seen:
+                    ok, _, _ = self.is_legal_move(c, r, self.turn)
+                    if ok:
+                        legal.append(coord)
+                        seen.add(coord)
+                        if len(legal) >= limit:
+                            return legal
+        legal.append("PASS")
+        return legal
+
     @staticmethod
     def _board_hash(grid: List[List[Optional[str]]]) -> str:
         return "".join((cell if cell else ".") for row in grid for cell in row)
@@ -357,10 +399,13 @@ class GoEngine9x9:
                         "coord": self.format_coord(c, r),
                         "color": self.grid[r][c]
                     })
+        last_move = self.move_history[-1]["coord"] if self.move_history else None
         return {
             "game": "go",
             "size": self.size,
             "turn": "black" if self.turn == "B" else "white",
+            "ply_count": self.ply_count,
+            "last_move": last_move,
             "komi": self.komi,
             "stones": stones,
             "captured_by_black": self.captured_by_black,
