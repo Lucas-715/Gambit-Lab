@@ -2,6 +2,29 @@
 
 Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 
+## [2.3.1-traceability] — 2026-10-31
+
+### Adicionado
+- **Rastreabilidade Ponta a Ponta no Painel 'Lance Selecionado'**:
+  - População automática do painel no carregamento da partida (`loadMatchAndPieces`) com o último lance do timeline, eliminando o painel em branco.
+  - Sincronização estrita de todos os lances (`selectMoveByPly`), exibindo número do lance, notação SAN, peça ativa, coordenadas, tese, citação literal, status de verificação e captura física.
+  - Estado inicial pré-jogo limpo e informativo quando o cursor de replay está no início (`ply = 0`), com desativação apropriada dos botões de recuo.
+- **Alinhamento Matemático de Coordenadas em 2D e Projeção em 3D**:
+  - **Modo 2D**: Reestruturação completa com CSS Grid (`.board-2d-inner`) de alinhamento 1:1 entre as células do tabuleiro e os rótulos de fileiras (`8..1`) e colunas (`a..h` no Xadrez, `A..J` sem `I` no Go 9×9).
+  - **Modo 3D**: Overlay em HTML5 Canvas (`#stageCoordsOverlay`) sincronizado com o WebGL através da projeção geométrica da matriz de visualização e perspectiva (`vp`).
+- **Inspeção Interativa por Clique na Casa**:
+  - Clique em qualquer casa do tabuleiro abre modal de inspeção com busca no histórico da partida e botão direto para inspecionar o lance correspondente no painel "Lance Selecionado".
+- **Esquema de Estado e Sequenciamento de Eventos**:
+  - Campo `status` (`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`, `BUDGET_EXHAUSTED`) integrado a `ResearchMatchStateSchema`.
+  - Campo `move_event_seq` persistido em `MatchPlyRecordSchema` e `MoveAuditPayloadSchema` para mapeamento bidirecional exato com o `EventStore`.
+
+### Corrigido
+- **Honestidade Científica nas Citações e Vereditos**:
+  - Distinção transparente entre citação verificada no arquivo ("✓ Citação verificada no arquivo") e citação anexada sem verificação ("⚠️ Citação anexada; relevância semântica pendente").
+  - Capturas físicas nunca falsificam veredito factual como `REFUTED`, mantendo `INCONCLUSIVE` ou `NOT_ASSESSED`.
+- **Prevenção de Erros de Referência nula no DOM**:
+  - Proteção de todos os acessos a elementos do DOM removidos ou reestruturados no redesign v2.3 (`topModeBadge`, `countChat`, `countAudit`, `countHistory`), garantindo que o ciclo de 7 estágios execute sem interrupções.
+
 ## [2.3.0-focus] — 2026-10-31
 
 ### Adicionado

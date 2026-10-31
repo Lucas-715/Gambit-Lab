@@ -123,7 +123,7 @@ class RecordingMixin:
 
         # Persiste eventos canônicos compatíveis com EventStore.replay_session(up_to_seq=...)!
         if sess["game"] == "chess":
-            self.sm._append_session_event(
+            move_evt = self.sm._append_session_event(
                 session_id,
                 "CHESS_MOVE",
                 {
@@ -136,7 +136,7 @@ class RecordingMixin:
                 },
             )
         else:
-            self.sm._append_session_event(
+            move_evt = self.sm._append_session_event(
                 session_id,
                 "GO_MOVE",
                 {
@@ -149,7 +149,7 @@ class RecordingMixin:
             )
         self.sm._append_session_event(session_id, "CLAIM_CREATED", claim_dict)
         self.sm._append_session_event(session_id, "JUDGMENT_ISSUED", judgment_dict)
-        ev = self.sm._append_session_event(
+        step_evt = self.sm._append_session_event(
             session_id,
             "INVESTIGATION_STEP_COMPLETED",
             {
@@ -161,4 +161,9 @@ class RecordingMixin:
                 "verdict": verdict,
             },
         )
-        return ev
+        return {
+            "seq": step_evt["seq"],
+            "hash": step_evt.get("hash") or step_evt.get("event_hash"),
+            "move_seq": move_evt["seq"],
+            "move_hash": move_evt.get("hash") or move_evt.get("event_hash"),
+        }

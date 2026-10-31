@@ -117,3 +117,17 @@ Este documento estabelece o mapeamento formal de rastreabilidade entre os requis
 | **UX05** | Replay histórico sincroniza lance, FEN e alegações sem chamar LLM | Browser / CDP | `scratch/verify_v23_nocturne_focus_cdp.py` | **PASS** |
 | **UX06** | Sidebar recolhível e responsividade mobile sem overflow horizontal | Browser / CDP | `docs/screenshots/nocturne_v23_sidebar_collapsed.png` | **PASS** |
 | **UX07** | Modal Diagnóstico exibe métricas, telemetria e integridade SHA-256 | Browser / CDP | `docs/screenshots/nocturne_v23_diagnostics_modal.png` | **PASS** |
+
+---
+
+## 7. Suíte de Rastreabilidade e Coordenadas v2.3.1 (`T01` a `T06`)
+
+| ID | Cenário / Critério | Tipo | Arquivo de Teste / Evidência | Resultado |
+|---|---|---|---|:---:|
+| **T01** | Painel Lance Selecionado populado automaticamente na carga da partida | Browser / CDP | `docs/screenshots/nocturne_v23_1_lance_selecionado_auto.png` | **PASS** |
+| **T02** | Replay sincroniza timeline completa de 10+ lances com dados semânticos | Browser / CDP | `docs/screenshots/nocturne_v23_1_replay_plies_1_to_10.png` | **PASS** |
+| **T03** | Mapeamento atômico entre `move_event_seq` e `EventStore` no timeline | Unit / Schema | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **T04** | Grade 2D CSS (.board-2d-inner) alinhada 1:1 com as fileiras (8..1) e colunas (a..h) | Browser / CDP | `docs/screenshots/nocturne_v23_1_2d_aligned_grid.png` | **PASS** |
+| **T05** | Overlay 3D projeta coordenadas com perspectiva exata sobre o WebGL | Browser / CDP | `docs/screenshots/nocturne_v23_1_3d_perspective_coords.png` | **PASS** |
+| **T06** | Coordenadas do Go 9x9 com A-J (sem I) e honestidade de citações/capturas | Browser / CDP | `docs/screenshots/nocturne_v23_1_go_coords_no_i.png` | **PASS** |
+

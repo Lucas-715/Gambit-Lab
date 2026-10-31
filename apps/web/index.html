@@ -1535,46 +1535,94 @@ body.star-motion-paused #space {
   border: 1px solid var(--border);
 }
 
-/* Moldura e Coordenadas Externas do Tabuleiro (C06) */
-.board-frame-2d, .stage-container {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: center;
-  position: relative;
+/* Moldura e Coordenadas Externas do Tabuleiro (C06 & Auditoria v2.3) */
+.board-frame-2d {
+  display: none;
   width: 100%;
+  min-height: 468px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.board-2d-inner {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  grid-template-rows: 1fr 26px;
+  max-width: 440px;
+  width: 100%;
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.board-corner-spacer {
+  grid-column: 1;
+  grid-row: 2;
 }
 
 .board-ranks-col {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 4px 8px 30px 4px;
-  font-size: 12px;
-  font-weight: 600;
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--muted);
   user-select: none;
-  min-width: 22px;
-  text-align: center;
-}
-
-.board-grid-wrap, .stage-canvas-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
+  padding-right: 6px;
 }
 
 .board-files-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  width: 100%;
-  padding-top: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--muted);
   user-select: none;
+  padding-top: 6px;
+}
+
+.stage-container {
+  position: relative;
+  width: 100%;
+  height: 468px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#stageCoordsOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.smp-empty-state, .smp-loading-state, .smp-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px 16px;
+  color: var(--muted);
+  gap: 8px;
+}
+.smp-empty-state strong, .smp-loading-state strong {
+  color: var(--text);
+  font-size: 14px;
+}
+.smp-empty-state p, .smp-loading-state p {
+  font-size: 12px;
+  max-width: 320px;
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* Painel LANCE SELECIONADO (C07) */
@@ -1948,24 +1996,22 @@ body.star-motion-paused #space {
             </div>
 
             <div class="stage">
-              <!-- Modo 3D com moldura ancorada de coordenadas externas (C06) -->
+              <!-- Modo 3D com projeção geométrica direta de coordenadas (C06 & v2.3.1) -->
               <div class="stage-container" id="stageContainer">
-                <div class="board-ranks-col ranks-3d" id="boardRanks3D" aria-hidden="true"></div>
-                <div class="stage-canvas-wrap">
-                  <canvas id="stage" aria-label="Tabuleiro 3D WebGL interativo de Xadrez e Go"></canvas>
-                  <div class="board-files-row files-3d" id="boardFiles3D" aria-hidden="true"></div>
-                </div>
+                <canvas id="stage" aria-label="Tabuleiro 3D WebGL interativo de Xadrez e Go"></canvas>
+                <canvas id="stageCoordsOverlay" aria-hidden="true"></canvas>
               </div>
 
-              <!-- Modo 2D acessível com rótulos externos completos (C06) -->
+              <!-- Modo 2D acessível com grade matemática perfeita (C06 & v2.3.1) -->
               <div id="board2D" class="board-frame-2d" style="display:none;">
-                <div class="board-ranks-col" id="boardRanks2D" aria-hidden="true"></div>
-                <div class="board-grid-wrap">
+                <div class="board-2d-inner" id="board2DInner">
+                  <div class="board-ranks-col" id="boardRanks2D" aria-hidden="true"></div>
                   <div class="grid-2d" id="grid2D"></div>
+                  <div class="board-corner-spacer"></div>
                   <div class="board-files-row" id="boardFiles2D" aria-hidden="true"></div>
                 </div>
               </div>
-              <span class="scene-note" id="sceneNote">Arraste para orbitar em 3D · Coordenadas externas ativas · Clique nas casas para inspecionar</span>
+              <span class="scene-note" id="sceneNote">Arraste para orbitar em 3D · Coordenadas sincronizadas · Clique nas casas para inspecionar</span>
             </div>
 
             <div class="action-bars">
@@ -2021,10 +2067,12 @@ body.star-motion-paused #space {
           </div>
 
           <!-- ABA 1: Conversa entre Agentes -->
-                    <!-- ABA PRIMÁRIA: Lance Selecionado (UI Nocturne Focus C07) -->
+                    <!-- ABA PRIMÁRIA: Lance Selecionado (UI Nocturne Focus C07 & v2.3.1) -->
           <div class="tab-panel active" role="tabpanel" id="tabPanelMove" aria-labelledby="tabBtnMove">
             <div class="selected-move-panel" id="selectedMovePanel">
-              <div class="move-panel-head">
+              <div id="smpStateContainer"></div>
+              <div id="smpContent" style="display:flex;flex-direction:column;gap:12px;">
+                <div class="move-panel-head">
                 <div class="move-ply-badge" id="smpPlyBadge">Lance #—</div>
                 <div class="move-san-highlight" id="smpSanLabel">Aguardando lance</div>
                 <div class="move-side-pill" id="smpSidePill">—</div>
@@ -2081,6 +2129,7 @@ body.star-motion-paused #space {
                 <div class="epistemic-disclaimer">
                   <small>⚠️ <em>Rigor científico:</em> A captura física no jogo nunca equivale automaticamente à refutação factual da tese sem contraprova semântica demonstrada.</small>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -2716,6 +2765,11 @@ function render3DScene() {
     renderChessFen3D(boardState.chessFen);
   }
 
+  // Projeção matemática de coordenadas sobre o tabuleiro 3D (C06 & v2.3.1)
+  if (typeof draw3DCoordinates === 'function') {
+    draw3DCoordinates(vp, w, h, size, offset);
+  }
+
   if (viewMode === '3d' && document.getElementById('workspace').classList.contains('active')) {
     requestAnimationFrame(render3DScene);
   }
@@ -2858,6 +2912,39 @@ function inspectCell(c, r, label) {
     (p.origin_square && p.origin_square.toLowerCase() === label.toLowerCase())
   );
 
+  // Verifica se há lances no timeline vinculados a esta casa (Rastreabilidade v2.3.1)
+  let matchingPly = null;
+  if (typeof activeMatchTimeline !== 'undefined' && activeMatchTimeline && activeMatchTimeline.length) {
+    for (let i = activeMatchTimeline.length - 1; i >= 0; i--) {
+      const rec = activeMatchTimeline[i];
+      const mInfo = (rec.audit_payload && rec.audit_payload.move) || {};
+      const toC = (mInfo.to || rec.to_coord || '').toLowerCase();
+      const fromC = (mInfo.from || rec.from_coord || '').toLowerCase();
+      if (toC === label.toLowerCase() || fromC === label.toLowerCase()) {
+        matchingPly = rec;
+        break;
+      }
+    }
+  }
+
+  let matchPlyHtml = '';
+  if (matchingPly) {
+    const pStatus = (matchingPly.audit_payload && matchingPly.audit_payload.argument_verdict && matchingPly.audit_payload.argument_verdict.status) || matchingPly.epistemic_verdict || 'SUPPORTED';
+    matchPlyHtml = `
+      <div class="source-box" style="border-left: 3px solid var(--accent); margin-bottom: 12px; background: rgba(166, 141, 255, 0.08);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <b>Lance Relacionado: #${matchingPly.ply} (${matchingPly.san || matchingPly.move})</b>
+          <span class="badge-verdict ${pStatus.toLowerCase()}">${escapeHtml(pStatus)}</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--text);margin-bottom:6px">"${escapeHtml(matchingPly.claim_statement || 'Tese em andamento.')}"</div>
+        <button class="btn sm primary" style="margin-top:6px" onclick="selectMoveByPly(${matchingPly.ply}, true); switchTab('move'); closeModal('inspectModal');">Inspecionar Lance #${matchingPly.ply} no Painel →</button>
+      </div>
+    `;
+    if (typeof selectMoveByPly === 'function') {
+      selectMoveByPly(matchingPly.ply, false);
+    }
+  }
+
   let pieceHtml = '';
   if (pieceDossier) {
     const isPro = pieceDossier.owner_side === 'white';
@@ -2891,7 +2978,7 @@ function inspectCell(c, r, label) {
         </div>
       `;
     }).join('');
-    body.innerHTML = pieceHtml + body.innerHTML;
+    body.innerHTML = matchPlyHtml + pieceHtml + body.innerHTML;
   } else {
     body.innerHTML = `<div class="empty-state">Nenhuma alegação vinculada diretamente à coordenada <strong>${escapeHtml(label)}</strong> até o momento.</div>`;
   }
@@ -3024,7 +3111,7 @@ async function startInvestigation() {
     // Se a opção Research Match v2 estiver ativada, executa o ciclo completo de 7 estágios
     const runV2 = document.getElementById('researchMatchCheck') && document.getElementById('researchMatchCheck').checked;
     if (runV2) {
-      await runResearchMatchLifecycle(activeSessionId);
+      await runResearchMatchLifecycle(activeSessionId, 'quick');
     }
   } catch (err) {
     notify('Erro de comunicação com o servidor FastAPI: ' + err.message);
@@ -3076,7 +3163,8 @@ function applySessionStateToUI(sess) {
   document.getElementById('crumbPolicy').textContent = sess.normalized_source_policy || sess.source_policy;
   document.getElementById('questionTitle').textContent = sess.title;
   document.getElementById('userBubble').textContent = sess.title;
-  document.getElementById('topModeBadge').textContent = `${shortModes[mode] || mode} · ${game === 'chess' ? 'Xadrez' : 'Go'}`;
+  const topBadge = document.getElementById('topModeBadge');
+  if (topBadge) topBadge.textContent = `${shortModes[mode] || mode} · ${game === 'chess' ? 'Xadrez' : 'Go'}`;
   document.getElementById('boardTitle').textContent = game === 'chess' ? 'Tabuleiro de Xadrez · 8×8' : 'Tabuleiro Go / Weiqi · 9×9';
   document.getElementById('auditModeChip').textContent = sess.execution_mode || 'DEMO_OFFLINE';
 
@@ -3135,7 +3223,8 @@ function applySessionStateToUI(sess) {
 function renderChatMessages(sess) {
   const stream = document.getElementById('chatStream');
   const msgs = sess.messages || [];
-  document.getElementById('countChat').textContent = String(msgs.length + 1);
+  const cChat = document.getElementById('countChat');
+  if (cChat) cChat.textContent = String(msgs.length + 1);
 
   let html = `
     <div class="message user">
@@ -3229,7 +3318,8 @@ function renderAuditPanel(sess) {
 
   const judgments = sess.judgments || [];
   const claims = sess.claims || [];
-  document.getElementById('countAudit').textContent = String(claims.length);
+  const cAudit = document.getElementById('countAudit');
+  if (cAudit) cAudit.textContent = String(claims.length);
 
   if (judgments.length > 0) {
     const lastJ = judgments[judgments.length - 1];
@@ -3362,7 +3452,8 @@ async function refreshEventsList() {
   const resp = await fetch(`/api/v1/sessions/${activeSessionId}/events`);
   if (!resp.ok) return;
   sessionEvents = await resp.json();
-  document.getElementById('countHistory').textContent = String(sessionEvents.length);
+  const cHistory = document.getElementById('countHistory');
+  if (cHistory) cHistory.textContent = String(sessionEvents.length);
 
   // Índices de eventos de movimento (inclui seq 1 = posição inicial antes de qualquer lance)
   const moveEvts = sessionEvents.filter(e => e.event_type === 'CHESS_MOVE' || e.event_type === 'GO_MOVE');
@@ -3411,23 +3502,26 @@ function updateReplayControlsState() {
 }
 
 async function navigateMoveReplay(dir) {
-  if (moveEventSeqs.length <= 1) return;
-  const maxIdx = moveEventSeqs.length - 1;
-  let idx = isReplayActive ? replayCursor : maxIdx;
+  const count = (typeof activeMatchTimeline !== 'undefined' && activeMatchTimeline) ? activeMatchTimeline.length : 0;
+  if (count === 0 && moveEventSeqs.length <= 1) return;
 
-  if (dir === 'first') idx = 0;
-  else if (dir === 'prev') idx = Math.max(0, idx - 1);
-  else if (dir === 'next') idx = Math.min(maxIdx, idx + 1);
+  const totalMoves = Math.max(count, Math.max(0, moveEventSeqs.length - 1));
+  let curPly = (typeof selectedMovePly !== 'undefined' && selectedMovePly !== null) ? selectedMovePly : (isReplayActive ? replayCursor : totalMoves);
 
-  if (idx >= maxIdx) {
+  let targetPly = curPly;
+  if (dir === 'first') targetPly = 0;
+  else if (dir === 'prev') targetPly = Math.max(0, curPly - 1);
+  else if (dir === 'next') targetPly = Math.min(totalMoves, curPly + 1);
+  else if (dir === 'last') targetPly = totalMoves;
+
+  if (targetPly >= totalMoves) {
     await replayJumpLatest();
     return;
   }
-  replayCursor = idx;
-  await replayToSeq(moveEventSeqs[idx], idx);
+  await selectMoveByPly(targetPly, true);
 }
 
-async function replayToSeq(seq, knownMoveIdx = null) {
+async function replayToSeq(seq, knownMoveIdx = null, updatePanel = true) {
   if (!activeSessionId) return;
   const resp = await fetch(`/api/v1/sessions/${activeSessionId}/replay?up_to_seq=${seq}`);
   if (!resp.ok) return;
@@ -3443,10 +3537,9 @@ async function replayToSeq(seq, knownMoveIdx = null) {
 
   applyBoardFromBackend(rep.board);
   updateReplayControlsState();
-  if (activeSession && activeSession.research_match && activeSession.research_match.timeline) {
-    const tl = activeSession.research_match.timeline;
-    const matchPly = tl.find(t => t.event_seq === seq) || tl[replayCursor] || tl[tl.length - 1];
-    if (matchPly) updateSelectedMovePanel(matchPly);
+
+  if (updatePanel && typeof selectMoveByPly === 'function') {
+    selectMoveByPly(replayCursor, false);
   }
 }
 
@@ -3455,9 +3548,14 @@ async function replayJumpLatest() {
   replayCursor = -1;
   if (activeSession) {
     applyBoardFromBackend(activeSession.board);
-    if (activeSession.research_match && activeSession.research_match.timeline && activeSession.research_match.timeline.length) {
-      const tl = activeSession.research_match.timeline;
-      updateSelectedMovePanel(tl[tl.length - 1]);
+    if (typeof selectMoveByPly === 'function') {
+      const count = (activeMatchTimeline && activeMatchTimeline.length) || 0;
+      if (count > 0) {
+        selectMoveByPly(count, false);
+      } else if (activeSession.research_match && activeSession.research_match.timeline && activeSession.research_match.timeline.length) {
+        activeMatchTimeline = activeSession.research_match.timeline;
+        selectMoveByPly(activeMatchTimeline.length, false);
+      }
     }
   }
   updateReplayControlsState();
@@ -3788,7 +3886,7 @@ function renderStageList(stages = [], currentStageIndex = 1, liveMsg = '') {
   if (msgEl && liveMsg) msgEl.textContent = liveMsg;
 }
 
-async function runResearchMatchLifecycle(sessionId) {
+async function runResearchMatchLifecycle(sessionId, depth = 'quick') {
   document.getElementById('matchProgressModal').style.display = 'flex';
   renderStageList([], 1, 'Iniciando orquestrador de Research Match v2...');
 
@@ -3801,7 +3899,7 @@ async function runResearchMatchLifecycle(sessionId) {
       const resp = await fetch(`/api/v1/sessions/${sessionId}/match/stage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ depth: null })
+        body: JSON.stringify({ depth: depth })
       });
 
       if (!resp.ok) {
@@ -3880,6 +3978,7 @@ async function loadMatchAndPieces(sessionId, viewerSide = null) {
 
     if (mResp.ok) {
       activeMatchState = await mResp.json();
+      activeMatchTimeline = activeMatchState.timeline || [];
       renderDualConclusionCard(activeMatchState.conclusion, activeMatchState);
       
       // Controla visibilidade de botões na barra de ação
@@ -3887,6 +3986,15 @@ async function loadMatchAndPieces(sessionId, viewerSide = null) {
       const resumeBtn = document.getElementById('resumeMatchBtn');
       if (runV2Btn) runV2Btn.style.display = (activeMatchState.status === 'COMPLETED' || activeMatchState.current_stage >= 6) ? 'none' : 'inline-flex';
       if (resumeBtn) resumeBtn.style.display = activeMatchState.status === 'BUDGET_EXHAUSTED' ? 'inline-flex' : 'none';
+
+      // Sincroniza e exibe automaticamente o lance no painel Lance Selecionado (v2.3.1)
+      if (typeof selectMoveByPly === 'function') {
+        if (activeMatchTimeline.length > 0) {
+          selectMoveByPly(activeMatchTimeline.length, false);
+        } else {
+          updateSelectedMovePanel(null, 'NO_MOVES');
+        }
+      }
     }
 
     if (pResp.ok) {
@@ -4176,8 +4284,11 @@ function openArtifactFromPiece(artifactId) {
 
 
 /* =========================================================================
-   NOCTURNE FOCUS v2.3 — FUNÇÕES DE SINCRONIZAÇÃO E CONTROLE
+   NOCTURNE FOCUS v2.3.1 — RASTREABILIDADE TOTAL E COORDENADAS PROJETADAS
    ========================================================================= */
+
+let activeMatchTimeline = []; // Lista completa de MatchPlyRecordSchema
+let selectedMovePly = null;    // null = sem seleção; 0 = inicial; 1..N = lance ativo
 
 function toggleSidebar() {
   const rail = document.querySelector('.rail');
@@ -4197,33 +4308,158 @@ function toggleSidebar() {
   } catch(e){}
 })();
 
+// Atualiza rótulos externos com precisão em 2D
 function updateBoardCoordinatesLabels() {
+  const isChess = (game === 'chess');
+  const size = isChess ? 8 : 9;
+  const ranks = isChess ? ['8','7','6','5','4','3','2','1'] : ['9','8','7','6','5','4','3','2','1'];
+  const files = isChess ? ['a','b','c','d','e','f','g','h'] : ['A','B','C','D','E','F','G','H','J']; // nunca I
+
   const ranks2D = document.getElementById('boardRanks2D');
   const files2D = document.getElementById('boardFiles2D');
-  const ranks3D = document.getElementById('boardRanks3D');
-  const files3D = document.getElementById('boardFiles3D');
 
-  const chessRanks = ['8','7','6','5','4','3','2','1'];
-  const chessFiles = ['a','b','c','d','e','f','g','h'];
-  const goRanks = ['9','8','7','6','5','4','3','2','1'];
-  const goFiles = ['A','B','C','D','E','F','G','H','J']; // v2.3 C06: nunca I
-
-  const isChess = (game === 'chess');
-  const ranks = isChess ? chessRanks : goRanks;
-  const files = isChess ? chessFiles : goFiles;
-
-  const ranksHtml = ranks.map(r => `<div>${r}</div>`).join('');
-  const filesHtml = files.map(f => `<div>${f}</div>`).join('');
-
-  if (ranks2D) ranks2D.innerHTML = ranksHtml;
-  if (files2D) files2D.innerHTML = filesHtml;
-  if (ranks3D) ranks3D.innerHTML = ranksHtml;
-  if (files3D) files3D.innerHTML = filesHtml;
+  if (ranks2D) {
+    ranks2D.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+    ranks2D.innerHTML = ranks.map(r => `<div>${r}</div>`).join('');
+  }
+  if (files2D) {
+    files2D.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    files2D.innerHTML = files.map(f => `<div>${f}</div>`).join('');
+  }
 }
 
-// Atualiza o painel "LANCE SELECIONADO" com base no registro de lance
-function updateSelectedMovePanel(record) {
+// Projeção matemática de coordenadas 3D no overlay sobre a borda do tabuleiro
+function draw3DCoordinates(vp, width, height, size, offset) {
+  const ovCanvas = document.getElementById('stageCoordsOverlay');
+  if (!ovCanvas) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.floor(ovCanvas.clientWidth * dpr));
+  const h = Math.max(1, Math.floor(ovCanvas.clientHeight * dpr));
+  if (ovCanvas.width !== w || ovCanvas.height !== h) {
+    ovCanvas.width = w;
+    ovCanvas.height = h;
+  }
+  const ctx = ovCanvas.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+
+  const isChess = (size === 8);
+  const ranks = isChess ? ['8','7','6','5','4','3','2','1'] : ['9','8','7','6','5','4','3','2','1'];
+  const files = isChess ? ['a','b','c','d','e','f','g','h'] : ['A','B','C','D','E','F','G','H','J'];
+
+  ctx.font = `bold ${Math.round(11.5 * dpr)}px monospace`;
+  ctx.fillStyle = '#8C909D';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Projeta arquivos (files a..h ou A..J) na borda frontal
+  for (let c = 0; c < size; c++) {
+    const worldPos = [c - offset, 0.04, offset + 0.65];
+    const cx = vp[0]*worldPos[0] + vp[4]*worldPos[1] + vp[8]*worldPos[2] + vp[12];
+    const cy = vp[1]*worldPos[0] + vp[5]*worldPos[1] + vp[9]*worldPos[2] + vp[13];
+    const cw = vp[3]*worldPos[0] + vp[7]*worldPos[1] + vp[11]*worldPos[2] + vp[15];
+    if (cw > 0.1) {
+      const sx = (cx / cw * 0.5 + 0.5) * w;
+      const sy = (-cy / cw * 0.5 + 0.5) * h;
+      if (sx >= 0 && sx <= w && sy >= 0 && sy <= h) {
+        ctx.fillText(files[c], sx, sy);
+      }
+    }
+  }
+
+  // Projeta fileiras (ranks 8..1 ou 9..1) na borda esquerda
+  for (let r = 0; r < size; r++) {
+    const worldPos = [-offset - 0.65, 0.04, r - offset];
+    const cx = vp[0]*worldPos[0] + vp[4]*worldPos[1] + vp[8]*worldPos[2] + vp[12];
+    const cy = vp[1]*worldPos[0] + vp[5]*worldPos[1] + vp[9]*worldPos[2] + vp[13];
+    const cw = vp[3]*worldPos[0] + vp[7]*worldPos[1] + vp[11]*worldPos[2] + vp[15];
+    if (cw > 0.1) {
+      const sx = (cx / cw * 0.5 + 0.5) * w;
+      const sy = (-cy / cw * 0.5 + 0.5) * h;
+      if (sx >= 0 && sx <= w && sy >= 0 && sy <= h) {
+        ctx.fillText(ranks[r], sx, sy);
+      }
+    }
+  }
+}
+
+// Centralização da Seleção de Lances
+async function selectMoveByPly(ply, syncReplay = true) {
+  const count = (activeMatchTimeline && activeMatchTimeline.length) || 0;
+  if (count === 0) {
+    selectedMovePly = 0;
+    updateSelectedMovePanel(null, 'NO_MOVES');
+    updateReplayControlsState();
+    return;
+  }
+
+  if (ply <= 0) {
+    selectedMovePly = 0;
+    updateSelectedMovePanel(null, 'INITIAL_POSITION');
+    if (syncReplay && moveEventSeqs.length > 0) {
+      await replayToSeq(moveEventSeqs[0], 0, false);
+    }
+    updateReplayControlsState();
+    return;
+  }
+
+  const clamped = Math.min(Math.max(1, ply), count);
+  selectedMovePly = clamped;
+  const record = activeMatchTimeline[clamped - 1]; // ply 1 está no índice 0
+  updateSelectedMovePanel(record, 'MOVE_READY');
+
+  if (syncReplay) {
+    if (moveEventSeqs && moveEventSeqs.length > clamped) {
+      await replayToSeq(moveEventSeqs[clamped], clamped, false);
+    } else if (record.board_snapshot) {
+      applyBoardFromBackend(record.board_snapshot);
+    }
+  }
+  updateReplayControlsState();
+}
+
+// Atualização do Painel "LANCE SELECIONADO"
+function updateSelectedMovePanel(record, state = 'MOVE_READY') {
+  const stateContainer = document.getElementById('smpStateContainer');
+  const content = document.getElementById('smpContent');
+
+  if (state === 'NO_MOVES') {
+    if (stateContainer) {
+      stateContainer.style.display = 'block';
+      stateContainer.innerHTML = `
+        <div class="smp-empty-state">
+          <span style="font-size:28px;">⏳</span>
+          <strong>Aguardando início da investigação</strong>
+          <p>Nenhum lance foi executado ainda nesta sessão. Inicie ou avance a partida para visualizar os movimentos e as evidências.</p>
+        </div>
+      `;
+    }
+    if (content) content.style.display = 'none';
+    const wsPlyLbl = document.getElementById('wsCurrentPlyLabel');
+    if (wsPlyLbl) wsPlyLbl.textContent = 'Lance: Inicial';
+    return;
+  }
+
+  if (state === 'INITIAL_POSITION') {
+    if (stateContainer) {
+      stateContainer.style.display = 'block';
+      stateContainer.innerHTML = `
+        <div class="smp-empty-state">
+          <span style="font-size:28px;">♟️</span>
+          <strong>Posição Inicial do Tabuleiro</strong>
+          <p>Estado anterior ao lance #1. Use os controles de replay ou clique em "Próximo →" para inspecionar o primeiro lance.</p>
+        </div>
+      `;
+    }
+    if (content) content.style.display = 'none';
+    const wsPlyLbl = document.getElementById('wsCurrentPlyLabel');
+    if (wsPlyLbl) wsPlyLbl.textContent = 'Posição Inicial (antes de #1)';
+    return;
+  }
+
   if (!record) return;
+
+  if (stateContainer) stateContainer.style.display = 'none';
+  if (content) content.style.display = 'flex';
 
   const plyBadge = document.getElementById('smpPlyBadge');
   const sanLabel = document.getElementById('smpSanLabel');
@@ -4245,7 +4481,6 @@ function updateSelectedMovePanel(record) {
   const verdictBadge = document.getElementById('smpVerdictBadge');
   const verdictReason = document.getElementById('smpVerdictReason');
 
-  // Payload auditável v2.3 C11 ou campos nativos do MatchPlyRecordSchema
   const audit = record.audit_payload || {};
   const moveInfo = audit.move || {};
   const pieceInfo = audit.piece || {};
@@ -4274,28 +4509,37 @@ function updateSelectedMovePanel(record) {
   if (pieceRole) pieceRole.textContent = pieceInfo.role || record.piece_role || 'Investigação tática';
   if (claimText) claimText.textContent = pieceInfo.claim_statement || record.claim_statement || 'Tese em andamento.';
 
-  // Citação e Evidência
+  // Citação e Verificação Honesta
   const quote = (evidInfo.quotes && evidInfo.quotes[0]) || record.quote_text;
+  const isVerified = (evidInfo.source_status === 'SOURCE_VERIFIED') ||
+                     (record.quote_verified === true) ||
+                     (record.epistemic_verdict === 'SOURCE_VERIFIED') ||
+                     (audit.evidence && audit.evidence.source_status === 'SOURCE_VERIFIED');
+
   if (quote && quoteBox) {
     quoteBox.style.display = 'block';
     if (quoteText) quoteText.textContent = `"${quote}"`;
-    if (sourceMeta) sourceMeta.textContent = `Fonte: ${record.artifact_title || 'Documento do cofre'} · Citação verificada no arquivo`;
+    if (sourceMeta) {
+      const vText = isVerified ? '✓ Citação verificada no arquivo' : '⚠️ Citação anexada; relevância semântica pendente';
+      sourceMeta.textContent = `Fonte: ${record.artifact_title || 'Documento do cofre'} · ${vText}`;
+      sourceMeta.style.color = isVerified ? '#34d399' : '#fbbf24';
+    }
   } else if (quoteBox) {
     quoteBox.style.display = 'none';
   }
 
-  const sStatus = evidInfo.source_status || (quote ? 'SOURCE_VERIFIED' : 'UNVERIFIED');
+  const sStatus = evidInfo.source_status || (isVerified ? 'SOURCE_VERIFIED' : (quote ? 'UNVERIFIED' : 'NO_SOURCES_ATTACHED'));
   if (sourceStatusBadge) {
     sourceStatusBadge.textContent = sStatus;
     sourceStatusBadge.className = `badge-status ${sStatus.toLowerCase()}`;
   }
 
-  // Contestação (se for captura física ou oponente registrado)
+  // Contestação do Oponente
   const isCap = outInfo.physical_capture != null ? outInfo.physical_capture : record.is_capture;
   if (isCap && (oppInfo || record.captured_piece_label) && contestBox) {
     contestBox.style.display = 'block';
     if (oppLabel) oppLabel.textContent = oppInfo ? oppInfo.label : (record.captured_piece_label || 'Peça capturada');
-    if (oppClaimText) oppClaimText.textContent = oppInfo ? (oppInfo.claim_statement || 'Tese opositora') : 'Tese do lado defensor confrontada.';
+    if (oppClaimText) oppClaimText.textContent = oppInfo ? (oppInfo.claim_statement || 'Tese opositora confrontada.') : 'Tese do lado defensor contestada no tabuleiro.';
   } else if (contestBox) {
     contestBox.style.display = 'none';
   }
@@ -4316,8 +4560,8 @@ function updateSelectedMovePanel(record) {
     mateBadge.style.color = isMate ? '#f87171' : 'var(--muted)';
   }
 
-  // Avaliação factual do árbitro
-  const verdict = verdInfo.status || (isCap ? 'INCONCLUSIVE' : (record.epistemic_verdict || 'NOT_ASSESSED'));
+  // Avaliação factual do árbitro (não falsifica captura como REFUTED)
+  const verdict = verdInfo.status || (isCap ? 'INCONCLUSIVE' : (record.epistemic_verdict || (isVerified ? 'SOURCE_VERIFIED' : 'INCONCLUSIVE')));
   if (verdictBadge) {
     verdictBadge.textContent = verdict;
     verdictBadge.className = `badge-verdict ${verdict.toLowerCase()}`;
@@ -4326,11 +4570,10 @@ function updateSelectedMovePanel(record) {
     verdictReason.textContent = verdInfo.reason || (
       isCap
         ? 'Captura física no tabuleiro; refutação factual independente não avaliada nesta jogada.'
-        : 'Avanço posicional de tese sustentada no tabuleiro.'
+        : `Avanço posicional de ${san} sustentando tese no lance #${plyNum}.`
     );
   }
 
-  // Atualiza barra superior compacta
   const wsPlyLbl = document.getElementById('wsCurrentPlyLabel');
   if (wsPlyLbl) wsPlyLbl.textContent = `Lance: #${plyNum} (${san})`;
 }

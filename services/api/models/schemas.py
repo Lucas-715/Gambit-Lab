@@ -404,11 +404,13 @@ class MoveAuditPayloadSchema(BaseModel):
     board_outcome: Dict[str, Any] = Field(default_factory=dict)
     event_seq: Optional[int] = None
     event_hash: Optional[str] = None
+    move_event_seq: Optional[int] = None
 
 
 class MatchPlyRecordSchema(BaseModel):
     ply: int
     event_seq: int
+    move_event_seq: Optional[int] = None
     side: Literal["pro", "contra"]
     color: Literal["white", "black"]
     move: str
@@ -470,6 +472,7 @@ class MatchConclusionSchema(BaseModel):
 
 class ResearchMatchStateSchema(BaseModel):
     session_id: str
+    status: Literal["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "BUDGET_EXHAUSTED"] = "NOT_STARTED"
     depth: MatchDepth = "standard"
     execution_mode: str = "DEMO_OFFLINE"
     plies_budget: int = 160

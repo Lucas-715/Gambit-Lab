@@ -154,3 +154,23 @@ Em resposta à auditoria formal de produto e aos achados de integridade científ
 
 - Total de testes no repositório: **90 testes aprovados (`90 PASSED, 0 FAILED`)**
 - Verificação funcional no Google Chrome real via CDP: **Cenários UX01 a UX07 aprovados com 100% de sucesso**.
+
+---
+
+## 8. Auditoria de Rastreabilidade e Coordenadas v2.3.1 (Resolução T01–T06)
+
+Em atendimento à auditoria de rastreamento de lances e alinhamento visual, a versão **v2.3.1** corrigiu as 6 inconsistências críticas de integração entre tabuleiro, histórico e painel de evidências:
+
+| ID | Problema Auditado | Causa Raiz Técnica | Resolução Implementada | Evidência / Teste |
+|---|---|---|---|---|
+| **T01** | Painel "Lance Selecionado" vazio ao carregar partida | `loadMatchAndPieces` não disparava a seleção do último lance no painel após obter os dados | Invocação automática de `selectMoveByPly(activeMatchTimeline.length, false)` com dados sincronizados (SAN, peça, tese, evidência e veredito) | `nocturne_v23_1_lance_selecionado_auto.png` (**PASS**) |
+| **T02** | Replay sem rastreabilidade completa | Busca de `timeline` em endpoint de resumo onde o payload era mantido leve | `activeMatchTimeline` desacoplado e lido de `GET /sessions/{id}/match`, garantindo replay auditável de todos os lances | `nocturne_v23_1_replay_plies_1_to_10.png` (**PASS**) |
+| **T03** | Mapeamento divergente entre evento e lance | `MatchPlyRecordSchema` não armazenava o `move_event_seq` do `EventStore` | Adicionado campo `move_event_seq` em `MatchPlyRecordSchema` e `MoveAuditPayloadSchema`, gravado atomicamente em `recording.py` | `test_v23_epistemic_audit.py` (**PASS**) |
+| **T04** | Coordenadas 2D deslocadas | Moldura externa flex com espaçamento divergente das células `.cell-2d` | Estrutura CSS Grid `.board-2d-inner` com ranks `8..1` e files `a..h` matematicamente alinhados 1:1 com as casas | `nocturne_v23_1_2d_aligned_grid.png` (**PASS**) |
+| **T05** | Coordenadas 3D fora de perspectiva | Rótulos HTML externos ao redor do canvas sem matriz de câmera | Overlay sincronizado `<canvas id="stageCoordsOverlay">` projetando rótulos diretamente no espaço de tela via matriz de câmera `vp` | `nocturne_v23_1_3d_perspective_coords.png` (**PASS**) |
+| **T06** | Citações e capturas exibidas sem rigor | Interface assumia texto localizado como prova factual e capturas como refutação | Badges honestos: "✓ Citação verificada no arquivo" vs "⚠️ Citação anexada; relevância semântica pendente"; capturas preservam veredito neutro (`INCONCLUSIVE`) | Testes E2E CDP 2 e 3 (**PASS**) |
+
+### Resultados Consolidados v2.3.1
+- **Suíte Pytest Total**: 90 testes aprovados (`90 passed, 0 failed, 1 warning`).
+- **Suíte E2E CDP v2.3.1**: 6 cenários aprovados com gravação de telas comprovando a resolução de T01 a T06.
+

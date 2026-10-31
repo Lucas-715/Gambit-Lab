@@ -192,7 +192,8 @@ class ConclusionMixin:
         play = sess["_match_internal"]["play"]
         mstate["is_complete"] = True
         mstate["percent_complete"] = 100
-        sess["status"] = "COMPLETED" if play["finished"] else "BUDGET_EXHAUSTED"
+        mstate["status"] = "COMPLETED" if play["finished"] else "BUDGET_EXHAUSTED"
+        sess["status"] = mstate["status"]
         conc = mstate["conclusion"]
         self.sm._append_session_event(
             sess["id"],

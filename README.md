@@ -1,4 +1,4 @@
-# Gambit Lab Nocturne (v2.2) — Framework Multiagente Orientado por Jogos & Research Match
+# Gambit Lab Nocturne (v2.3.1 Focus) — Framework Multiagente Orientado por Jogos & Research Match
 
 > **Princípio Central**: *O LLM propõe, as regras do jogo restringem, as evidências sustentam e o sistema registra.*
 
@@ -8,8 +8,20 @@ $$\text{Pergunta} \longrightarrow \text{Hipótese} \longrightarrow \text{Busca /
 
 ---
 
-## 1. Novidades da Reengenharia Nocturne (`v2.2.0-nocturne`)
+## 1. Novidades da Reengenharia Nocturne Focus (`v2.3.1`)
 
+- **Rastreabilidade Ponta a Ponta no Painel 'Lance Selecionado'**:
+  - População automática do painel no término do carregamento da partida (`loadMatchAndPieces`) com o último lance do timeline, eliminando painéis em branco.
+  - Sincronização estrita de todos os lances (`selectMoveByPly`), exibindo número do lance, notação SAN, peça ativa, coordenadas, tese, citação literal, status de verificação e status de captura física.
+  - Estado inicial pré-jogo limpo e informativo quando o cursor de replay está no início (`ply = 0`), com desativação apropriada dos botões de recuo.
+- **Alinhamento Matemático de Coordenadas 2D e Projeção em 3D**:
+  - **Modo 2D**: Estrutura CSS Grid (`.board-2d-inner`) com alinhamento rigoroso 1:1 entre as células do tabuleiro e os rótulos de fileiras (`8..1`) e colunas (`a..h` no Xadrez, `A..J` sem `I` no Go 9×9).
+  - **Modo 3D**: Overlay em HTML5 Canvas (`#stageCoordsOverlay`) sincronizado com o WebGL através da projeção geométrica da matriz de visualização e perspectiva (`vp`).
+- **Inspeção Interativa por Clique na Casa**:
+  - Clique em qualquer casa do tabuleiro abre modal de inspeção com busca no histórico da partida e botão direto para inspecionar o lance correspondente no painel "Lance Selecionado".
+- **Honestidade Científica nas Citações e Vereditos**:
+  - Distinção transparente entre citação verificada no arquivo ("✓ Citação verificada no arquivo") e citação anexada sem verificação ("⚠️ Citação anexada; relevância semântica pendente").
+  - Capturas físicas nunca geram falsos vereditos `REFUTED` no histórico, mantendo neutralidade factual (`INCONCLUSIVE`).
 - **Research Match v2 (`services/api/match/`)**:
   - Geração de partidas completas orientadas por 7 estágios determinísticos.
   - Investigação Pró e Contra estritamente isoladas em cofres privados (HTTP 403).

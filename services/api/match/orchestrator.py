@@ -59,6 +59,7 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
         pro_color = "white" if game == "chess" else "black"
         state = ResearchMatchStateSchema(
             session_id=sess["id"],
+            status="NOT_STARTED",
             depth=chosen,
             execution_mode=sess["execution_mode"],
             plies_budget=DEPTH_PLIES_BUDGET[game][chosen],
@@ -140,6 +141,8 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
         stage = mstate["stages"][idx - 1]
         stage["status"], stage["detail"] = "running", None
         sess["status"] = "RUNNING"
+        if mstate.get("status") in (None, "NOT_STARTED"):
+            mstate["status"] = "IN_PROGRESS"
         try:
             detail = self._execute_stage(sess, mstate, idx)
         except Exception as exc:  # estágio falhou: o que já existe é preservado e o estágio pode ser repetido
@@ -185,6 +188,7 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
         mstate["current_stage"] = 4
         mstate["is_complete"] = False
         mstate["resumable"] = False
+        mstate["status"] = "IN_PROGRESS"
         mstate["conclusion"] = None
         for st in mstate["stages"][4:]:
             st["status"], st["detail"] = "pending", None

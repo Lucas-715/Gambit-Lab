@@ -363,11 +363,12 @@ class PlayMixin:
             },
             event_seq=ev.get("seq", ply_idx),
             event_hash=ev.get("hash") or ev.get("event_hash"),
+            move_event_seq=ev.get("move_seq", ply_idx),
         )
 
         mstate["timeline"].append(
             MatchPlyRecordSchema(
-                ply=ply_idx, event_seq=ev["seq"], side=acting_side, color=acting_color,
+                ply=ply_idx, event_seq=ev["seq"], move_event_seq=ev.get("move_seq", ply_idx), side=acting_side, color=acting_color,
                 move=mv.uci(), san=res.san, from_coord=from_sq, to_coord=to_sq,
                 piece_id=att["piece_id"] if att else "unknown",
                 piece_label=att["label"] if att else acting_color,
@@ -518,11 +519,12 @@ class PlayMixin:
                 },
                 event_seq=ev.get("seq", ply_idx),
                 event_hash=ev.get("hash") or ev.get("event_hash"),
+                move_event_seq=ev.get("move_seq", ply_idx),
             )
 
             mstate["timeline"].append(
                 MatchPlyRecordSchema(
-                    ply=ply_idx, event_seq=ev["seq"], side=acting_side, color=acting_color,
+                    ply=ply_idx, event_seq=ev["seq"], move_event_seq=ev.get("move_seq", ply_idx), side=acting_side, color=acting_color,
                     move=res.coord_str, san=res.coord_str, to_coord=None if res.is_pass else res.coord_str,
                     piece_id=active["piece_id"], piece_label=active["label"], piece_role=active["role"],
                     claim_statement=active["claim"], quote_text=quote_txt, artifact_title=art_title,
