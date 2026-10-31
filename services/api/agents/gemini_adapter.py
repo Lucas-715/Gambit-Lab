@@ -13,6 +13,22 @@ from typing import Dict, Any, List, Optional
 from services.api.models.schemas import ClaimSchema, CitationSchema, JudgmentSchema, RubricEvaluation
 
 
+def _load_env_if_needed():
+    """Carrega variáveis do .env local se ainda não estiverem presentes no ambiente."""
+    env_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+    if os.path.exists(env_file):
+        with open(env_file, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    k, v = k.strip(), v.strip()
+                    if k and k not in os.environ:
+                        os.environ[k] = v
+
+_load_env_if_needed()
+
+
 class BudgetExceededError(Exception):
     """Lançada quando a cota de tokens ou chamadas da sessão é atingida (RN-29, AC-14)."""
     pass
@@ -142,7 +158,11 @@ class GeminiAdapter:
         artifacts: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """Chamada estruturada direta à API do Google Gemini."""
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
+        headers = {
+            "Content-Type": "application/json",
+            "X-goog-api-key": self.api_key
+        }
         sources_summary = "\n".join([f"- ID {a.get('id')}: {a.get('name')} (hash: {a.get('sha256')[:8]})" for a in artifacts[:3]])
         prompt = f"""Você é o agente de raciocínio investigativo do Gambit Lab 2.0.
 Tema: {topic}
@@ -163,7 +183,7 @@ Gere uma resposta em JSON estrito com:
             "generationConfig": {"responseMimeType": "application/json"}
         }
         with httpx.Client(timeout=25.0) as client:
-            resp = client.post(url, json=payload)
+            resp = client.post(url, json=payload, headers=headers)
             resp.raise_for_status()
             data = resp.json()
             raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
