@@ -48,7 +48,8 @@ class RecordingMixin:
                             domain=aref.get("domain"),
                         )
                     )
-                    verdict = "SUPPORTED"
+                    # v2.3 C01: Citação verificada no documento = SOURCE_VERIFIED
+                    verdict = "SOURCE_VERIFIED"
 
         stmt = (
             f"[{piece_doc['label']}] {piece_doc['claim']}"

@@ -45,6 +45,9 @@ SourceStatus = Literal[
     "SEARCH_UNAVAILABLE",
 ]
 EvidenceVerdict = Literal[
+    "UNVERIFIED",
+    "SOURCE_VERIFIED",
+    "EVIDENCE_REVIEWED",
     "SUPPORTED",
     "REFUTED",
     "INSUFFICIENT",
@@ -54,6 +57,9 @@ EvidenceVerdict = Literal[
     "NOT_ASSESSED",
 ]
 ClaimStatus = Literal[
+    "UNVERIFIED",
+    "SOURCE_VERIFIED",
+    "EVIDENCE_REVIEWED",
     "HYPOTHESIS",
     "SUPPORTED",
     "REFUTED",
@@ -355,6 +361,8 @@ class PieceHistoryEntrySchema(BaseModel):
         "CONFRONTATION_WON",
         "CONFRONTATION_BLOCKED",
         "CAPTURED",
+        "PIECE_CAPTURED",
+        "STONES_CAPTURED",
         "TERRITORY_PRESSURE",
     ] = "ADVANCE"
     summary: str
@@ -384,6 +392,20 @@ class PieceDossierSchema(BaseModel):
     history: List[PieceHistoryEntrySchema] = Field(default_factory=list)
 
 
+class MoveAuditPayloadSchema(BaseModel):
+    session_id: str
+    ply: int
+    game: GameType
+    move: Dict[str, Any]
+    piece: Dict[str, Any]
+    opponent: Optional[Dict[str, Any]] = None
+    evidence: Dict[str, Any] = Field(default_factory=dict)
+    argument_verdict: Dict[str, Any] = Field(default_factory=dict)
+    board_outcome: Dict[str, Any] = Field(default_factory=dict)
+    event_seq: Optional[int] = None
+    event_hash: Optional[str] = None
+
+
 class MatchPlyRecordSchema(BaseModel):
     ply: int
     event_seq: int
@@ -409,6 +431,8 @@ class MatchPlyRecordSchema(BaseModel):
     is_turning_point: bool = False
     pro_momentum: float = 0.5
     board_snapshot: BoardPositionSchema
+    audit_payload: Optional[MoveAuditPayloadSchema] = None
+    audit_payload: Optional[MoveAuditPayloadSchema] = None
     piece_coords_snapshot: Dict[str, Optional[str]] = Field(default_factory=dict)
     piece_stones_snapshot: Dict[str, List[str]] = Field(default_factory=dict)
 

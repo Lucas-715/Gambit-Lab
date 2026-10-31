@@ -2,6 +2,36 @@
 
 Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 
+## [2.3.0-focus] — 2026-10-31
+
+### Adicionado
+- **Workspace Nocturne Focus ("Xadrez/Go primeiro, lance e evidência depois")**:
+  - Painel contextual único **LANCE SELECIONADO** sincronizado instantaneamente ao cursor de replay, seleção no tabuleiro ou término de lance.
+  - Exibição de movimento auditável: SAN/UCI (`20...Nxd3`), peça ativa, papel tático, tese, fonte documental, trecho literal, contestação do oponente (em capturas), status físico (`Captura`, `Xeque`, `Mate`) e avaliação factual do árbitro.
+  - Moldura com rótulos externos visíveis em 2D e 3D: Xadrez `a–h` e `1–8`; Go 9×9 `A B C D E F G H J` (sem a letra `I`) e `1–9`.
+  - Topbar minimalista e menu modal **⚙ Diagnóstico & Estado** reunindo métricas globais, telemetria Gemini, status da Pesquisa Web e verificação de cadeia SHA-256.
+  - Sidebar retrátil (`.rail.collapsed`) no desktop e drawer responsivo com navegação por teclado (ESC) no mobile.
+- **Payload de Lance Auditável (`MoveAuditPayloadSchema`)**:
+  - Estrutura padronizada no timeline contendo `session_id`, `ply`, `game`, `move`, `piece`, `opponent`, `evidence`, `argument_verdict`, `board_outcome`, `event_seq` e `event_hash`.
+- **Privacidade Estrita de Dossiês Não Jogados (`C12` / `SEC01`)**:
+  - `GET /api/v1/sessions/{id}/pieces` aplica controle por papéis (`owner`, `white`, `black`, `observer`). Dossiês de peças que ainda não jogaram no tabuleiro permanecem reservados como `[reservada — ainda não jogada no tabuleiro]`, protegendo o isolamento de estratégias.
+- **Suíte de Testes Epistêmicos v2.3 (`tests/integration/test_v23_epistemic_audit.py`)**:
+  - Cobertura automatizada para os achados C01 a C12 e cenários UX01 a UX07. Total da suíte do repositório elevado para **90 testes aprovados (`90 PASSED, 0 FAILED`)**.
+
+### Corrigido
+- **Separação entre Trecho Localizado e Suporte Epistêmico (`C01`)**:
+  - A localização literal de uma citação em um documento atribui `SOURCE_VERIFIED`, e **NÃO** `SUPPORTED` automático. Uma definição (ex.: "propriedade privada") não é promovida a prova de teses normativas fortes (ex.: "superioridade universal") sem avaliação semântica.
+- **Desacoplamento entre Captura Física e Refutação Factual (`C02`)**:
+  - Capturar uma peça no tabuleiro (`PIECE_CAPTURED` / `STONES_CAPTURED`) não altera o veredito da alegação para `REFUTED`. Registra honestamente `NOT_ASSESSED` ou `INCONCLUSIVE`.
+- **Deduplicação de Fontes e Eliminação de Multiplicadores de Verdade por Peça (`C03`)**:
+  - Remoção de multiplicadores de verdade (`ROLE_EPISTEMIC_WEIGHTS` onde Rei valia 2.6x e Dama 2.3x). A unidade epistêmica é a alegação independente deduplicada por DOI/URL/hash de conteúdo. Múltiplos peões repetindo a mesma fonte pontuam de forma unitária.
+- **Resignação Automática Desabilitada por Padrão no Xadrez (`C04`)**:
+  - Resignação automática após 800cp por 3 turnos desabilitada por padrão (`DEFAULT_AUTO_RESIGN = False`). O motor segue as regras FIDE oficiais (xeque-mate formal, afogamento, tripla repetição, regra dos 50 lances e material insuficiente). Quando resignação explícita ocorre, é rotulada estritamente como `resignation`, jamais como xeque-mate.
+- **Legalidade Estrita FIDE sem Bloqueio de Capturas no Modo Padrão (`C05`)**:
+  - O portão epistêmico de bloqueio foi desativado no modo FIDE padrão (`epistemic_gating_enabled = False`), garantindo que capturas legais permaneçam legais e que o confronto epistêmico ocorra em paralelo.
+- **Estados Epistêmicos Discretos e Remoção de Probabilidades Arbitrárias (`C09`)**:
+  - Eliminação de pontuações arbitrárias flutuantes (`.82`, `.88`). Adoção de estados discretos calibrados: `UNVERIFIED`, `SOURCE_VERIFIED`, `EVIDENCE_REVIEWED`, `SUPPORTED`, `REFUTED`, `INCONCLUSIVE`.
+
 ## [2.1.0-nocturne] — 2026-10-31
 
 ### Adicionado

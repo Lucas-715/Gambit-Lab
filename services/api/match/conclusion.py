@@ -12,25 +12,40 @@ from typing import Any, Dict, List, Optional, Tuple
 from services.api.agents.gemini_adapter import is_future_projection_topic
 from services.api.models.schemas import MatchConclusionSchema
 
+# v2.3 C03: Unidade de comparação é alegação independente; peso unitário (a verdade não é multiplicada por rei/dama)
 ROLE_EPISTEMIC_WEIGHTS = {
-    "king": 2.6, "queen": 2.3, "rook": 1.6, "bishop": 1.35, "knight": 1.35, "pawn": 0.75,
-    "go_influence": 2.2, "go_territory": 2.0, "go_eyes": 1.9, "go_invasion": 1.7,
-    "go_siege": 1.5, "go_connection": 1.4,
+    "king": 1.0, "queen": 1.0, "rook": 1.0, "bishop": 1.0, "knight": 1.0, "pawn": 1.0,
+    "go_influence": 1.0, "go_territory": 1.0, "go_eyes": 1.0, "go_invasion": 1.0,
+    "go_siege": 1.0, "go_connection": 1.0,
 }
 INCONCLUSIVE_MARGIN = 0.12
 
 
 def epistemic_scores(pieces: List[Dict[str, Any]]) -> Tuple[float, float, int, int]:
-    """(score_pró, score_contra, fontes_verificadas_pró, fontes_verificadas_contra) — só evidência verificada."""
+    """
+    v2.3 C03: (score_pró, score_contra, fontes_verificadas_pró, fontes_verificadas_contra).
+    Unidade de análise: alegação independente e fontes deduplicadas.
+    Ponderação unitária sem multiplicação por tipo de peça.
+    """
     s = {"pro": 0.0, "contra": 0.0}
-    ids = {"pro": set(), "contra": set()}
+    seen_sources = {"pro": set(), "contra": set()}
+    seen_claims = {"pro": set(), "contra": set()}
+
     for p in pieces:
+        side = p["side"]
         refs = [a for a in p.get("supporting_artifacts", []) if a.get("verified")]
-        if p["epistemic_status"] == "SUPPORTED" and refs:
-            s[p["side"]] += p["confidence_score"] * ROLE_EPISTEMIC_WEIGHTS.get(p["piece_type"], 1.0)
+        # No v2.3, SOURCE_VERIFIED, EVIDENCE_REVIEWED e SUPPORTED com refs verificadas contam
+        if p.get("epistemic_status") in ("SOURCE_VERIFIED", "EVIDENCE_REVIEWED", "SUPPORTED") and refs:
             for a in refs:
-                ids[p["side"]].add(a["sha256"])
-    return s["pro"], s["contra"], len(ids["pro"]), len(ids["contra"])
+                h = a.get("sha256") or a.get("url") or a.get("artifact_id")
+                if h:
+                    seen_sources[side].add(h)
+            claim_key = (p.get("claim") or "").strip().lower()
+            if claim_key and claim_key not in seen_claims[side]:
+                seen_claims[side].add(claim_key)
+                s[side] += 1.0
+
+    return s["pro"], s["contra"], len(seen_sources["pro"]), len(seen_sources["contra"])
 
 
 class ConclusionMixin:

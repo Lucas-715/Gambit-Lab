@@ -92,3 +92,28 @@ Este documento estabelece o mapeamento formal de rastreabilidade entre os requis
 - **Total de Testes Automatizados Unitários e de Integração**: **81 PASS** (100% de sucesso).
 - **Total de Cenários Chromium CDP Verificados em Tela**: **6 Cenários PASS** (100% de sucesso).
 - **Exceções ou Falhas de Regressão**: **0**.
+
+
+## Matriz de Aceite e Verificação v2.3 (Nocturne Focus & Epistêmica)
+
+| ID | Cenário / Critério | Tipo | Arquivo de Teste / Evidência | Resultado |
+|---|---|---|---|:---:|
+| **C01** | Trecho localizado marca `SOURCE_VERIFIED`, não `SUPPORTED` para claim forte | Unit / Epistêmico | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **C02** | Captura física marca `NOT_ASSESSED`/`INCONCLUSIVE`, nunca `REFUTED` | Unit / Epistêmico | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **C03** | Pesos de peças unitários e deduplicação de claims/fontes por hash/DOI | Unit / Epistêmico | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **C04** | Resignação automática 800cp desligada por default; regras FIDE oficiais | Unit / Game Engine | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **C05** | Capturas legais FIDE nunca bloqueadas no modo padrão | Unit / Game Engine | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **C06** | Rótulos externos visíveis a-h, 1-8 (Xadrez) e A-J, 1-9 (Go sem I) em 2D/3D | Browser / CDP | `scratch/verify_v23_nocturne_focus_cdp.py` | **PASS** |
+| **C07** | Layout centrado no tabuleiro + painel Lance Selecionado contextual | Browser / CDP | `scratch/verify_v23_nocturne_focus_cdp.py` | **PASS** |
+| **C08** | Topbar limpa, menu Diagnóstico & Estado, sidebar retrátil | Browser / CDP | `scratch/verify_v23_nocturne_focus_cdp.py` | **PASS** |
+| **C09** | Estados epistêmicos discretos sem probabilidades flutuantes não calibradas | Schema / Unit | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **C10** | Encerramento consistente derivado de evento terminal único | Integration | `tests/integration/test_research_match_v2.py` | **PASS** |
+| **C11** | Payload `MoveAuditPayloadSchema` em cada lance da timeline | Integration / Schema | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **C12** | Redação de dossiês não jogados para perfis observador / adversário | Security / API | `tests/integration/test_v23_epistemic_audit.py` | **PASS** |
+| **UX01** | Iniciar investigação abre workspace focado sem poluição visual | Browser / CDP | `docs/screenshots/nocturne_v23_workspace_focus.png` | **PASS** |
+| **UX02** | Xadrez 3D e 2D com coordenadas externas corretas | Browser / CDP | `docs/screenshots/nocturne_v23_board_2d_coordinates.png` | **PASS** |
+| **UX03** | Go 9×9 com colunas A-J (sem a letra I) | Browser / CDP | `scratch/verify_v23_nocturne_focus_cdp.py` | **PASS** |
+| **UX04** | Painel Lance Selecionado atualiza com peça, claim, quote e veredito | Browser / CDP | `docs/screenshots/nocturne_v23_lance_selecionado.png` | **PASS** |
+| **UX05** | Replay histórico sincroniza lance, FEN e alegações sem chamar LLM | Browser / CDP | `scratch/verify_v23_nocturne_focus_cdp.py` | **PASS** |
+| **UX06** | Sidebar recolhível e responsividade mobile sem overflow horizontal | Browser / CDP | `docs/screenshots/nocturne_v23_sidebar_collapsed.png` | **PASS** |
+| **UX07** | Modal Diagnóstico exibe métricas, telemetria e integridade SHA-256 | Browser / CDP | `docs/screenshots/nocturne_v23_diagnostics_modal.png` | **PASS** |

@@ -260,9 +260,9 @@ class PreparationMixin:
                     accessible_arts=rotated_arts,
                     topic=topic,
                 )
-                bonus = 0.06 if ptype in ("king", "queen") and is_ver else (0.03 if ptype in ("rook", "bishop", "knight") and is_ver else 0.0)
-                conf = round(min(0.95, base_conf + bonus), 2)
-                ep_status = "SUPPORTED" if is_ver else ("HYPOTHESIS" if (not side_arts or is_future_projection_topic(topic)) else "INSUFFICIENT")
+                # v2.3 C01/C09: Trecho localizado = SOURCE_VERIFIED (sem SUPPORTED automático nem bônus de peça)
+                conf = round(base_conf, 2)
+                ep_status = "SOURCE_VERIFIED" if is_ver else ("HYPOTHESIS" if (not side_arts or is_future_projection_topic(topic)) else "INSUFFICIENT")
 
                 pieces.append(
                     PieceDossierSchema(
@@ -314,8 +314,9 @@ class PreparationMixin:
                     accessible_arts=rotated_arts,
                     topic=topic,
                 )
-                conf = round(min(0.94, base_conf + (0.05 if is_ver else 0.0)), 2)
-                ep_status = "SUPPORTED" if is_ver else ("HYPOTHESIS" if (not side_arts or is_future_projection_topic(topic)) else "INSUFFICIENT")
+                # v2.3 C01/C09: Trecho localizado = SOURCE_VERIFIED (sem SUPPORTED automático)
+                conf = round(base_conf, 2)
+                ep_status = "SOURCE_VERIFIED" if is_ver else ("HYPOTHESIS" if (not side_arts or is_future_projection_topic(topic)) else "INSUFFICIENT")
 
                 pieces.append(
                     PieceDossierSchema(
@@ -338,5 +339,6 @@ class PreparationMixin:
                 )
 
         mstate["pieces"] = pieces
-        supported_cnt = sum(1 for p in pieces if p["epistemic_status"] == "SUPPORTED")
-        return f"{len(pieces)} unidades táticas vinculadas a teses e dossiês ({supported_cnt} com citação literal verificada)."
+        
+        ver_cnt = sum(1 for p in pieces if p["epistemic_status"] in ("SOURCE_VERIFIED", "SUPPORTED"))
+        return f"{len(pieces)} unidades táticas vinculadas a teses e dossiês ({ver_cnt} com citação literal verificada)."

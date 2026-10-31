@@ -90,12 +90,13 @@ def get_match_status(
 @router.get("/{session_id}/pieces", response_model=List[PieceDossierSchema])
 def list_piece_dossiers(
     session_id: str,
-    viewer_side: Optional[str] = Query(default=None, description="white | black (aplica redação pré-término)"),
+    viewer_side: Optional[str] = Query(default=None, description="white | black | observer | owner"),
+    role: Optional[str] = Query(default=None, description="owner | observer | white | black"),
     manager=Depends(get_manager),
 ):
     """Lista os dossiês argumentativos e artefatos de cada peça/grupo com respeito ao isolamento de preparação."""
     try:
-        return manager.match_orchestrator.get_pieces_for_viewer(session_id, viewer_side=viewer_side)
+        return manager.match_orchestrator.get_pieces_for_viewer(session_id, viewer_side=viewer_side, role=role)
     except KeyError as ke:
         raise HTTPException(status_code=404, detail=str(ke))
 

@@ -196,7 +196,7 @@ def test_rm03_every_piece_has_dossier_and_verified_artifacts_from_its_own_vault(
             if a["verified"]:
                 assert mgr.vault.verify_quote_exists(a["artifact_id"], a["quote_text"])
     for side in ("pro", "contra"):
-        assert any(p["epistemic_status"] == "SUPPORTED" for p in pieces if p["side"] == side)
+        assert any(p["epistemic_status"] in ("SUPPORTED", "SOURCE_VERIFIED") for p in pieces if p["side"] == side)
     moved = {r["piece_id"] for r in mstate["timeline"]}
     for p in pieces:
         if p["piece_id"] in moved and p["supporting_artifacts"]:

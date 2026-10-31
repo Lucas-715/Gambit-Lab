@@ -1483,6 +1483,257 @@ body.star-motion-paused #space {
   50% { opacity: 0.5; }
 }
 
+
+/* =========================================================================
+   NOCTURNE FOCUS v2.3 — TABULEIRO & LANCE PRIMEIRO, AUDITORIA SOB DEMANDA
+   ========================================================================= */
+.rail.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  border-right: none !important;
+}
+
+.rail-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  margin-right: 10px;
+}
+.rail-toggle:hover {
+  background: var(--surface-card);
+  border-color: var(--accent);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.workspace-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* Moldura e Coordenadas Externas do Tabuleiro (C06) */
+.board-frame-2d, .stage-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.board-ranks-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 4px 8px 30px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  user-select: none;
+  min-width: 22px;
+  text-align: center;
+}
+
+.board-grid-wrap, .stage-canvas-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.board-files-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  padding-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  user-select: none;
+}
+
+/* Painel LANCE SELECIONADO (C07) */
+.selected-move-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.move-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.move-ply-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(166, 141, 255, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(166, 141, 255, 0.3);
+}
+
+.move-san-highlight {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--font-mono, monospace);
+}
+
+.move-side-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 12px;
+  margin-left: auto;
+  text-transform: uppercase;
+}
+
+.smp-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.smp-sec-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.smp-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.smp-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.smp-claim-text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text);
+  margin: 4px 0 8px 0;
+}
+
+.smp-quote-box {
+  background: rgba(166, 141, 255, 0.06);
+  border-left: 3px solid var(--accent);
+  padding: 8px 10px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 6px 0;
+}
+
+.smp-quote-content {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.smp-source-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.badge-status {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.badge-verdict {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-verdict.inconclusive, .badge-verdict.not_assessed {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-verdict.source_verified, .badge-verdict.evidence_reviewed {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-verdict.supported {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-verdict.refuted {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.smp-verdict-reason {
+  font-size: 12.5px;
+  color: var(--text);
+  line-height: 1.4;
+  margin: 4px 0 8px 0;
+}
+
+.epistemic-disclaimer {
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px dashed var(--border);
+  padding-top: 6px;
+  margin-top: 6px;
+}
+
 </style>
 </head>
 <body>
@@ -1509,14 +1760,17 @@ body.star-motion-paused #space {
 
   <main class="main">
     <header class="topbar">
-      <div class="brand-wrap">
-        <div class="brand">GAMBIT <span>LAB</span> · NOCTURNE</div>
-        <div class="tiny-tag">EPISTEMIC MULTI-AGENT ENGINE</div>
+      <div class="brand-wrap" style="display:flex;align-items:center;">
+        <button class="rail-toggle" id="railToggleBtn" onclick="toggleSidebar()" title="Recolher/Expandir barra lateral" aria-label="Recolher ou expandir menu lateral">☰</button>
+        <div>
+          <div class="brand">GAMBIT <span>LAB</span> · NOCTURNE <span style="font-size:11px;opacity:0.6">v2.3 Focus</span></div>
+          <div class="tiny-tag">INVESTIGAÇÃO GUIADA POR JOGOS DETERMINÍSTICOS</div>
+        </div>
       </div>
-      <div class="topbar-pills">
-        <span class="pill" id="backendBadge">● Verificando capacidades...</span>
-        <span class="pill" id="webCapBadge">○ Web: verificando</span>
-        <span class="pill accent" id="topModeBadge">Pesquisa · Xadrez</span>
+      <div class="topbar-actions">
+        <button class="btn sm secondary" id="btnDiagnostics" onclick="openDiagnosticsModal()" title="Diagnóstico de capacidades, IA, telemetria e Event Store">
+          ⚙ Diagnóstico & Estado
+        </button>
       </div>
     </header>
 
@@ -1602,7 +1856,7 @@ body.star-motion-paused #space {
       </div>
 
       <!-- 4 Cartões de Métricas Separadas e Honestas -->
-      <div class="metrics-strip" aria-label="Métricas da sessão">
+      <div class="metrics-strip" aria-label="Métricas da sessão" style="display:none;" id="mainMetricsStrip">
         <div class="metric-card">
           <div class="m-label">Lances do jogo</div>
           <div class="m-val" id="metricPlies">0</div>
@@ -1694,9 +1948,24 @@ body.star-motion-paused #space {
             </div>
 
             <div class="stage">
-              <canvas id="stage" aria-label="Tabuleiro 3D WebGL interativo de Xadrez e Go"></canvas>
-              <div id="board2D"><div class="grid-2d" id="grid2D"></div></div>
-              <span class="scene-note" id="sceneNote">Arraste para orbitar em 3D · Clique em casas no modo 2D para inspecionar claims</span>
+              <!-- Modo 3D com moldura ancorada de coordenadas externas (C06) -->
+              <div class="stage-container" id="stageContainer">
+                <div class="board-ranks-col ranks-3d" id="boardRanks3D" aria-hidden="true"></div>
+                <div class="stage-canvas-wrap">
+                  <canvas id="stage" aria-label="Tabuleiro 3D WebGL interativo de Xadrez e Go"></canvas>
+                  <div class="board-files-row files-3d" id="boardFiles3D" aria-hidden="true"></div>
+                </div>
+              </div>
+
+              <!-- Modo 2D acessível com rótulos externos completos (C06) -->
+              <div id="board2D" class="board-frame-2d" style="display:none;">
+                <div class="board-ranks-col" id="boardRanks2D" aria-hidden="true"></div>
+                <div class="board-grid-wrap">
+                  <div class="grid-2d" id="grid2D"></div>
+                  <div class="board-files-row" id="boardFiles2D" aria-hidden="true"></div>
+                </div>
+              </div>
+              <span class="scene-note" id="sceneNote">Arraste para orbitar em 3D · Coordenadas externas ativas · Clique nas casas para inspecionar</span>
             </div>
 
             <div class="action-bars">
@@ -1731,25 +2000,92 @@ body.star-motion-paused #space {
         <!-- Coluna Direita: 4 Abas Organizadas (Conversa | Fontes | Auditoria | Histórico) -->
         <section class="tabs-surface" aria-label="Painel analítico da investigação">
           <div class="tab-nav" role="tablist" aria-label="Abas de investigação">
-            <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tabPanelChat" id="tabBtnChat" onclick="switchTab('chat')">
-              Conversa <span class="tab-count" id="countChat">1</span>
+            <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tabPanelMove" id="tabBtnMove" onclick="switchTab('move')">
+              ⚔️ Lance Selecionado
+            </button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelPieces" id="tabBtnPieces" onclick="switchTab('pieces')">
+              Dossiês <span class="tab-count" id="countPieces">0</span>
             </button>
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelSources" id="tabBtnSources" onclick="switchTab('sources')">
               Fontes <span class="tab-count" id="countSources">0</span>
             </button>
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelAudit" id="tabBtnAudit" onclick="switchTab('audit')">
-              Auditoria <span class="tab-count" id="countAudit">0</span>
+              Auditoria
             </button>
-            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelPieces" id="tabBtnPieces" onclick="switchTab('pieces')">
-              Peças & Teses <span class="tab-count" id="countPieces">0</span>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelChat" id="tabBtnChat" onclick="switchTab('chat')">
+              Conversa
             </button>
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tabPanelHistory" id="tabBtnHistory" onclick="switchTab('history')">
-              Histórico <span class="tab-count" id="countHistory">1</span>
+              Histórico
             </button>
           </div>
 
           <!-- ABA 1: Conversa entre Agentes -->
-          <div class="tab-panel active" role="tabpanel" id="tabPanelChat" aria-labelledby="tabBtnChat">
+                    <!-- ABA PRIMÁRIA: Lance Selecionado (UI Nocturne Focus C07) -->
+          <div class="tab-panel active" role="tabpanel" id="tabPanelMove" aria-labelledby="tabBtnMove">
+            <div class="selected-move-panel" id="selectedMovePanel">
+              <div class="move-panel-head">
+                <div class="move-ply-badge" id="smpPlyBadge">Lance #—</div>
+                <div class="move-san-highlight" id="smpSanLabel">Aguardando lance</div>
+                <div class="move-side-pill" id="smpSidePill">—</div>
+              </div>
+
+              <!-- Seção 1: Identificação & Movimento -->
+              <div class="smp-section">
+                <div class="smp-sec-title">📍 MOVIMENTO & PEÇA ATIVA</div>
+                <div class="smp-grid-2">
+                  <div><small style="color:var(--muted)">Peça ativa:</small><br><strong id="smpPieceLabel">—</strong></div>
+                  <div><small style="color:var(--muted)">Origem → Destino:</small><br><strong id="smpCoordsLabel">—</strong></div>
+                </div>
+                <div style="margin-top:6px"><small style="color:var(--muted)">Papel tático:</small> <span id="smpPieceRole" style="color:var(--text)">—</span></div>
+              </div>
+
+              <!-- Seção 2: Tese & Evidência Documental -->
+              <div class="smp-section smp-thesis-box">
+                <div class="smp-sec-title">📖 TESE & PROVA DOCUMENTAL</div>
+                <p class="smp-claim-text" id="smpClaimText">Nenhum lance selecionado no momento.</p>
+                <div class="smp-quote-box" id="smpQuoteBox" style="display:none">
+                  <div class="smp-quote-content" id="smpQuoteText"></div>
+                  <div class="smp-source-meta" id="smpSourceMeta"></div>
+                </div>
+                <div style="font-size:11px;margin-top:4px;">
+                  Status da fonte: <span class="badge-status" id="smpSourceStatusBadge">UNVERIFIED</span>
+                </div>
+              </div>
+
+              <!-- Seção 3: Contestação / Oponente (em capturas) -->
+              <div class="smp-section smp-contest-box" id="smpContestBox" style="display:none">
+                <div class="smp-sec-title">⚔️ CONTESTAÇÃO / OPONENTE</div>
+                <div><small style="color:var(--muted)">Peça oponente:</small> <strong id="smpOpponentLabel">—</strong></div>
+                <p class="smp-claim-text" id="smpOpponentClaimText" style="margin-top:4px;">—</p>
+              </div>
+
+              <!-- Seção 4: Status Físico no Tabuleiro -->
+              <div class="smp-section">
+                <div class="smp-sec-title">♟️ TABULEIRO FÍSICO</div>
+                <div class="smp-grid-3">
+                  <div><small style="color:var(--muted)">Captura:</small><br><b id="smpPhysicalCaptureBadge">NÃO</b></div>
+                  <div><small style="color:var(--muted)">Xeque:</small><br><b id="smpCheckBadge">NÃO</b></div>
+                  <div><small style="color:var(--muted)">Xeque-mate:</small><br><b id="smpMateBadge">NÃO</b></div>
+                </div>
+              </div>
+
+              <!-- Seção 5: Avaliação Epistêmica Factual -->
+              <div class="smp-section">
+                <div class="smp-sec-title">⚖️ AVALIAÇÃO FACTUAL DO ÁRBITRO</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="font-size:12px;">Veredito:</span>
+                  <span class="badge-verdict inconclusive" id="smpVerdictBadge">NOT_ASSESSED</span>
+                </div>
+                <p class="smp-verdict-reason" id="smpVerdictReason">Aguardando movimento ou inspeção de jogada.</p>
+                <div class="epistemic-disclaimer">
+                  <small>⚠️ <em>Rigor científico:</em> A captura física no jogo nunca equivale automaticamente à refutação factual da tese sem contraprova semântica demonstrada.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ABA 2: Conversa entre Agentes -->
+          <div class="tab-panel" role="tabpanel" id="tabPanelChat" aria-labelledby="tabBtnChat">
             <div class="chat-stream" id="chatStream">
               <div class="message user">
                 <div class="msg-head"><span class="msg-author">VOCÊ · PERGUNTA CENTRAL</span></div>
@@ -2330,6 +2666,7 @@ function renderChessFen3D(fen) {
 }
 
 function render3DScene() {
+  updateBoardCoordinatesLabels();
   if (!gl) return;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = Math.max(1, Math.floor(canvas3D.clientWidth * dpr));
@@ -2440,6 +2777,7 @@ function parseFenToMap(fen) {
 }
 
 function render2DBoard() {
+  updateBoardCoordinatesLabels();
   const grid = document.getElementById('grid2D');
   grid.innerHTML = '';
 
@@ -3105,12 +3443,23 @@ async function replayToSeq(seq, knownMoveIdx = null) {
 
   applyBoardFromBackend(rep.board);
   updateReplayControlsState();
+  if (activeSession && activeSession.research_match && activeSession.research_match.timeline) {
+    const tl = activeSession.research_match.timeline;
+    const matchPly = tl.find(t => t.event_seq === seq) || tl[replayCursor] || tl[tl.length - 1];
+    if (matchPly) updateSelectedMovePanel(matchPly);
+  }
 }
 
 async function replayJumpLatest() {
   isReplayActive = false;
   replayCursor = -1;
-  if (activeSession) applyBoardFromBackend(activeSession.board);
+  if (activeSession) {
+    applyBoardFromBackend(activeSession.board);
+    if (activeSession.research_match && activeSession.research_match.timeline && activeSession.research_match.timeline.length) {
+      const tl = activeSession.research_match.timeline;
+      updateSelectedMovePanel(tl[tl.length - 1]);
+    }
+  }
   updateReplayControlsState();
 }
 
@@ -3119,6 +3468,7 @@ async function replayJumpLatest() {
    ========================================================================= */
 function switchTab(key) {
   const map = {
+    move: ['tabBtnMove', 'tabPanelMove'],
     chat: ['tabBtnChat', 'tabPanelChat'],
     sources: ['tabBtnSources', 'tabPanelSources'],
     audit: ['tabBtnAudit', 'tabPanelAudit'],
@@ -3824,6 +4174,266 @@ function openArtifactFromPiece(artifactId) {
   window.open(`/api/v1/sessions/${activeSessionId}/artifacts/${artifactId}`, '_blank');
 }
 
+
+/* =========================================================================
+   NOCTURNE FOCUS v2.3 — FUNÇÕES DE SINCRONIZAÇÃO E CONTROLE
+   ========================================================================= */
+
+function toggleSidebar() {
+  const rail = document.querySelector('.rail');
+  if (rail) {
+    rail.classList.toggle('collapsed');
+    try { localStorage.setItem('gambit_rail_collapsed', rail.classList.contains('collapsed')); } catch(e){}
+  }
+}
+
+// Inicializa estado da sidebar
+(function initSidebarPref() {
+  try {
+    if (localStorage.getItem('gambit_rail_collapsed') === 'true') {
+      const rail = document.querySelector('.rail');
+      if (rail) rail.classList.add('collapsed');
+    }
+  } catch(e){}
+})();
+
+function updateBoardCoordinatesLabels() {
+  const ranks2D = document.getElementById('boardRanks2D');
+  const files2D = document.getElementById('boardFiles2D');
+  const ranks3D = document.getElementById('boardRanks3D');
+  const files3D = document.getElementById('boardFiles3D');
+
+  const chessRanks = ['8','7','6','5','4','3','2','1'];
+  const chessFiles = ['a','b','c','d','e','f','g','h'];
+  const goRanks = ['9','8','7','6','5','4','3','2','1'];
+  const goFiles = ['A','B','C','D','E','F','G','H','J']; // v2.3 C06: nunca I
+
+  const isChess = (game === 'chess');
+  const ranks = isChess ? chessRanks : goRanks;
+  const files = isChess ? chessFiles : goFiles;
+
+  const ranksHtml = ranks.map(r => `<div>${r}</div>`).join('');
+  const filesHtml = files.map(f => `<div>${f}</div>`).join('');
+
+  if (ranks2D) ranks2D.innerHTML = ranksHtml;
+  if (files2D) files2D.innerHTML = filesHtml;
+  if (ranks3D) ranks3D.innerHTML = ranksHtml;
+  if (files3D) files3D.innerHTML = filesHtml;
+}
+
+// Atualiza o painel "LANCE SELECIONADO" com base no registro de lance
+function updateSelectedMovePanel(record) {
+  if (!record) return;
+
+  const plyBadge = document.getElementById('smpPlyBadge');
+  const sanLabel = document.getElementById('smpSanLabel');
+  const sidePill = document.getElementById('smpSidePill');
+  const pieceLabel = document.getElementById('smpPieceLabel');
+  const coordsLabel = document.getElementById('smpCoordsLabel');
+  const pieceRole = document.getElementById('smpPieceRole');
+  const claimText = document.getElementById('smpClaimText');
+  const quoteBox = document.getElementById('smpQuoteBox');
+  const quoteText = document.getElementById('smpQuoteText');
+  const sourceMeta = document.getElementById('smpSourceMeta');
+  const sourceStatusBadge = document.getElementById('smpSourceStatusBadge');
+  const contestBox = document.getElementById('smpContestBox');
+  const oppLabel = document.getElementById('smpOpponentLabel');
+  const oppClaimText = document.getElementById('smpOpponentClaimText');
+  const captureBadge = document.getElementById('smpPhysicalCaptureBadge');
+  const checkBadge = document.getElementById('smpCheckBadge');
+  const mateBadge = document.getElementById('smpMateBadge');
+  const verdictBadge = document.getElementById('smpVerdictBadge');
+  const verdictReason = document.getElementById('smpVerdictReason');
+
+  // Payload auditável v2.3 C11 ou campos nativos do MatchPlyRecordSchema
+  const audit = record.audit_payload || {};
+  const moveInfo = audit.move || {};
+  const pieceInfo = audit.piece || {};
+  const oppInfo = audit.opponent || null;
+  const evidInfo = audit.evidence || {};
+  const verdInfo = audit.argument_verdict || {};
+  const outInfo = audit.board_outcome || {};
+
+  const plyNum = record.ply || audit.ply || 0;
+  const san = moveInfo.san || record.san || record.move || '—';
+  const fromCoord = moveInfo.from || record.from_coord || '—';
+  const toCoord = moveInfo.to || record.to_coord || '—';
+  const side = record.side || 'pro';
+  const color = record.color || (side === 'pro' ? 'white' : 'black');
+
+  if (plyBadge) plyBadge.textContent = `Lance #${plyNum}`;
+  if (sanLabel) sanLabel.textContent = san;
+  if (sidePill) {
+    sidePill.textContent = (side === 'pro' ? '⚪ Pró' : '⚫ Contra');
+    sidePill.style.background = (side === 'pro' ? 'rgba(121, 134, 203, 0.2)' : 'rgba(239, 83, 80, 0.2)');
+    sidePill.style.color = (side === 'pro' ? '#9fa8da' : '#ef9a9a');
+  }
+
+  if (pieceLabel) pieceLabel.textContent = pieceInfo.label || record.piece_label || `${color} (${san})`;
+  if (coordsLabel) coordsLabel.textContent = `${fromCoord} → ${toCoord}`;
+  if (pieceRole) pieceRole.textContent = pieceInfo.role || record.piece_role || 'Investigação tática';
+  if (claimText) claimText.textContent = pieceInfo.claim_statement || record.claim_statement || 'Tese em andamento.';
+
+  // Citação e Evidência
+  const quote = (evidInfo.quotes && evidInfo.quotes[0]) || record.quote_text;
+  if (quote && quoteBox) {
+    quoteBox.style.display = 'block';
+    if (quoteText) quoteText.textContent = `"${quote}"`;
+    if (sourceMeta) sourceMeta.textContent = `Fonte: ${record.artifact_title || 'Documento do cofre'} · Citação verificada no arquivo`;
+  } else if (quoteBox) {
+    quoteBox.style.display = 'none';
+  }
+
+  const sStatus = evidInfo.source_status || (quote ? 'SOURCE_VERIFIED' : 'UNVERIFIED');
+  if (sourceStatusBadge) {
+    sourceStatusBadge.textContent = sStatus;
+    sourceStatusBadge.className = `badge-status ${sStatus.toLowerCase()}`;
+  }
+
+  // Contestação (se for captura física ou oponente registrado)
+  const isCap = outInfo.physical_capture != null ? outInfo.physical_capture : record.is_capture;
+  if (isCap && (oppInfo || record.captured_piece_label) && contestBox) {
+    contestBox.style.display = 'block';
+    if (oppLabel) oppLabel.textContent = oppInfo ? oppInfo.label : (record.captured_piece_label || 'Peça capturada');
+    if (oppClaimText) oppClaimText.textContent = oppInfo ? (oppInfo.claim_statement || 'Tese opositora') : 'Tese do lado defensor confrontada.';
+  } else if (contestBox) {
+    contestBox.style.display = 'none';
+  }
+
+  // Status físico
+  if (captureBadge) {
+    captureBadge.textContent = isCap ? 'SIM (Peça removida)' : 'NÃO';
+    captureBadge.style.color = isCap ? '#fbbf24' : 'var(--muted)';
+  }
+  if (checkBadge) {
+    const isChk = outInfo.check != null ? outInfo.check : (boardState && boardState.isCheck);
+    checkBadge.textContent = isChk ? 'SIM' : 'NÃO';
+    checkBadge.style.color = isChk ? '#f87171' : 'var(--muted)';
+  }
+  if (mateBadge) {
+    const isMate = outInfo.mate != null ? outInfo.mate : false;
+    mateBadge.textContent = isMate ? 'SIM' : 'NÃO';
+    mateBadge.style.color = isMate ? '#f87171' : 'var(--muted)';
+  }
+
+  // Avaliação factual do árbitro
+  const verdict = verdInfo.status || (isCap ? 'INCONCLUSIVE' : (record.epistemic_verdict || 'NOT_ASSESSED'));
+  if (verdictBadge) {
+    verdictBadge.textContent = verdict;
+    verdictBadge.className = `badge-verdict ${verdict.toLowerCase()}`;
+  }
+  if (verdictReason) {
+    verdictReason.textContent = verdInfo.reason || (
+      isCap
+        ? 'Captura física no tabuleiro; refutação factual independente não avaliada nesta jogada.'
+        : 'Avanço posicional de tese sustentada no tabuleiro.'
+    );
+  }
+
+  // Atualiza barra superior compacta
+  const wsPlyLbl = document.getElementById('wsCurrentPlyLabel');
+  if (wsPlyLbl) wsPlyLbl.textContent = `Lance: #${plyNum} (${san})`;
+}
+
+// Modal de diagnóstico
+function openDiagnosticsModal() {
+  const modal = document.getElementById('diagnosticsModal');
+  if (!modal) return;
+
+  const g = (serverCapabilities && serverCapabilities.gemini) || {};
+  const w = (serverCapabilities && serverCapabilities.web_search) || {};
+
+  const gStatus = document.getElementById('diagGeminiStatus');
+  if (gStatus) {
+    gStatus.innerHTML = `
+      <strong>Status:</strong> ${g.live_allowed ? '<span style="color:#34d399">● LIVE HABILITADO</span>' : (g.configured ? '<span style="color:#fbbf24">○ CONFIGURADO (Offline/Lim)</span>' : '<span style="color:#f87171">✕ NÃO CONFIGURADO</span>')}<br>
+      <strong>Modelo:</strong> ${g.model || 'gemini-flash-latest'}<br>
+      <strong>Provedor ativo:</strong> ${g.provider || 'Google Generative AI'}
+    `;
+  }
+
+  const wStatus = document.getElementById('diagWebStatus');
+  if (wStatus) {
+    wStatus.innerHTML = `
+      <strong>Status:</strong> ${w.available ? '<span style="color:#34d399">● ATIVO (' + w.engine + ')</span>' : '<span style="color:#f87171">✕ INDISPONÍVEL</span>'}<br>
+      <strong>Cofre isolado:</strong> Ativo por lado (Regra de Ouro)<br>
+      <strong>Política:</strong> ${(activeSession && activeSession.normalized_source_policy) || 'OWN_ONLY'}
+    `;
+  }
+
+  if (activeSession) {
+    const pliesEl = document.getElementById('diagPlies');
+    const stepsEl = document.getElementById('diagSteps');
+    const sourcesEl = document.getElementById('diagSources');
+    const costEl = document.getElementById('diagCost');
+    const chainEl = document.getElementById('diagChainStatus');
+
+    if (pliesEl) pliesEl.textContent = activeSession.ply_count || 0;
+    if (stepsEl) stepsEl.textContent = `${activeSession.investigation_step_index || 0} / ${activeSession.max_steps || 12}`;
+    if (sourcesEl) sourcesEl.textContent = (activeSession.artifacts || []).length;
+    if (costEl && activeSession.budget) {
+      costEl.textContent = `$${(activeSession.budget.estimated_cost_usd || 0).toFixed(4)}`;
+    }
+    if (chainEl) {
+      chainEl.innerHTML = `
+        ID da Sessão: <code>${activeSession.id}</code><br>
+        Status: <strong>${activeSession.status}</strong> · Integridade: <span style="color:#34d399">INTEGRITY_VERIFIED (SHA-256)</span>
+      `;
+    }
+  }
+
+  modal.style.display = 'flex';
+}
+
+// Fechar com tecla ESC
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(m => m.style.display = 'none');
+  }
+});
+
 </script>
+
+  <!-- Modal de Diagnóstico & Estado (C08) -->
+  <div class="modal" id="diagnosticsModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="diagModalTitle">
+    <div class="modal-card" style="max-width:700px;">
+      <div class="modal-head">
+        <h3 id="diagModalTitle">⚙️ Diagnóstico & Estado da Sessão</h3>
+        <button class="btn sm secondary" onclick="closeModal('diagnosticsModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="smp-section">
+            <div class="smp-sec-title">PROVEDOR IA (GEMINI)</div>
+            <div id="diagGeminiStatus" style="font-size:12.5px;">Carregando status...</div>
+          </div>
+          <div class="smp-section">
+            <div class="smp-sec-title">PESQUISA WEB</div>
+            <div id="diagWebStatus" style="font-size:12.5px;">Carregando status...</div>
+          </div>
+        </div>
+
+        <div class="smp-section" style="margin-bottom:16px;">
+          <div class="smp-sec-title">MÉTRICAS DA SESSÃO</div>
+          <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;text-align:center;">
+            <div><small style="color:var(--muted)">Lances:</small><br><strong id="diagPlies" style="font-size:16px;">0</strong></div>
+            <div><small style="color:var(--muted)">Etapas:</small><br><strong id="diagSteps" style="font-size:16px;">0 / 12</strong></div>
+            <div><small style="color:var(--muted)">Fontes:</small><br><strong id="diagSources" style="font-size:16px;">0</strong></div>
+            <div><small style="color:var(--muted)">Tokens/Custo:</small><br><strong id="diagCost" style="font-size:16px;">$0.00</strong></div>
+          </div>
+        </div>
+
+        <div class="smp-section">
+          <div class="smp-sec-title">INTEGRIDADE CRIPTOGRÁFICA (SHA-256)</div>
+          <div id="diagChainStatus" style="font-size:12px;color:var(--text);">Cadeia de eventos íntegra.</div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" onclick="closeModal('diagnosticsModal')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

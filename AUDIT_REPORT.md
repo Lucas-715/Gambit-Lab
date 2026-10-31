@@ -125,3 +125,32 @@ Em conformidade com os novos requisitos do produto ("Fundo Vivo", partidas compl
 | **Research Match v2.2 (`RM-01`..`RM-17`)** | **17 integração** | **PASS (100%)** |
 | **Automação de Navegador Real (CDP)** | **6 cenários** | **PASS (100%)** |
 | **TOTAL CONSOLIDADO** | **81 unit/int + 6 CDP** | **87 / 87 PASS (100%)** |
+
+
+---
+
+## 7. Reengenharia v2.3 — UI Nocturne Focus e Resolução de C01–C12
+
+Em resposta à auditoria formal de produto e aos achados de integridade científica (`GAMBIT_LAB_V23_AUDITORIA_REENGENHARIA.md`), a versão **v2.3 (Nocturne Focus)** promoveu o redesenho da experiência: **"Xadrez/Go primeiro, lance e evidência depois"**, aliada à correção rigorosa das premissas epistêmicas.
+
+### Tabela de Resolução dos Achados C01–C12
+
+| ID | Achado Auditado | Resolução v2.3 | Evidência / Teste |
+|---|---|---|---|
+| **C01** | `preparation.py` marcava `SUPPORTED` apenas por localizar trecho literal | Citação verificada no arquivo marca `SOURCE_VERIFIED`; `SUPPORTED` exige validação semântica da tese forte | `test_c01_quote_found_does_not_equal_supported` (**PASS**) |
+| **C02** | Captura física gerava `REFUTED` no histórico da peça | Captura no tabuleiro físico `PIECE_CAPTURED` registra `NOT_ASSESSED` ou `INCONCLUSIVE`, jamais `REFUTED` automático | `test_c02_physical_capture_does_not_equal_refuted` (**PASS**) |
+| **C03** | Confiança multiplicada por tipo de peça (Rei 2.6x, Dama 2.3x) e fontes duplicadas somadas | Pesos unitários (`1.0`); deduplicação estrita de claims e fontes por hash/DOI na síntese epistêmica | `test_c03_no_piece_weight_multiplication_and_deduplication` (**PASS**) |
+| **C04** | Resignação automática após 800cp por 3 turnos gerava término forçado | Resignação automática desabilitada por padrão (`DEFAULT_AUTO_RESIGN=False`); regras FIDE oficiais governam xeque-mate e empates | `test_c04_default_chess_disables_auto_resignation_and_honors_fide` (**PASS**) |
+| **C05** | Portão epistêmico rejeitava capturas legais no xadrez padrão | No xadrez padrão FIDE, capturas legais nunca são bloqueadas; avaliação epistêmica segue paralela | `test_c05_legal_captures_not_blocked_in_standard_chess` (**PASS**) |
+| **C06** | Ausência de coordenadas externas visíveis no tabuleiro | Rótulos externos legíveis nos modos 2D e 3D: Xadrez `a–h`, `1–8`; Go `A B C D E F G H J` (sem `I`), `1–9` | `nocturne_v23_board_2d_coordinates.png`, `nocturne_v23_board_3d_coordinates.png` (**PASS**) |
+| **C07** | Poluição visual: 4 cartões de métricas e até 32 dossiês ocupando a dobra | Layout focado no tabuleiro + painel contextual **LANCE SELECIONADO**; 32 dossiês virtualizados sob demanda | `nocturne_v23_workspace_focus.png`, `nocturne_v23_lance_selecionado.png` (**PASS**) |
+| **C08** | Badges permanentes na navbar poluindo o topo | Navbar minimalista com modal **Diagnóstico & Estado**; sidebar retrátil e drawer mobile com teclado/ESC | `nocturne_v23_sidebar_collapsed.png`, `nocturne_v23_diagnostics_modal.png` (**PASS**) |
+| **C09** | Scores arbitrários (.82, .88) usados como probabilidade de verdade | Estados discretos calibrados: `UNVERIFIED`, `SOURCE_VERIFIED`, `EVIDENCE_REVIEWED`, `SUPPORTED`, `REFUTED`, `INCONCLUSIVE` | `test_c09_discrete_epistemic_states_no_arbitrary_floats` (**PASS**) |
+| **C10** | Inconsistência entre término lúdico e status da sessão | Resultado lúdico, FEN final e encerramento derivados exclusivamente do evento terminal oficial | `test_rm06_chess_ends_only_by_rule_or_explicit_budget` (**PASS**) |
+| **C11** | Falta de evento de confrontação semântica auditável por lance | `MoveAuditPayloadSchema` em cada ply com SAN, UCI, peça, oponente, evidências, veredito e board_outcome | `test_c11_timeline_contains_audit_confrontation_payload` (**PASS**) |
+| **C12** | Possível vazamento de dossiês não jogados para observador | Controle estrito de acesso por papéis (`owner`, `white`, `black`, `observer`). Dossiês não jogados são redigidos até abertura no tabuleiro | `test_c12_viewer_privacy_for_unplayed_dossiers` (**PASS**) |
+
+### Resultados da Suíte Automatizada v2.3
+
+- Total de testes no repositório: **90 testes aprovados (`90 PASSED, 0 FAILED`)**
+- Verificação funcional no Google Chrome real via CDP: **Cenários UX01 a UX07 aprovados com 100% de sucesso**.

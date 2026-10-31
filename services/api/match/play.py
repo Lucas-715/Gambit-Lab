@@ -19,8 +19,10 @@ from packages.game_rules.chess_engine import EpistemicChessEngine
 from packages.game_rules.go_engine import GoEngine9x9
 from services.api.match.chess_player import ChessPlayer, material_cp, material_diff_white_cp
 from services.api.match.go_player import GoPlayer
+import datetime
 from services.api.models.schemas import (
     BoardPositionSchema,
+    MoveAuditPayloadSchema,
     MatchPlyRecordSchema,
     PieceHistoryEntrySchema,
 )
@@ -31,6 +33,9 @@ RESIGN_MIN_PLY = 24
 
 
 class PlayMixin:
+    DEFAULT_AUTO_RESIGN: bool = False
+    enable_auto_resignation: bool = False
+    epistemic_gating_enabled: bool = False
     # ------------------------------------------------------------------ schemas de tabuleiro
     @staticmethod
     def _chess_board_schema(engine: EpistemicChessEngine) -> BoardPositionSchema:
@@ -141,14 +146,15 @@ class PlayMixin:
             acting_color = engine.turn
             acting_side = "pro" if acting_color == mstate["pro_color"] else "contra"
 
-            # Resignação formal: déficit material decisivo e sustentado do lado a jogar.
+            # v2.3 C04: Resignação automática desabilitada por padrão; só ativa se explícito
+            auto_resign_on = getattr(self, "enable_auto_resignation", False) or sess.get("enable_auto_resignation", False)
             mine = chess.WHITE if acting_color == "white" else chess.BLACK
             deficit = material_cp(board, not mine) - material_cp(board, mine)
-            if engine.ply_count >= RESIGN_MIN_PLY and deficit >= RESIGN_DEFICIT_CP:
+            if auto_resign_on and engine.ply_count >= RESIGN_MIN_PLY and deficit >= RESIGN_DEFICIT_CP:
                 play["resign_streak"][acting_color] += 1
             else:
                 play["resign_streak"][acting_color] = 0
-            if play["resign_streak"][acting_color] >= RESIGN_STREAK:
+            if auto_resign_on and play["resign_streak"][acting_color] >= RESIGN_STREAK:
                 play["finished"] = True
                 play["termination"] = "resignation"
                 play["resigned_color"] = acting_color
@@ -179,7 +185,13 @@ class PlayMixin:
             self._apply_chess_move(sess, mstate, play, engine, mv, block_note, ply_idx, acting_side, acting_color, pieces_by_id)
 
     def _gate_chess_move(self, board, ranked, sq_to_pid, pieces_by_id, ply_idx):
-        """Portão epistêmico de capturas: tese verificada e mais confiável não cai para atacante mais fraco."""
+        """
+        v2.3 C05: No Xadrez padrão FIDE, capturas legais NUNCA são bloqueadas.
+        A disputa epistêmica corre em paralelo sem adulterar a legalidade das regras.
+        """
+        if not getattr(self, "epistemic_gating_enabled", False):
+            return ranked[0][1], None
+
         first_block: Optional[str] = None
         for score, mv in ranked:
             if not board.is_capture(mv):
@@ -268,15 +280,13 @@ class PlayMixin:
             cap["captured_by_piece_id"] = att["piece_id"]
             for aref in att["supporting_artifacts"][:1]:
                 cap["counter_artifacts"].append(copy.deepcopy(aref))
-            note = (
-                f"Neutralizada no lance #{ply_idx} ({res.san}) por {att['label']} "
-                f"[confiança {att['confidence_score']:.2f} vs {cap['confidence_score']:.2f}]."
-            )
+            # v2.3 C02: Captura física != REFUTED. Marca NOT_ASSESSED ou INCONCLUSIVE
+            note = f"Capturada no tabuleiro físico no lance #{ply_idx} ({res.san}) por {att['label']}."
             cap["fall_explanation"] = note
             cap["history"].append(
                 PieceHistoryEntrySchema(
                     ply=ply_idx, move_label=res.san, from_coord=from_sq, to_coord=to_sq,
-                    event_kind="CAPTURED", summary=note, arbiter_verdict="REFUTED",
+                    event_kind="PIECE_CAPTURED", summary=note, arbiter_verdict="NOT_ASSESSED",
                 ).model_dump()
             )
             play["highlights"].append(f"Lance #{ply_idx} ({res.san}): {note}")
@@ -302,6 +312,59 @@ class PlayMixin:
         diff_white = material_diff_white_cp(engine.board)
         diff_pro = diff_white if mstate["pro_color"] == "white" else -diff_white
         momentum = round(1.0 / (1.0 + 10 ** (-diff_pro / 400.0)), 3)
+        # v2.3 C11: Construção do payload auditável completo
+        audit_payload = MoveAuditPayloadSchema(
+            session_id=sess["id"],
+            ply=ply_idx,
+            game="chess",
+            move={
+                "uci": mv.uci(),
+                "san": res.san,
+                "from": from_sq,
+                "to": to_sq,
+                "color": acting_color,
+                "kind": "capture" if is_cap else "advance",
+            },
+            piece={
+                "id": att["piece_id"] if att else "unknown",
+                "role": att["role"] if att else "",
+                "label": att["label"] if att else "",
+                "claim_id": att.get("claim_id") or (att["piece_id"] if att else ""),
+                "claim_statement": att["claim"] if att else "",
+            },
+            opponent={
+                "piece_id": cap["piece_id"],
+                "role": cap["role"],
+                "label": cap["label"],
+                "claim_id": cap.get("claim_id") or cap["piece_id"],
+                "claim_statement": cap["claim"],
+            } if (is_cap and cap) else None,
+            evidence={
+                "attacker_artifact_ids": [a.get("artifact_id") for a in (att.get("supporting_artifacts") or []) if a.get("artifact_id")],
+                "defender_artifact_ids": [a.get("artifact_id") for a in (cap.get("supporting_artifacts") or []) if a.get("artifact_id")] if (is_cap and cap) else [],
+                "quotes": [quote_txt] if quote_txt else [],
+                "source_status": "SOURCE_VERIFIED" if quote_txt else "UNVERIFIED",
+            },
+            argument_verdict={
+                "status": "INCONCLUSIVE" if is_cap else att.get("epistemic_status", "SOURCE_VERIFIED"),
+                "reason": (
+                    "Captura no tabuleiro físico; refutação factual independente não avaliada nesta jogada."
+                    if is_cap
+                    else f"Avanço posicional de {att['label']} no lance #{ply_idx}."
+                ) if att else "Movimento registrado.",
+                "reviewer": "arbiter_engine",
+                "evaluated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            },
+            board_outcome={
+                "physical_capture": is_cap,
+                "check": engine.board.is_check(),
+                "mate": engine.board.is_checkmate(),
+                "fen_after": engine.board.fen(),
+            },
+            event_seq=ev.get("seq", ply_idx),
+            event_hash=ev.get("hash") or ev.get("event_hash"),
+        )
+
         mstate["timeline"].append(
             MatchPlyRecordSchema(
                 ply=ply_idx, event_seq=ev["seq"], side=acting_side, color=acting_color,
@@ -317,6 +380,7 @@ class PlayMixin:
                 captured_piece_label=cap["label"] if cap else None,
                 confrontation_summary=note, pro_momentum=momentum, board_snapshot=board_schema,
                 piece_coords_snapshot={p["piece_id"]: p["current_coord"] for p in mstate["pieces"]},
+                audit_payload=audit_payload,
             ).model_dump()
         )
 
@@ -376,10 +440,8 @@ class PlayMixin:
                             gdoc["captured_at_ply"] = ply_idx
                             gdoc["captured_by_piece_id"] = active["piece_id"]
                             gdoc["current_coord"] = None
-                        gdoc["fall_explanation"] = (
-                            f"Pedra(s) capturada(s) por cerco em {res.coord_str} no lance #{ply_idx} "
-                            f"por {active['label']}."
-                        )
+                        # v2.3 C02: Captura em Go é territorial; não é refutação da tese
+                        gdoc["fall_explanation"] = f"Pedra(s) capturada(s) por cerco territorial em {res.coord_str} no lance #{ply_idx}."
                         for aref in active["supporting_artifacts"][:1]:
                             gdoc["counter_artifacts"].append(copy.deepcopy(aref))
                         note = gdoc["fall_explanation"]
@@ -405,6 +467,59 @@ class PlayMixin:
             b_sc, w_sc = engine.calculate_area_score()
             pro_sc, con_sc = (b_sc, w_sc) if mstate["pro_color"] == "black" else (w_sc, b_sc)
             momentum = round(min(0.97, max(0.03, pro_sc / max(1.0, pro_sc + con_sc))), 3)
+            go_audit_payload = MoveAuditPayloadSchema(
+                session_id=sess["id"],
+                ply=ply_idx,
+                game="go",
+                move={
+                    "uci": res.coord_str,
+                    "san": res.coord_str,
+                    "from": None,
+                    "to": None if res.is_pass else res.coord_str,
+                    "color": acting_color,
+                    "kind": "pass" if res.is_pass else ("capture" if res.is_capture else "placement"),
+                },
+                piece={
+                    "id": active["piece_id"],
+                    "role": active["role"],
+                    "label": active["label"],
+                    "claim_id": active.get("claim_id") or active["piece_id"],
+                    "claim_statement": active["claim"],
+                },
+                opponent={
+                    "piece_id": cap_gid,
+                    "role": cap_label or "",
+                    "label": cap_label or "",
+                    "claim_id": cap_gid,
+                    "claim_statement": "",
+                } if (res.is_capture and cap_gid) else None,
+                evidence={
+                    "attacker_artifact_ids": [a.get("artifact_id") for a in (active.get("supporting_artifacts") or []) if a.get("artifact_id")],
+                    "defender_artifact_ids": [],
+                    "quotes": [quote_txt] if quote_txt else [],
+                    "source_status": "SOURCE_VERIFIED" if quote_txt else "UNVERIFIED",
+                },
+                argument_verdict={
+                    "status": "INCONCLUSIVE" if res.is_capture else active.get("epistemic_status", "SOURCE_VERIFIED"),
+                    "reason": (
+                        "Captura territorial de pedras; refutação factual independente não avaliada nesta jogada."
+                        if res.is_capture
+                        else ("Passe de jogada." if res.is_pass else f"Posicionamento territorial em {res.coord_str}.")
+                    ),
+                    "reviewer": "arbiter_engine",
+                    "evaluated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                },
+                board_outcome={
+                    "physical_capture": res.is_capture,
+                    "check": False,
+                    "mate": False,
+                    "captured_black": engine.captured_by_white,
+                    "captured_white": engine.captured_by_black,
+                },
+                event_seq=ev.get("seq", ply_idx),
+                event_hash=ev.get("hash") or ev.get("event_hash"),
+            )
+
             mstate["timeline"].append(
                 MatchPlyRecordSchema(
                     ply=ply_idx, event_seq=ev["seq"], side=acting_side, color=acting_color,
@@ -416,6 +531,7 @@ class PlayMixin:
                     confrontation_summary=note, pro_momentum=momentum, board_snapshot=board_schema,
                     piece_coords_snapshot={p["piece_id"]: p["current_coord"] for p in mstate["pieces"]},
                     piece_stones_snapshot={p["piece_id"]: list(p["stones"]) for p in mstate["pieces"]},
+                    audit_payload=go_audit_payload,
                 ).model_dump()
             )
 

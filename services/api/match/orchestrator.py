@@ -84,22 +84,49 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
         return sess
 
     # ------------------------------------------------------------------ visão por lado (Regra de Ouro)
-    def get_pieces_for_viewer(self, session_id: str, viewer_side: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Enquanto a partida não termina, um lado só vê do adversário o que já foi JOGADO no tabuleiro."""
+    def get_pieces_for_viewer(
+        self, session_id: str, viewer_side: Optional[str] = None, role: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        v2.3 C12 / SEC01: Controle estrito de acesso e privacidade de dossiês não jogados.
+        Papéis: 'owner', 'white', 'black', 'observer'.
+        Durante a partida em andamento:
+          - 'owner': visualização integral
+          - 'white': dossiês de white completos; black apenas jogados
+          - 'black': dossiês de black completos; white apenas jogados
+          - 'observer' (padrão quando viewer_side não informado): apenas peças já jogadas de ambos os lados
+        Após conclusão: todos revelados no replay.
+        """
         sess = self._sess(session_id)
         mstate = sess.get("research_match")
         if not mstate:
             return []
         pieces = copy.deepcopy(mstate.get("pieces", []))
-        if mstate.get("is_complete") or viewer_side not in ("white", "black"):
+        if mstate.get("is_complete"):
             return pieces
+
+        effective_role = role or viewer_side or "observer"
+        effective_role = effective_role.strip().lower()
+
+        if effective_role in ("owner", "admin"):
+            return pieces
+
         for p in pieces:
-            if p["color"] == viewer_side:
+            if effective_role in ("white", "black") and p["color"] == effective_role:
                 continue
-            p["supporting_artifacts"] = [a for a in p["supporting_artifacts"] if a.get("played_at_ply") is not None]
-            p["counter_artifacts"] = []
-            if not p["history"]:
+
+            has_played = bool(p.get("history")) or any(
+                a.get("played_at_ply") is not None for a in p.get("supporting_artifacts", [])
+            )
+            if not has_played:
                 p["claim"] = "[reservada — ainda não jogada no tabuleiro]"
+                p["supporting_artifacts"] = []
+                p["counter_artifacts"] = []
+            else:
+                p["supporting_artifacts"] = [
+                    a for a in p.get("supporting_artifacts", []) if a.get("played_at_ply") is not None
+                ]
+                p["counter_artifacts"] = []
         return pieces
 
     # ------------------------------------------------------------------ execução por estágio
