@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gambit Lab 2.0 — 3 modos × 2 jogos — Protótipo 3D</title>
+<style>
+:root{--bg:#080e17;--panel:#111d2a;--panel2:#172636;--ink:#edf4f5;--sub:#90a5b8;--stroke:#253649;--accent:#61d2c0;--gold:#e1ad69;--red:#df7479}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}button,input,select{font:inherit}
+.shell{min-height:100vh;display:grid;grid-template-columns:250px minmax(520px,1fr) 320px;gap:0}
+aside{background:var(--panel);padding:22px 18px;border-right:1px solid var(--stroke)}.right{border-right:0;border-left:1px solid var(--stroke)}
+.brand{display:flex;align-items:center;gap:11px;padding:8px 5px 28px}.logo{background:linear-gradient(145deg,#5fe8d1,#2b819f);color:#06232f;font-size:25px;width:40px;height:40px;display:grid;place-items:center;border-radius:12px;font-weight:900}.brand strong{font-size:18px;letter-spacing:.3px}.brand small{display:block;color:var(--sub);font-size:10px;letter-spacing:1.8px}
+.hd{font-weight:800;text-transform:uppercase;letter-spacing:1.6px;font-size:10px;color:#7e98ac;margin:20px 5px 10px}.nav{width:100%;text-align:left;border:1px solid transparent;background:transparent;color:#b4c5d5;padding:12px;border-radius:10px;cursor:pointer;margin:3px 0;display:flex;align-items:center;gap:11px}.nav.active{color:#dcfff6;background:#183b42;border-color:#285d63}.nav span{font-size:18px}.muted{color:var(--sub)}label{display:block;color:#9fb7c7;font-size:12px;margin:14px 0 6px}input,select{width:100%;background:#0c1722;border:1px solid #2a4053;color:#eaf6f8;border-radius:9px;padding:10px;font-size:12px;outline:none}input:focus,select:focus{border-color:var(--accent)}
+main{min-width:0;padding:29px 28px 24px;display:flex;flex-direction:column;gap:15px}.eyebrow{font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-weight:800}h1{font-size:30px;letter-spacing:-1px;margin:4px 0 6px}.desc{color:#8eabba;line-height:1.55;font-size:13px;margin:0}.top{display:flex;align-items:center;justify-content:space-between;gap:20px}.chip{border:1px solid #27535a;background:#12343a;color:#87f0df;border-radius:40px;padding:8px 11px;font-size:11px;white-space:nowrap}
+.board-card{background:radial-gradient(ellipse at 50% 38%,#243b48 0,#121e2b 52%,#0d1722 100%);border:1px solid #2a3d50;border-radius:18px;position:relative;overflow:hidden;min-height:510px;flex:1;box-shadow:inset 0 1px rgba(255,255,255,.04)}#stage{display:block;width:100%;height:100%;min-height:510px;cursor:grab}#stage:active{cursor:grabbing}.viewbar{position:absolute;top:16px;left:18px;right:18px;display:flex;justify-content:space-between;pointer-events:none;gap:10px}.viewbar span{background:#09141edb;border:1px solid #2c4858;color:#aac9d1;font-size:11px;padding:8px 11px;border-radius:9px}.coord{position:absolute;left:18px;bottom:20px;color:#9eb4c3;font-size:11px;max-width:70%}.view-help{position:absolute;right:16px;bottom:20px;color:#9eb4c3;font-size:10px}
+.controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.btn{border:1px solid #2f455a;border-radius:10px;padding:11px 15px;background:#192a3c;color:#edf5fa;cursor:pointer;font-size:12px;font-weight:700}.btn:hover{filter:brightness(1.14)}.btn.primary{color:#062630;background:var(--accent);border-color:var(--accent)}.btn.secondary{background:#0e1b29}.counter{margin-left:auto;color:#8fa8b6;font-size:12px}
+.info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.metric{background:#121f2d;border:1px solid #253b4b;padding:15px;border-radius:12px}.metric b{display:block;font-size:19px}.metric small{font-size:10px;color:var(--sub)}
+.right h2{font-size:15px;margin:6px 0 4px}.right p{font-size:12px;line-height:1.6;color:#9db4c5}.section{border-bottom:1px solid #26394a;padding:4px 0 17px;margin-bottom:12px}.status{display:flex;align-items:center;gap:8px;color:#8fe8d7;font-size:12px}.dot{height:7px;width:7px;border-radius:50%;background:var(--accent)}.source{padding:12px;background:#192b39;border:1px solid #2d4451;border-radius:10px;margin:10px 0}.source b{font-size:12px}.source small{display:block;font-size:11px;color:#9fb4c2;line-height:1.6;margin-top:6px}.tag{display:inline-block;margin-top:7px;color:var(--gold);font-size:10px;font-weight:800}.log{max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:7px}.event{display:flex;gap:9px;font-size:11px;color:#c3d5df;line-height:1.5;padding:7px 8px;border-left:2px solid #3b7881;background:#142533;border-radius:5px}.event em{color:#6df0d8;font-style:normal;font-weight:900}.foot{margin-top:14px;font-size:10px;line-height:1.6;color:#7e98aa}
+@media(max-width:1100px){.shell{grid-template-columns:200px 1fr}.right{grid-column:1/-1;border-left:0;border-top:1px solid var(--stroke)}.right .section{max-width:680px}.board-card{min-height:440px}#stage{min-height:440px}}@media(max-width:700px){.shell{display:block}aside{border:0;border-bottom:1px solid var(--stroke)}main{padding:18px}.board-card{min-height:390px}#stage{min-height:390px}.info{grid-template-columns:1fr 1fr}.top{align-items:start}.chip{white-space:normal}}
+</style>
+</head><body>
+<div class="shell">
+<aside>
+ <div class="brand"><div class="logo">G</div><div><strong>GAMBIT LAB</strong><small>REASONING ENGINE</small></div></div>
+ <div class="hd">Ambiente</div>
+ <button id="navResearch" class="nav active" onclick="setMode('research')"><span>⌕</span> Pesquisa estratégica</button>
+ <button id="navDebate" class="nav" onclick="setMode('debate')"><span>♟</span> Debate de evidências</button>
+ <button id="navAudit" class="nav" onclick="setMode('audit')"><span>◉</span> Auditoria de evidências</button>
+ <div class="hd">Jogo para qualquer modo</div>
+ <label for="gameSelect">Motor de tabuleiro</label>
+ <select id="gameSelect" onchange="setGame(this.value)"><option value="chess">Xadrez · 8×8</option><option value="go">Go / Weiqi · 9×9</option></select>
+ <div class="hd">Configuração</div>
+ <label for="topic">Tema / questão de investigação</label>
+ <input id="topic" value="Aprendizado federado e explicabilidade" aria-label="Tema da pesquisa">
+ <label for="opening" id="openingLabel">Estratégia investigativa / linha de abertura</label>
+ <select id="opening"><option value="queen">Gambito da Dama — equilíbrio</option><option value="king">Gambito do Rei — exploração</option><option value="evans">Gambito Evans — descoberta</option></select>
+ <label id="fusionLabel" style="display:flex;align-items:center;gap:9px;padding:11px;border:1px solid #2a4053;border-radius:9px"><input id="fusion" type="checkbox" onchange="updateFusion()" style="width:auto;accent-color:#61d2c0"><span>FUSION · investigar por múltiplas estratégias</span></label>
+ <label for="branchSelect" id="branchLabel" style="display:none">Ramo de pesquisa (tabuleiros independentes)</label>
+ <select id="branchSelect" style="display:none" onchange="resetScene()"></select>
+ <label for="sources">Fontes autorizadas</label>
+ <select id="sources"><option>Somente arquivos anexados</option><option>Arquivos + Internet autorizada</option></select>
+<div class="hd">Legenda de confiança</div>
+ <div class="source"><b>Pré-comprometimento</b><small>Artefatos pré-partida seriam registrados por hash e liberados apenas conforme as regras do confronto.</small><span class="tag">PROPOSTA DE MVP</span></div>
+</aside>
+<main>
+ <div class="top"><div><div class="eyebrow">Ambiente interativo / prova de conceito</div><h1 id="title">Pesquisa como estratégia</h1><p class="desc" id="sub">Movimentos animados em geometria 3D; evidências demonstrativas, sem API Gemini.</p></div><div class="chip" id="statusChip">CENA 3D · CHESS</div></div>
+ <div class="board-card"><canvas id="stage" aria-label="Cena tridimensional demonstrativa de Xadrez ou Go"></canvas><div class="viewbar"><span id="turnLabel">BRANCAS · abertura</span><span id="engineLabel">WebGL · 3D real</span></div><div class="coord" id="moveLabel">Selecione uma estratégia e avance os movimentos.</div><div class="view-help">Arraste para girar · roda para zoom</div></div>
+ <div class="controls"><button class="btn primary" id="next" onclick="step()">▶ Próximo movimento</button><button class="btn" id="auto" onclick="toggleAuto()">⟳ Reproduzir</button><button class="btn secondary" onclick="resetScene()">↺ Reiniciar</button><button class="btn secondary" onclick="cameraReset()">◉ Centralizar câmera</button><button class="btn secondary" id="synthesis" onclick="showFusion()" style="display:none">◇ Síntese FUSION</button><span class="counter" id="counter">0 / 3 movimentos</span></div>
+ <div class="info"><div class="metric"><b id="metric1">3</b><small id="m1label">Movimentos planejados</small></div><div class="metric"><b id="metric2">2</b><small id="m2label">Agentes ilustrados</small></div><div class="metric"><b id="metric3">100%</b><small id="m3label">Artefatos rotulados como simulação</small></div></div>
+</main>
+<aside class="right"><div class="hd">Evidência em destaque</div><div class="section"><div class="status"><span class="dot"></span><span id="evidenceStatus">Demonstração visual — sem API Gemini</span></div><h2 id="evidenceTitle">O jogo guia a pesquisa</h2><p id="evidenceText">Cada movimento representa uma decisão rastreável. No produto real, toda alegação deverá apontar para uma fonte e um trecho verificável.</p></div><div class="hd">Artefatos / peças</div><div class="source"><b id="source1">Fonte A · estudo primário</b><small id="sourceDetail1">Exemplo demonstrativo: evidências associadas à tese inicial. Nenhum documento externo foi consultado nesta tela.</small><span class="tag">DEMONSTRATIVO</span></div><div class="source"><b id="source2">Fonte B · contestação</b><small id="sourceDetail2">Exemplo demonstrativo: argumentos alternativos e limites da inferência.</small><span class="tag">DEMONSTRATIVO</span></div><div class="hd">Linha do tempo imutável (conceito)</div><div id="log" class="log"><div class="event"><em>00</em> Estado inicial registrado.</div></div><div class="foot">PROTÓTIPO VISUAL OFFLINE. Todos os 6 cenários de modo × jogo usam sequências demonstrativas. FUSION alterna ramos sem combinar estados. Não há validação completa de regras, consulta à internet, execução de agentes ou verificação factual neste arquivo. O MVP especificado na documentação implementará essas capacidades separadamente.</div></aside>
+</div>
+<script>
+'use strict';
+// Motor gráfico WebGL próprio e sem dependências de terceiros: malhas 3D, câmera orbital e interpolação animada.
+const canvas=document.getElementById('stage'), nativeGL=canvas.getContext('webgl',{antialias:true,alpha:false});
+const fallback=!nativeGL;
+const gl=nativeGL||new Proxy({getShaderParameter:()=>true,getProgramParameter:()=>true,getAttribLocation:()=>0,createShader:()=>({}),createProgram:()=>({}),createBuffer:()=>({}),getUniformLocation:()=>({})},{get:(obj,key)=>key in obj?obj[key]:(()=>{})});
+let fallbackEl=null,fallbackNodes=new Map();
+if(fallback){
+ canvas.style.display='none';
+ document.getElementById('engineLabel').textContent='CSS 3D · compatibilidade';
+ let parent=canvas.parentElement;
+ fallbackEl=document.createElement('div');fallbackEl.id='fallbackScene';fallbackEl.style.cssText='position:absolute;width:min(510px,79%);aspect-ratio:1;left:50%;top:49%;transform:translate(-50%,-50%) perspective(900px) rotateX(30deg);transform-style:preserve-3d;background:#18252d;box-shadow:0 30px 80px #030810,0 0 0 12px #745535;border:2px solid #b59063;border-radius:5px;overflow:visible;';parent.appendChild(fallbackEl);
+}
+const VERT=`attribute vec3 p;attribute vec3 n;uniform mat4 vp;uniform mat4 model;varying vec3 fn;varying vec3 fp;void main(){vec4 q=model*vec4(p,1.0);fp=q.xyz;fn=normalize(mat3(model)*n);gl_Position=vp*q;}`;
+const FRAG=`precision mediump float;uniform vec3 color;varying vec3 fn;varying vec3 fp;void main(){vec3 L=normalize(vec3(-0.55,0.95,0.72));float lam=max(dot(normalize(fn),L),0.0);float rim=pow(1.0-max(dot(normalize(fn),normalize(vec3(0.4,0.65,1.0))),0.0),2.0);vec3 c=color*(0.41+0.59*lam)+vec3(0.065)*rim;gl_FragColor=vec4(c,1.0);}`;
+function shader(type,src){let s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
+let program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,VERT));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,FRAG));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);const loc={p:gl.getAttribLocation(program,'p'),n:gl.getAttribLocation(program,'n'),vp:gl.getUniformLocation(program,'vp'),model:gl.getUniformLocation(program,'model'),color:gl.getUniformLocation(program,'color')};gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);
+function identity(){return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]}
+function mult(a,b){let o=new Array(16).fill(0);for(let j=0;j<4;j++)for(let i=0;i<4;i++)for(let k=0;k<4;k++)o[j*4+i]+=a[k*4+i]*b[j*4+k];return o}
+function trans(x,y,z){let a=identity();a[12]=x;a[13]=y;a[14]=z;return a}
+function scale(x,y,z){let a=identity();a[0]=x;a[5]=y;a[10]=z;return a}
+function rotY(t){let c=Math.cos(t),s=Math.sin(t);return [c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1]}
+function persp(fov,asp,n,f){let k=1/Math.tan(fov/2);return [k/asp,0,0,0,0,k,0,0,0,0,(f+n)/(n-f),-1,0,0,2*f*n/(n-f),0]}
+function sub(a,b){return a.map((v,i)=>v-b[i])}function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}function dot(a,b){return a.reduce((s,v,i)=>s+v*b[i],0)}function norm(a){return a.map(x=>x/Math.max(1e-9,Math.sqrt(dot(a,a))))}
+function lookAt(eye,at){let z=norm(sub(eye,at)),x=norm(cross([0,1,0],z)),y=cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1]}
+function mesh(verts){let o={buf:gl.createBuffer(),count:verts.length/6};gl.bindBuffer(gl.ARRAY_BUFFER,o.buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);return o}
+function addTri(a,b,c,n,arr){for(let v of [a,b,c])arr.push(...v,...n)}
+function boxMesh(){let v=[],q=[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,.5,-.5],[-.5,.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]];for(let [idx,no] of [[[4,5,6,7],[0,0,1]],[[1,0,3,2],[0,0,-1]],[[0,4,7,3],[-1,0,0]],[[5,1,2,6],[1,0,0]],[[3,7,6,2],[0,1,0]],[[0,1,5,4],[0,-1,0]]]){addTri(q[idx[0]],q[idx[1]],q[idx[2]],no,v);addTri(q[idx[0]],q[idx[2]],q[idx[3]],no,v)}return mesh(v)}
+function lathe(prof,seg=18){let v=[];for(let i=0;i<prof.length-1;i++){let [r0,y0]=prof[i], [r1,y1]=prof[i+1], dy=y1-y0, dr=r1-r0;for(let j=0;j<seg;j++){let a=2*Math.PI*j/seg,b=2*Math.PI*(j+1)/seg;let p0=[r0*Math.cos(a),y0,r0*Math.sin(a)],p1=[r0*Math.cos(b),y0,r0*Math.sin(b)],p2=[r1*Math.cos(b),y1,r1*Math.sin(b)],p3=[r1*Math.cos(a),y1,r1*Math.sin(a)];let no=norm([Math.cos((a+b)/2)*dy,-dr,Math.sin((a+b)/2)*dy]);addTri(p0,p2,p1,no,v);addTri(p0,p3,p2,no,v)}}return mesh(v)}
+const cube=boxMesh();const pawn=lathe([[.3,0],[.35,.08],[.25,.16],[.19,.26],[.12,.5],[.18,.56],[.19,.6],[.13,.64],[.06,.68],[0,.68]]);const tower=lathe([[.32,0],[.34,.08],[.25,.17],[.18,.21],[.2,.78],[.29,.8],[.31,.91],[.31,.97],[.08,.99],[0,.99]]);const bishop=lathe([[.29,0],[.35,.08],[.24,.18],[.15,.27],[.20,.39],[.13,.58],[.25,.73],[.13,.9],[0,1.07]]);const queen=lathe([[.32,0],[.36,.09],[.23,.18],[.17,.29],[.14,.65],[.3,.83],[.24,.96],[.13,1.04],[0,1.09]]);const king=lathe([[.34,0],[.38,.09],[.26,.2],[.18,.32],[.15,.76],[.27,.84],[.23,.96],[.11,1.03],[0,1.07]]);const sphere=lathe(Array.from({length:15},(_,i)=>{let a=-Math.PI/2+i*Math.PI/14;return [Math.max(.002,Math.cos(a)),Math.sin(a)]}),22);
+const meshes={p:pawn,r:tower,n:bishop,b:bishop,q:queen,k:king};meshes.n=bishop;delete meshes.nothing;
+function draw(m,model,col){gl.bindBuffer(gl.ARRAY_BUFFER,m.buf);gl.enableVertexAttribArray(loc.p);gl.vertexAttribPointer(loc.p,3,gl.FLOAT,false,24,0);gl.enableVertexAttribArray(loc.n);gl.vertexAttribPointer(loc.n,3,gl.FLOAT,false,24,12);gl.uniformMatrix4fv(loc.model,false,new Float32Array(model));gl.uniform3fv(loc.color,new Float32Array(col));gl.drawArrays(gl.TRIANGLES,0,m.count)}
+function xyz(x,y,z,sc=[1,1,1]){return mult(trans(x,y,z),scale(...sc))}
+const cols={wood:[.12,.21,.26],wood2:[.15,.28,.31],light:[.59,.76,.76],dark:[.18,.39,.43],trim:[.62,.42,.2],white:[.88,.88,.79],black:[.09,.15,.21],whitego:[.94,.93,.84],blackgo:[.07,.09,.12]};
+let mode='research',game='chess',board=[],pieces=[],steps=[],stepIndex=0,animation=null,autoTimer=null,last=0,theta=0,phi=.88,radius=13.5,camTarget=[0,0,0],goSize=9;
+const chessStart=['rnbqkbnr','pppppppp','........','........','........','........','PPPPPPPP','RNBQKBNR'];const openings={queen:[['d2','d4','As brancas introduzem a tese central e reivindicam espaço para pesquisa.'],['d7','d5','O agente crítico formula um contraponto baseado em fontes alternativas.'],['c2','c4','O gambito propõe sacrificar uma premissa inicial para aprofundar a investigação.']],king:[['e2','e4','Hipótese exploratória avança primeiro.'],['e7','e5','O agente opositor responde com um argumento contrastante.'],['f2','f4','Um argumento inicial é exposto a uma refutação antecipada.']],evans:[['e2','e4','Primeiro eixo de investigação.'],['e7','e5','Contra-hipótese inicial.'],['g1','f3','Primeira verificação cruzada.'],['b8','c6','Busca por fontes alternativas.'],['f1','c4','Evidência estrutural de suporte.'],['f8','c5','Evidência rival.'],['b2','b4','Gambito estratégico: hipótese exposta ao escrutínio.']]};
+function goSeq(){return [[4,4,0],[3,4,1],[0,0,0],[4,3,1],[8,8,0],[5,4,1],[0,8,0],[4,5,1]]}
+function makeChess(){pieces=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++){let type=chessStart[r][c];if(type!=='.')pieces.push({r,c,type:type.toLowerCase(),white:type===type.toUpperCase(),alive:true,x:c-3.5,z:r-3.5});}}
+function makeGo(){pieces=[];}
+function getChess(s){let c=s.charCodeAt(0)-97,r=8-Number(s[1]);return {c,r}}
+function getMoves(){
+ const key=strategyKey();
+ if(game==='go'){
+   let seq=goSeq().map(q=>q.slice());
+   if(key==='influence')seq=seq.map(q=>[8-q[0],q[1],q[2]]);
+   if(key==='invasion')seq=seq.map(q=>[q[0],8-q[1],q[2]]);
+   if(key==='connection')seq=seq.map(q=>[8-q[0],8-q[1],q[2]]);
+   return seq.map((q,i)=>({c:q[0],r:q[1],white:!!q[2],desc:(mode==='research'?'Pesquisa de regiões: ':mode==='debate'?'Confronto de teses: ':'Auditoria de controle: ')+(i===7?'cerco espacial no Go; não é refutação factual.':'pedra representa etapa ilustrativa.')}));
+ }
+ return (openings[key]||openings.queen).map((v,i)=>({...getChess(v[0]),dest:getChess(v[1]),desc:(mode==='research'?'Pesquisa: ':mode==='debate'?'Debate: ':'Auditoria: ')+v[2],number:i+1}));
+}
+function resetScene(){if(autoTimer){clearInterval(autoTimer);autoTimer=null;document.getElementById('auto').textContent='⟳ Reproduzir';}animation=null;stepIndex=0;game==='go'?makeGo():makeChess();steps=getMoves();document.getElementById('moveLabel').textContent='Selecione uma estratégia e avance os movimentos.';document.getElementById('turnLabel').textContent=game==='go'?'PRETAS · início':'BRANCAS · início';document.getElementById('log').innerHTML='<div class="event"><em>00</em> Estado inicial registrado.</div>';if(fallback)fallbackDraw();document.getElementById('evidenceTitle').textContent='O jogo guia a investigação';document.getElementById('evidenceText').textContent='Cada movimento representa uma decisão rastreável. Nenhuma fonte externa foi consultada neste protótipo.';updateCounter();}
+function updateCounter(){document.getElementById('counter').textContent=`${stepIndex} / ${steps.length} movimentos`;document.getElementById('metric1').textContent=steps.length;}
+function addLog(text){const el=document.createElement('div');el.className='event';let em=document.createElement('em');em.textContent=String(stepIndex).padStart(2,'0');el.appendChild(em);el.appendChild(document.createTextNode(text));let log=document.getElementById('log');log.prepend(el);}
+function step(){if(animation)return;if(stepIndex>=steps.length){if(autoTimer)toggleAuto();return}let m=steps[stepIndex];stepIndex++;if(game==='go'){let p={type:'stone',white:m.white,c:m.c,r:m.r,x:m.c-4,z:m.r-4,alive:true};pieces.push(p);animation={piece:p,startX:p.x,startZ:p.z,endX:p.x,endZ:p.z,start:performance.now(),go:true};if(stepIndex===steps.length){let cap=pieces.find(x=>x.c===4&&x.r===4&&!x.white);if(cap)cap.alive=false;document.getElementById('evidenceTitle').textContent='Captura por falta de liberdades';}}else{let p=pieces.find(x=>x.alive&&x.c===m.c&&x.r===m.r);if(!p){addLog('Movimento ausente na sequência demonstrativa');return}let cap=pieces.find(x=>x.alive&&x.c===m.dest.c&&x.r===m.dest.r);if(cap)cap.alive=false;animation={piece:p,startX:p.x,startZ:p.z,endX:m.dest.c-3.5,endZ:m.dest.r-3.5,start:performance.now()};p.c=m.dest.c;p.r=m.dest.r;}document.getElementById('moveLabel').textContent=m.desc;document.getElementById('turnLabel').textContent=`TURNO ${stepIndex} · ${game==='go'?(m.white?'BRANCAS':'PRETAS'):(stepIndex%2?'BRANCAS':'PRETAS')}`;document.getElementById('evidenceText').textContent=m.desc+' Esta é uma mensagem ilustrativa, não um resultado gerado por IA.';document.getElementById('evidenceTitle').textContent=(mode==='research'?'Pesquisa':mode==='debate'?'Debate':'Auditoria')+' · movimento demonstrativo';addLog(m.desc);updateCounter();if(fallback){fallbackDraw();animation=null;}}
+function toggleAuto(){if(autoTimer){clearInterval(autoTimer);autoTimer=null;document.getElementById('auto').textContent='⟳ Reproduzir';return}if(stepIndex===steps.length)resetScene();autoTimer=setInterval(()=>{if(!animation)step();if(stepIndex>=steps.length&&!animation)toggleAuto()},1150);document.getElementById('auto').textContent='Ⅱ Pausar';}
+function strategyKey(){return mode==='research'&&document.getElementById('fusion').checked ? document.getElementById('branchSelect').value : document.getElementById('opening').value;}
+function refreshStrategies(){
+ const opening=document.getElementById('opening');opening.replaceChildren();
+ let opts=game==='go'?[['influence','Influência · cobertura ampla'],['territory','Território · aprofundamento'],['invasion','Invasão · contestação'],['connection','Conexão · relações entre fontes']]:[['queen','Gambito da Dama · equilíbrio'],['king','Gambito do Rei · exploração'],['evans','Gambito Evans · descoberta']];
+ for(let [key,label] of opts){let o=document.createElement('option');o.value=key;o.textContent=label;opening.appendChild(o);}
+ const b=document.getElementById('branchSelect');b.replaceChildren();for(let [key,label] of opts.slice(0,3)){let o=document.createElement('option');o.value=key;o.textContent=label;b.appendChild(o)};
+ document.getElementById('openingLabel').textContent=game==='go'?'Lente Go / fuseki':'Gambito / estratégia de Xadrez';
+ updateFusion();
+}
+function updateFusion(){
+ let active=mode==='research'&&document.getElementById('fusion').checked;
+ document.getElementById('branchSelect').style.display=active?'block':'none';document.getElementById('branchLabel').style.display=active?'block':'none';
+ document.getElementById('opening').disabled=active;document.getElementById('synthesis').style.display=active?'inline-block':'none';resetScene();
+}
+function showFusion(){
+ const area=document.getElementById('evidenceTitle'), detail=document.getElementById('evidenceText');
+ area.textContent='FUSION · Síntese demonstrativa de 3 ramos';
+ detail.textContent='Exemplo visual: um ramo procura evidências centrais, outro explora hipóteses e outro contesta suposições. No MVP real, o resultado agrega claims e citações, deduplica documentos e destaca contradições. Não mistura lances de diferentes posições nem valida fatos por votação. Nenhuma API foi chamada.';
+ addLog('Síntese FUSION apenas ilustrativa; ramos independentes e citações simuladas.');
+}
+function setGame(g){game=g;document.getElementById('gameSelect').value=g;refreshStrategies();setMode(mode);}
+function setMode(m){
+ mode=m;for(let [x,id] of [['research','navResearch'],['debate','navDebate'],['audit','navAudit']])document.getElementById(id).classList.toggle('active',x===m);
+ document.getElementById('title').textContent= m==='research'?'Pesquisa estratégica · '+(game==='go'?'Go':'Xadrez'):m==='debate'?'Debate de evidências · '+(game==='go'?'Go':'Xadrez'):'Auditoria rastreável · '+(game==='go'?'Go':'Xadrez');
+ document.getElementById('sub').textContent=m==='research'?'Investigue uma pergunta com diferentes perspectivas; FUSION combina resultados, não tabuleiros.':m==='debate'?'Dois lados, preparação privada e confrontos fundamentados; demonstração visual sem árbitro real.':'Mapeie controles, riscos e lacunas com evidências; pontuação de jogo é independente de veracidade.';
+ document.getElementById('statusChip').textContent=game==='go'?'CENA 3D · GO 9×9':'CENA 3D · CHESS 8×8';
+ const research=m==='research';document.getElementById('fusionLabel').style.display=research?'flex':'none';document.getElementById('synthesis').style.display=research&&document.getElementById('fusion').checked?'inline-block':'none';
+ document.getElementById('branchLabel').style.display=research&&document.getElementById('fusion').checked?'block':'none';
+ document.getElementById('branchSelect').style.display=research&&document.getElementById('fusion').checked?'block':'none';
+ document.getElementById('opening').disabled=research&&document.getElementById('fusion').checked;
+ document.getElementById('evidenceStatus').textContent='Protótipo 3D · movimentos predefinidos · sem Gemini';resetScene();
+}
+document.getElementById('opening').addEventListener('change',resetScene);
+function renderBoard(){let size=game==='go'?9:8,offset=(size-1)/2;draw(cube,xyz(0,-.15,0,[size+1,.24,size+1]),cols.wood);draw(cube,xyz(0,-.02,0,[size+.17,.05,size+.17]),cols.trim);for(let r=0;r<size;r++)for(let c=0;c<size;c++){let x=c-offset,z=r-offset;if(game==='go'){draw(cube,xyz(x,0.045,z,[.995,.075,.995]),cols.light)}else draw(cube,xyz(x,.045,z,[.99,.075,.99]),(r+c)%2?cols.dark:cols.light)}if(game==='go'){let line=.023;for(let i=0;i<9;i++){draw(cube,xyz(i-4,.095,0,[line,.012,8]),cols.wood);draw(cube,xyz(0,.095,i-4,[8,.012,line]),cols.wood)}for(let x of [-2,0,2])for(let z of [-2,0,2])draw(sphere,xyz(x,.104,z,[.05,.015,.05]),cols.wood2);}}
+function renderPiece(p,now){if(!p.alive)return;let x=p.x,z=p.z,up=0;if(animation&&animation.piece===p){let t=Math.min(1,(now-animation.start)/680),k=t*t*(3-2*t);x=animation.startX+(animation.endX-animation.startX)*k;z=animation.startZ+(animation.endZ-animation.startZ)*k;up=animation.go?(1-k)*.6:Math.sin(Math.PI*k)*.6;if(t>=1){p.x=animation.endX;p.z=animation.endZ;animation=null}}let y=.15+up;if(p.type==='stone'){draw(sphere,xyz(x,y+.095,z,[.42,.18,.42]),p.white?cols.whitego:cols.blackgo);return}let col=p.white?cols.white:cols.black;draw(meshes[p.type]||pawn,xyz(x,y,z,[.78,.78,.78]),col);if(p.type==='p'){draw(sphere,xyz(x,y+.54,z,[.17,.17,.17]),col)}if(p.type==='k'){draw(cube,xyz(x,y+.9,z,[.10,.37,.10]),col);draw(cube,xyz(x,y+1.0,z,[.27,.11,.10]),col)}if(p.type==='q'){for(let a=0;a<6;a++){let t=a*Math.PI/3;draw(sphere,xyz(x+.24*Math.cos(t),y+.79,z+.24*Math.sin(t),[.08,.08,.08]),col)}}if(p.type==='r'){for(let a=0;a<4;a++){let t=a*Math.PI/2;draw(cube,xyz(x+.21*Math.cos(t),y+.78,z+.21*Math.sin(t),[.16,.17,.16]),col)}}if(p.type==='n'){draw(cube,mult(trans(x+.04,y+.66,z-.02),mult(rotY(.35),scale(.25,.36,.30))),col);draw(sphere,xyz(x+.14,y+.84,z,[.15,.16,.15]),col)}}
+function cameraEye(){return [radius*Math.sin(theta)*Math.sin(phi),radius*Math.cos(phi),radius*Math.cos(theta)*Math.sin(phi)]}
+function fallbackDraw(){if(!fallback)return;let n=game==='go'?9:8;
+ if(fallbackEl.dataset.game!==game){
+   fallbackEl.replaceChildren();fallbackNodes.clear();fallbackEl.dataset.game=game;fallbackEl.style.background=game==='go'?'#c6a16a':'#18252d';
+   for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+     let cell=document.createElement('div');cell.style.cssText=`position:absolute;width:${100/n}%;height:${100/n}%;left:${c*100/n}%;top:${r*100/n}%;${game==='go'?'border-right:1px solid #766038;border-bottom:1px solid #766038;':`background:${(r+c)%2?'#1f4150':'#becdc4'};`}`;fallbackEl.appendChild(cell);
+   }
+ }
+ const symbols={p:['♙','♟'],r:['♖','♜'],n:['♘','♞'],b:['♗','♝'],q:['♕','♛'],k:['♔','♚']};
+ for(let [piece,node] of fallbackNodes){if(!piece.alive||!pieces.includes(piece)){node.remove();fallbackNodes.delete(piece)}}
+ for(let p of pieces){if(!p.alive)continue;let item=fallbackNodes.get(p);if(!item){
+   item=document.createElement('div');item.textContent=p.type==='stone'?'':(symbols[p.type]||symbols.p)[p.white?0:1];
+   item.style.cssText=`position:absolute;z-index:${20+p.r};width:${85/n}%;height:${85/n}%;transform:translate(-50%,-50%) rotateX(-30deg);display:grid;place-items:center;font-size:${game==='go'?16:Math.max(18,320/n)}px;line-height:1;filter:drop-shadow(2px 4px 2px #0009);color:${p.white?'#fff9db':'#16232b'};text-shadow:${p.white?'1px 1px 2px #17212a':'1px 1px 1px #c2a16b'};transition:top .65s ease,left .65s ease;`;
+   if(p.type==='stone')item.style.cssText+=`border-radius:50%;background:radial-gradient(circle at 35% 25%,${p.white?'#fff':'#5c656a'},${p.white?'#c2c0b2':'#06080b'});box-shadow:inset 1px 2px 4px #fff4,2px 4px 3px #0007;`;
+   item.addEventListener('click',()=>{document.getElementById('evidenceTitle').textContent=p.type==='stone'?'Pedra selecionada':'Peça selecionada';document.getElementById('evidenceText').textContent='No MVP, esta peça terá alegação, fonte, trecho, hash e verificação. Esta visualização usa apenas dados demonstrativos.'});
+   fallbackEl.appendChild(item);fallbackNodes.set(p,item);
+ }
+ item.style.left=`${(p.c+.5)/n*100}%`;item.style.top=`${(p.r+.5)/n*100}%`;
+ }
+}
+
+function render(now){if(fallback){return}const dpr=Math.min(devicePixelRatio||1,2),w=Math.floor(canvas.clientWidth*dpr),h=Math.floor(canvas.clientHeight*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}gl.clearColor(.055,.097,.14,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);let eye=cameraEye(),vp=mult(persp(Math.PI/4,w/h,.1,100),lookAt(eye,camTarget));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));renderBoard();for(let p of pieces)renderPiece(p,now);requestAnimationFrame(render)}
+let dragging=false,px=0,py=0,dragDist=0;canvas.addEventListener('pointerdown',e=>{dragging=true;dragDist=0;px=e.clientX;py=e.clientY;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointermove',e=>{if(!dragging)return;let dx=e.clientX-px,dy=e.clientY-py;dragDist+=Math.abs(dx)+Math.abs(dy);theta-=dx*.008;phi=Math.max(.18,Math.min(1.45,phi+dy*.006));px=e.clientX;py=e.clientY});canvas.addEventListener('pointerup',()=>{dragging=false});canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(8.5,Math.min(21,radius+e.deltaY*.012))},{passive:false});function cameraReset(){theta=0;phi=.88;radius=13.5}
+// Click on board maps a camera ray to the y=0.1 plane, and reveals a demonstrative artifact.
+canvas.addEventListener('click',e=>{if(dragDist>8)return;let rect=canvas.getBoundingClientRect(),sx=(e.clientX-rect.left)/rect.width*2-1,sy=1-(e.clientY-rect.top)/rect.height*2;let eye=cameraEye(),forward=norm(sub([0,0,0],eye)),right=norm(cross(forward,[0,1,0])),up=cross(right,forward),t=Math.tan(Math.PI/8),ratio=rect.width/rect.height,dir=norm(forward.map((x,i)=>x+right[i]*sx*ratio*t+up[i]*sy*t));let distance=(.1-eye[1])/dir[1];if(distance<=0)return;let hit=eye.map((x,i)=>x+dir[i]*distance),size=game==='go'?9:8,off=(size-1)/2,c=Math.round(hit[0]+off),r=Math.round(hit[2]+off);if(c<0||r<0||c>=size||r>=size)return;let p=pieces.find(z=>z.alive&&z.c===c&&z.r===r);document.getElementById('evidenceTitle').textContent=p?(game==='go'?'Pedra e alegação associada':`Peça selecionada: ${p.white?'branca':'preta'}`):'Interseção / casa selecionada';document.getElementById('evidenceText').textContent=p?'Espaço reservado para identificador do artefato, hash, origem, trecho citado e julgamento. Conteúdo exclusivamente demonstrativo.':'Esta célula ainda não possui evidência. No produto real, selecione a alegação vinculada à posição.';});
+refreshStrategies();setMode('research');if(!fallback)requestAnimationFrame(render);
+</script></body></html>
