@@ -233,3 +233,4 @@ def test_pertinent_verified_evidence_authorizes_capture():
 
     assert res["verdict"] == "CAPTURE_AUTHORIZED"
     assert "Refutação demonstrada" in res["justification"]
+
