@@ -198,3 +198,18 @@ Este documento estabelece o mapeamento formal de rastreabilidade entre os requis
 | `E18` | Rastreabilidade de confrontos no histórico individual de cada peça | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_full_chess_epistemic_match` | **PASS** |
 | `E19` | Gravação de `clash_info` no payload de auditoria do Event Store | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_full_chess_epistemic_match` | **PASS** |
 | `E20` | Partida completa de Xadrez Epistêmico gerando conclusão dual auditável | `tests/integration/test_v25_epistemic_chess_swot.py::test_v25_full_chess_epistemic_match` | **PASS** |
+
+
+---
+
+## 8. Suíte de Relevância Temática, Arbitragem Epistêmica e Correção 2D v2.5.1 (`R01` a `R07`)
+
+| ID | Cenário de Teste | Arquivo / Função | Resultado |
+| :--- | :--- | :--- | :---: |
+| `R01` | Rejeição de templates de TI (MTTR, supply chain, RBAC) em perguntas políticas/eleitorais | `tests/integration/test_v25_1_thematic_relevance.py::test_political_investigation_rejects_it_templates_and_decomposes_electoral_dimensions` | **PASS** |
+| `R02` | Decomposição analítica em dimensões políticas reais com confiança calibrada honesta | `tests/integration/test_v25_1_thematic_relevance.py::test_political_investigation_rejects_it_templates_and_decomposes_electoral_dimensions` | **PASS** |
+| `R03` | Citação verdadeira porém descontextualizada (Temer 2016 vs Eleição 2030) não autoriza captura | `tests/integration/test_v25_1_thematic_relevance.py::test_irrelevant_true_quote_cannot_authorize_capture` | **PASS** |
+| `R04` | Confronto entre duas hipóteses sem prova documental resulta em `CONFRONTATION_INCONCLUSIVE` | `tests/integration/test_v25_1_thematic_relevance.py::test_two_unsupported_hypotheses_produce_inconclusive_verdict` | **PASS** |
+| `R05` | Evidência verificada e comprovadamente pertinente ao tema autoriza captura legítima | `tests/integration/test_v25_1_thematic_relevance.py::test_pertinent_verified_evidence_authorizes_capture` | **PASS** |
+| `R06` | Centralização simétrica do tabuleiro 2D, ocultação de `#stageContainer` e eliminação de coordenadas fantasmas | `scratch/verify_v25_1_e2e_cdp.py` (Passo 4) | **PASS** |
+| `R07` | Correspondência rigorosa 1:1 entre símbolos vetoriais Cburnett renderizados e o FEN do motor | `scratch/verify_v25_1_e2e_cdp.py` (Passo 5) | **PASS** |

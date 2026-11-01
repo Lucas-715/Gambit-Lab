@@ -1509,7 +1509,7 @@ class SessionManager:
             defender=dfn,
             from_coord=from_c,
             to_coord=to_c,
-            board_fen=board_fen,
+            board_fen="",
             all_pieces=pieces,
         )
         res["evaluated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()

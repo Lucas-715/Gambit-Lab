@@ -6,6 +6,7 @@ Avalia a colisão entre subteses e evidências autorizadas sem pontuação arbit
 """
 import hashlib
 import json
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 import chess
@@ -37,6 +38,32 @@ class SemanticClashEngine:
         raw = f"{attacker.get('piece_id')}:{from_coord}|{att_claim}|{att_refs}=>{defender.get('piece_id')}:{to_coord}|{def_claim}|{def_refs}"
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
+    _compute_confrontation_hash = _compute_cache_key
+
+    def _check_relevance(self, claim_a: str, claim_b: str, quote: str, title: str) -> bool:
+        """Verifica se a evidência apresentada guarda pertinência temática real com o confronto."""
+        if not quote and not title:
+            return False
+        combined_claim = f"{claim_a} {claim_b}".lower()
+        stop_words = {
+            "de", "a", "o", "que", "e", "do", "da", "em", "um", "para", "é", "com", "não",
+            "uma", "os", "no", "se", "na", "por", "mais", "as", "dos", "como", "mas", "foi",
+            "ao", "ele", "das", "tem", "à", "seu", "sua", "ou", "ser", "quando", "muito", "há",
+            "nos", "já", "está", "eu", "também", "só", "pelo", "pela", "até", "isso", "ela",
+            "entre", "era", "depois", "sem", "mesmo", "aos", "ter", "seus", "quem", "nas", "me",
+            "esse", "eles", "estão", "você", "tinha", "foram", "essa", "num", "nem", "suas",
+            "meu", "às", "minha", "têm", "numa", "pelos", "elas", "havia", "seja", "qual",
+            "será", "seria", "sobre", "referente", "hipótese", "aberta", "aguardando",
+            "fundamentação", "documental", "investigar"
+        }
+        words = [re.sub(r'[^\w]', '', w) for w in combined_claim.split() if len(w) >= 3]
+        substantive = [w for w in words if w and w not in stop_words]
+        evidence_text = f"{title} {quote}".lower()
+        if not substantive:
+            return True
+        matches = sum(1 for w in substantive if w in evidence_text)
+        return matches >= 1
+
     def evaluate_confrontation(
         self,
         session_id: str,
@@ -44,27 +71,26 @@ class SemanticClashEngine:
         defender: Dict[str, Any],
         from_coord: str,
         to_coord: str,
-        board_fen: Optional[str] = None,
+        board_fen: str = "",
         all_pieces: Optional[List[Dict[str, Any]]] = None,
-        force_fresh: bool = False,
     ) -> Dict[str, Any]:
         """
-        Executa a sequência de 4 etapas de arbitragem semântica:
-        1. Validação física/geométrica (se board_fen fornecido).
-        2. Identificação das alegações e fontes autorizadas.
-        3. Arbitragem semântica com verificação do Invariante do Rei.
-        4. Emissão do veredito explícito e gravação em cache.
+        Avalia o confronto semântico entre a peça atacante e a peça defensora (v2.5.1).
+        Regras fundamentais:
+        1. SOURCE_VERIFIED != CLAIM_SUPPORTED.
+        2. Duas hipóteses não comprovadas resultam em CONFRONTATION_INCONCLUSIVE.
+        3. Citação verdadeira fora de contexto eleitoral/investigado não autoriza captura.
+        4. O Rei só pode ser capturado após todas as outras peças serem eliminadas (RN-X04).
         """
-        # Checa cache
         cache_key = self._compute_cache_key(attacker, defender, from_coord, to_coord)
         sess_cache = self._cache.setdefault(session_id, {})
-        if not force_fresh and cache_key in sess_cache:
+        if cache_key in sess_cache:
             res = dict(sess_cache[cache_key])
             res["cached"] = True
             return res
 
-        # Etapa 1: Validação física se FEN fornecido
-        if board_fen:
+        # Etapa 1: Validação de Movimento Físico (se FEN e tabuleiro fornecidos)
+        if board_fen and from_coord and to_coord:
             try:
                 board = chess.Board(board_fen)
                 from_sq = chess.parse_square(from_coord.lower())
@@ -140,24 +166,41 @@ class SemanticClashEngine:
         att_status = attacker.get("epistemic_status", "HYPOTHESIS")
         def_status = defender.get("epistemic_status", "HYPOTHESIS")
 
-        # Critérios Epistêmicos Formais:
-        # 1. Se atacante tem citação literal verificada (SOURCE_VERIFIED/SUPPORTED) e defensora NÃO TEM
-        #    -> Refutação autorizada (evidência pontual supera mera hipótese).
-        # 2. Se defensora tem citação literal verificada e atacante NÃO TEM
+        # Critérios Epistêmicos Formais Rigorosos (v2.5.1):
+        # 1. Se NENHUM tem fonte verificada (ambas são hipóteses abertas sem suporte probatório):
+        #    -> Confronto inconclusivo; duas alegações sem prova documental não produzem vitória/refutação.
+        # 2. Se atacante tem citação verificada e defensora NÃO TEM:
+        #    -> Valida se a evidência é relevante e não apenas uma citação desconexa. Se irrelevante -> INCONCLUSIVE.
+        # 3. Se defensora tem citação verificada e atacante NÃO TEM:
         #    -> Defesa bem-sucedida (hipótese atacante não derruba fato documental verificado).
-        # 3. Se AMBOS têm fontes verificadas:
-        #    -> Compara solidez, consistência interna e amplitude da tese.
-        # 4. Se NENHUM tem fontes verificadas:
-        #    -> Confronto inconclusivo (não há substância empírica para decretar refutação).
+        # 4. Se AMBOS têm fontes verificadas:
+        #    -> Compara pertinência e solidez probatória comparada.
 
-        if att_ver and not def_ver:
-            verdict: ClashVerdict = "CAPTURE_AUTHORIZED"
-            att_title = att_refs[0].get("title", "Fonte primária") if att_refs else "Fonte primária"
+        if not att_ver and not def_ver:
+            verdict: ClashVerdict = "CONFRONTATION_INCONCLUSIVE"
             justification = (
-                f"Refutação fundamentada: {attacker.get('label', 'Peça atacante')} apresentou evidência com "
-                f"citação literal verificada em '{att_title}' ({att_conf:.2f}), superando a alegação "
-                f"não comprovada de {defender.get('label', 'Peça defensora')}."
+                f"Confronto inconclusivo: ambas as alegações mantêm status {att_status}/{def_status} "
+                "sem citações documentais verificadas no cofre para sustentar refutação. Duas hipóteses "
+                "sem suporte documental não autorizam a captura de uma peça."
             )
+        elif att_ver and not def_ver:
+            att_title = att_refs[0].get("title", "Fonte primária") if att_refs else "Fonte primária"
+            att_quote = att_refs[0].get("quote_text", "") if att_refs else ""
+            is_rel = self._check_relevance(attacker.get("claim", ""), defender.get("claim", ""), att_quote, att_title)
+            if not is_rel:
+                verdict = "CONFRONTATION_INCONCLUSIVE"
+                justification = (
+                    f"Confronto inconclusivo: a evidência apresentada por {attacker.get('label')} "
+                    f"('{att_title}') não possui relevância temática demonstrada para refutar a "
+                    f"alegação de {defender.get('label')}. Citação verdadeira em contexto não correlato não autoriza refutação."
+                )
+            else:
+                verdict = "CAPTURE_AUTHORIZED"
+                justification = (
+                    f"Refutação demonstrada: {attacker.get('label', 'Peça atacante')} apresentou evidência documental "
+                    f"pertinente e verificada em '{att_title}' ({att_conf:.2f}), superando a hipótese "
+                    f"não comprovada de {defender.get('label', 'Peça defensora')}."
+                )
         elif def_ver and not att_ver:
             verdict = "DEFENSE_SUCCESSFUL"
             def_title = def_refs[0].get("title", "Documento oficial") if def_refs else "Documento oficial"
@@ -166,15 +209,34 @@ class SemanticClashEngine:
                 f"literal verificada em '{def_title}' ({def_conf:.2f}). A contestação de {attacker.get('label')} não "
                 "apresentou evidência documental correspondente para refutá-la."
             )
-        elif att_ver and def_ver:
-            # Ambos têm fontes verificadas: avalia diferencial de fundamentação
-            if att_conf >= def_conf + 0.15:
+        else:
+            # Ambos têm fontes verificadas
+            att_title = att_refs[0].get("title", "") if att_refs else ""
+            att_quote = att_refs[0].get("quote_text", "") if att_refs else ""
+            def_title = def_refs[0].get("title", "") if def_refs else ""
+            def_quote = def_refs[0].get("quote_text", "") if def_refs else ""
+            is_att_rel = self._check_relevance(attacker.get("claim", ""), defender.get("claim", ""), att_quote, att_title)
+            is_def_rel = self._check_relevance(defender.get("claim", ""), attacker.get("claim", ""), def_quote, def_title)
+
+            if is_att_rel and not is_def_rel:
+                verdict = "CAPTURE_AUTHORIZED"
+                justification = (
+                    f"Refutação por pertinência: {attacker.get('label')} apresentou evidência diretamente correlata "
+                    f"({att_conf:.2f}), enquanto a referência de {defender.get('label')} mostrou-se descontextualizada."
+                )
+            elif is_def_rel and not is_att_rel:
+                verdict = "DEFENSE_SUCCESSFUL"
+                justification = (
+                    f"Defesa sustentada: {defender.get('label')} apresentou evidência diretamente pertinente ao confronto "
+                    f"({def_conf:.2f}), resistindo à citação descontextualizada de {attacker.get('label')}."
+                )
+            elif att_conf >= def_conf + 0.15:
                 verdict = "CAPTURE_AUTHORIZED"
                 justification = (
                     f"Refutação demonstrada: ambas possuem fontes verificadas, mas a fundamentação contextual de "
                     f"{attacker.get('label')} ({att_conf:.2f}) supera a sustentação de {defender.get('label')} ({def_conf:.2f})."
                 )
-            elif def_conf >= att_conf + 0.10:
+            elif def_conf >= att_conf + 0.05:
                 verdict = "DEFENSE_SUCCESSFUL"
                 justification = (
                     f"Defesa resistente: {defender.get('label')} possui solidez probatória comprovada ({def_conf:.2f}) "
@@ -186,13 +248,6 @@ class SemanticClashEngine:
                     f"Confronto inconclusivo: ambas as alegações possuem evidências verificadas de peso equivalente "
                     f"({att_conf:.2f} vs {def_conf:.2f}). As perspectivas coexistem sem refutação categórica."
                 )
-        else:
-            # Nenhum tem fonte verificada
-            verdict = "CONFRONTATION_INCONCLUSIVE"
-            justification = (
-                f"Confronto preliminar sem comprovação documental: ambas as alegações mantêm status {att_status}/{def_status} "
-                "sem citações literais verificadas no cofre para sustentar refutação factual definitiva."
-            )
 
         result = {
             "confrontation_id": f"clash_{cache_key[:12]}",

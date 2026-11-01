@@ -253,3 +253,30 @@ Em cumprimento integral à Reengenharia Funcional v2.5 para consolidar uma genu�
   - `nocturne_v25_piece_reachability_3d.png`
   - `nocturne_v25_confrontation_modal.png`
   - `nocturne_v25_go_swot_matrix.png`
+
+
+---
+
+## 12. Relevância Temática, Arbitragem Epistêmica e Correção Visual 2D v2.5.1 (Resoluções R01–R03)
+
+Em resposta à auditoria de qualidade epistêmica e usabilidade visual, a versão **v2.5.1** resolveu os três problemas prioritários identificados:
+
+| ID | Problema Auditado | Causa Raiz Identificada | Resolução Implementada | Evidência / Teste |
+|---|---|---|---|---|
+| **R01** | Subteses Desconexas e Fabricadas (Templates de TI em Pergunta Eleitoral) | O gerador aplicava termos fixos de TI (MTTR, supply chain, segregação de privilégios) e forçava 48% de confiança idêntico em todas as 32 peças. | Implementado classificador dinâmico de domínio (`_detect_topic_domain`). Para temas eleitorais (ex.: "Renan Santos será presidente do Brasil em 2030?"), as subteses são decompostas em dimensões políticas reais (candidatura, alianças, eleitoral, competitividade, pesquisas). Peças sem fontes são honestamente rotuladas como hipóteses investigáveis abertas com confiança calibrada entre 0.18 e 0.27. | `test_political_investigation_rejects_it_templates_and_decomposes_electoral_dimensions` (**PASS**) |
+| **R02** | Arbitragem Epistêmica Frouxa (Citações Irrelevantes Autorizando Captura) | O árbitro tratava `SOURCE_VERIFIED` como refutação automática, permitindo que uma citação verdadeira sobre 2016 (Temer) autorizasse captura em tema de 2030. | Implementada verificação de pertinência substantiva (`_check_relevance`). Duas hipóteses sem suporte probatório resultam em `CONFRONTATION_INCONCLUSIVE` (captura negada). Citações verdadeiras porém descontextualizadas retornam `CONFRONTATION_INCONCLUSIVE` mantendo o defensor no tabuleiro. | `test_irrelevant_true_quote_cannot_authorize_capture`, `test_two_unsupported_hypotheses_produce_inconclusive_verdict`, `test_pertinent_verified_evidence_authorizes_capture` (**PASS**) |
+| **R03** | Tabuleiro 2D Quebrado (Deformação de Layout e Coordenadas Fantasmas) | `#stageContainer` mantinha `display: flex` em modo 2D dentro da `.stage` flexbox, comprimindo `#board2D` para a direita enquanto `#stageCoordsOverlay` continuava desenhando números no vazio. | `#stageContainer` é estritamente ocultado com `display: none` em 2D. `#stageCoordsOverlay` é suprimido e limpo. `#board2D` centralizado simetricamente (`margin: 0 auto;`). Alinhamento 1:1 rigorosamente verificado entre peças SVG e FEN canônico. | `verify_v25_1_e2e_cdp.py` Passos 4 e 5, `nocturne_v25_1_2d_centered_electoral.png` (**PASS**) |
+
+### Resultados Consolidados v2.5.1
+- **Suíte Pytest Completa**: **104 testes aprovados (0 falhas, 0 erros)**.
+  - 21 testes unitários (`python-chess`, `GoEngine9x9`, `EventStore`, `Fusion`)
+  - 8 testes v2.5 (`RBAC`, `SWOT`, `King Invariant`, `Confrontos`)
+  - 4 novos testes v2.5.1 de pertinência e arbitragem epistêmica
+  - 17 testes de Research Match v2.2
+  - 7 testes de Auditoria Epistêmica v2.3
+  - 24 testes de Reengenharia Nocturne v2.1
+  - 23 testes de isolamento e endpoints
+- **Validação E2E com CDP (Chrome Headless)**: 7/7 verificações aprovadas com 3 novas telas de alta resolução:
+  - `nocturne_v25_1_2d_centered_electoral.png` (tabuleiro 2D perfeitamente centralizado com símbolos Cburnett e sem coordenadas fantasmas)
+  - `nocturne_v25_1_confrontation_inconclusive.png` (modal de confronto argumentativo com veredito `CONFRONTO INCONCLUSIVO` para duas hipóteses)
+  - `nocturne_v25_1_3d_electoral.png` (apresentação 3D da partida eleitoral sem emojis)

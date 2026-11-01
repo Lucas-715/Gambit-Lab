@@ -500,24 +500,24 @@ class PlayMixin:
                 "id": att["piece_id"] if att else "unknown",
                 "role": att["role"] if att else "",
                 "label": att["label"] if att else "",
-                "claim_id": att.get("claim_id") or (att["piece_id"] if att else ""),
+                "claim_id": (att.get("claim_id") or att["piece_id"]) if att else "",
                 "claim_statement": att["claim"] if att else "",
             },
             opponent={
                 "piece_id": cap["piece_id"],
                 "role": cap["role"],
                 "label": cap["label"],
-                "claim_id": cap.get("claim_id") or cap["piece_id"],
-                "claim_statement": cap["claim"],
+                "claim_id": (cap.get("claim_id") or cap["piece_id"]) if cap else "",
+                "claim_statement": cap["claim"] if cap else "",
             } if (is_cap and cap) else None,
             evidence={
-                "attacker_artifact_ids": [a.get("artifact_id") for a in (att.get("supporting_artifacts") or []) if a.get("artifact_id")],
+                "attacker_artifact_ids": [a.get("artifact_id") for a in (att.get("supporting_artifacts") or []) if a.get("artifact_id")] if att else [],
                 "defender_artifact_ids": [a.get("artifact_id") for a in (cap.get("supporting_artifacts") or []) if a.get("artifact_id")] if (is_cap and cap) else [],
                 "quotes": [quote_txt] if quote_txt else [],
                 "source_status": "SOURCE_VERIFIED" if quote_txt else "UNVERIFIED",
             },
             argument_verdict={
-                "status": (clash_info.get("verdict") if clash_info else "CAPTURE_AUTHORIZED") if is_cap else att.get("epistemic_status", "SOURCE_VERIFIED"),
+                "status": (clash_info.get("verdict") if clash_info else "CAPTURE_AUTHORIZED") if is_cap else (att.get("epistemic_status", "SOURCE_VERIFIED") if att else "UNVERIFIED"),
                 "reason": (
                     (clash_info.get("justification") if clash_info else "Captura autorizada por refutação documental.")
                     if is_cap

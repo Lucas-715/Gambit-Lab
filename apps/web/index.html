@@ -1529,10 +1529,11 @@ body.star-motion-paused #space {
 .board-frame-2d {
   display: none;
   width: 100%;
-  min-height: 480px;
+  min-height: 468px;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 12px;
+  margin: 0 auto;
 }
 .board-2d-inner {
   display: flex;
@@ -3934,10 +3935,24 @@ function setViewMode(v) {
   viewMode = v;
   document.getElementById('btn3D').classList.toggle('active', v === '3d');
   document.getElementById('btn2D').classList.toggle('active', v === '2d');
-  document.getElementById('stage').style.display = v === '3d' ? 'block' : 'none';
-  document.getElementById('board2D').style.display = v === '2d' ? 'flex' : 'none';
-  if (v === '2d') render2DBoard();
-  else requestAnimationFrame(render3DScene);
+
+  const stageContainer = document.getElementById('stageContainer');
+  const board2D = document.getElementById('board2D');
+  if (stageContainer) stageContainer.style.display = (v === '3d' ? 'flex' : 'none');
+  if (board2D) board2D.style.display = (v === '2d' ? 'flex' : 'none');
+
+  const sceneNote = document.getElementById('sceneNote');
+  if (sceneNote) {
+    sceneNote.textContent = (v === '3d')
+      ? 'Arraste para orbitar em 3D · Coordenadas sincronizadas · Clique nas casas para inspecionar'
+      : 'Visão 2D Vetorial Acessível · Clique nas casas para inspecionar dossiês e confrontos';
+  }
+
+  if (v === '2d') {
+    render2DBoard();
+  } else {
+    requestAnimationFrame(render3DScene);
+  }
 }
 
 function inspectCell(c, r, label) {
@@ -5388,6 +5403,11 @@ function updateBoardCoordinatesLabels() {
 function draw3DCoordinates(vp, width, height, size, offset) {
   const ovCanvas = document.getElementById('stageCoordsOverlay');
   if (!ovCanvas) return;
+  if (viewMode !== '3d') {
+    const ctx = ovCanvas.getContext('2d');
+    ctx.clearRect(0, 0, ovCanvas.width, ovCanvas.height);
+    return;
+  }
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = Math.max(1, Math.floor(ovCanvas.clientWidth * dpr));
   const h = Math.max(1, Math.floor(ovCanvas.clientHeight * dpr));

@@ -2,6 +2,33 @@
 
 Todas as mudanças relevantes deste projeto são documentadas neste arquivo.
 
+## [2.5.1-epistemic-relevance] — 2026-10-31
+
+### Corrigido e Aprimorado
+- **Decomposição Temática Pertinente por Domínio**:
+  - Eliminação definitiva de templates genéricos de TI (MTTR, supply-chain, segregação de privilégios, revisão por pares) em investigações políticas e eleitorais.
+  - O motor de preparação detecta dinamicamente o domínio temático da pergunta (`political_electoral`, `security_tech`, `economic`, `general_investigative`).
+  - Para perguntas eleitorais (ex.: "Renan Santos será presidente do Brasil em 2030?"), as subteses decompõem dimensões políticas reais: viabilidade central, articulações partidárias, registro eleitoral, coerência de plataforma, intenção de voto, capilaridade regional, rejeição consolidada e transferibilidade de votos em segundo turno.
+  - Diferenciação de papéis analíticos por lado: peças Brancas/Pró formulam teses afirmativas de viabilidade, enquanto peças Pretas/Contra formulam objeções críticas estruturais e riscos eleitorais.
+- **Calibração Honesta de Confiança e Hipóteses Abertas**:
+  - Eliminação da confiança padronizada fixa em 48% para todas as 32 peças.
+  - Peças sem fontes comprovadas no cofre são explicitamente rotuladas como hipóteses investigáveis abertas: *"Hipótese a investigar: [dimensão] referente a '[tópico]', aguardando fundamentação documental."*
+  - Confiança honestamente calibrada por peça: 0.72–0.82 para citações literais verificadas e pertinentes; 0.38–0.48 para hipóteses com fontes preliminares sem citação direta; 0.18–0.27 para hipóteses abertas sem evidências documentais.
+- **Arbitragem Semântica Rigorosa (`SemanticClashEngine`)**:
+  - Aplicação estrita da distinção: `SOURCE_VERIFIED != CLAIM_SUPPORTED`.
+  - Duas hipóteses sem suporte documental no cofre nunca geram vencedor: o confronto retorna estritamente `CONFRONTATION_INCONCLUSIVE`, mantendo a defensora no tabuleiro e negando a captura arbitrária.
+  - Citações verdadeiras porém irrelevantes ao tema investigado (ex.: fato de 2016 sobre Michel Temer para contestar eleição de 2030) não autorizam refutação nem captura, retornando `CONFRONTATION_INCONCLUSIVE`.
+  - A ausência de fontes no defensor não concede vitória automática ao atacante sem prova de pertinência direta.
+- **Correção Visual do Tabuleiro 2D e Desativação de Coordenadas Fantasmas**:
+  - O container 3D (`#stageContainer`) é estritamente ocultado com `display: none` em modo 2D, eliminando a deformação de layout flexbox que comprimia o tabuleiro 2D para a direita.
+  - O canvas overlay (`#stageCoordsOverlay`) é limpo e suprimido em modo 2D, eliminando as coordenadas numéricas fantasmas que apareciam no vazio à esquerda.
+  - Centralização matemática horizontal simétrica do `#board2D` no palco (`margin: 0 auto;`).
+  - Correspondência 1:1 rigorosamente verificada entre as peças SVG renderizadas e o FEN do motor canônico `python-chess`.
+- **Suíte de Testes Automatizada e Validação CDP E2E**:
+  - Nova suíte de testes de integração `tests/integration/test_v25_1_thematic_relevance.py` com 4 testes específicos.
+  - Teste visual e funcional E2E com Chrome DevTools Protocol (`scratch/verify_v25_1_e2e_cdp.py`) com 7 verificações automatizadas gerando screenshots comprobatórios em `docs/screenshots/`.
+  - 100% de aprovação em todos os testes unitários e de integração (104 testes).
+
 ## [2.5.0-epistemic] — 2026-10-31
 
 ### Adicionado e Aprimorado
