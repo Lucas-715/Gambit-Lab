@@ -288,4 +288,4 @@ Gambit-Lab/
 
 ## Licença e Direitos Autorais
 
-Projeto idealizado e desenvolvido por **Lucas** para pesquisa aplicada em sistemas multiagentes verificáveis, arquitetura de software e demonstração de portfólio. Todos os direitos reservados ao autor.
+Projeto idealizado e desenvolvido por **Lucas** para pesquisa aplicada em sistemas multiagentes verificáveis, arquitetura de software. Todos os direitos reservados ao autor.
