@@ -3138,7 +3138,7 @@ function handleSquareClick(c, r, sq) {
     selectPieceAndReachability(p.piece_id, sq);
   } else {
     // Limpa seleção se clicou no vazio
-    if (selectedPieceId && (!targetOpp)) {
+    if (selectedPieceId) {
       selectedPieceId = null;
       selectedPieceCoord = null;
       selectedPieceReachability = null;
