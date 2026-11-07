@@ -39,9 +39,11 @@ def _centrality(square: int) -> float:
 
 
 class ChessPlayer:
-    def __init__(self, seed: str, depth: int = 2):
+    def __init__(self, seed: str, depth: int = 2, max_nodes_per_candidate: int = 128):
         self.seed = seed
         self.depth = depth
+        self.max_nodes_per_candidate = max(1, max_nodes_per_candidate)
+        self._nodes = 0
 
     def _noise(self, key: str) -> float:
         """Perturbação determinística em [-6, +6] centipeões (desempate reprodutível)."""
@@ -82,8 +84,9 @@ class ChessPlayer:
         return sorted(moves, key=key)
 
     def _quiesce(self, board: chess.Board, alpha: float, beta: float, qdepth: int) -> float:
+        self._nodes += 1
         stand = self._eval_for_side_to_move(board)
-        if qdepth <= 0:
+        if qdepth <= 0 or self._nodes >= self.max_nodes_per_candidate:
             return stand
         if stand >= beta:
             return stand
@@ -96,13 +99,18 @@ class ChessPlayer:
             if score >= beta:
                 return score
             alpha = max(alpha, score)
+            if self._nodes >= self.max_nodes_per_candidate:
+                break
         return alpha
 
     def _negamax(self, board: chess.Board, depth: int, alpha: float, beta: float, ply: int) -> float:
+        self._nodes += 1
         if board.is_checkmate():
             return -MATE_SCORE + ply
         if board.is_stalemate() or board.is_insufficient_material():
             return 0.0
+        if self._nodes >= self.max_nodes_per_candidate:
+            return self._eval_for_side_to_move(board)
         if depth <= 0:
             return self._quiesce(board, alpha, beta, 3)
         best = -float("inf")
@@ -113,7 +121,7 @@ class ChessPlayer:
             if score > best:
                 best = score
             alpha = max(alpha, score)
-            if alpha >= beta:
+            if alpha >= beta or self._nodes >= self.max_nodes_per_candidate:
                 break
         return best
 
@@ -124,6 +132,7 @@ class ChessPlayer:
         bias_by_square = bias_by_square or {}
         ranked: List[Tuple[float, chess.Move]] = []
         for m in self._order(board, list(board.legal_moves)):
+            self._nodes = 0
             board.push(m)
             if board.is_checkmate():
                 score = float(MATE_SCORE)

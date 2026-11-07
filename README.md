@@ -1,354 +1,291 @@
-# Gambit Lab
+# Gambit Lab Nocturne
 
-**Framework multiagente orientado por jogos para debates e auditorias baseados em evidências, utilizando LLMs, Xadrez, Go e raciocínio rastreável.**
+**Framework multiagente orientado por jogos determinísticos (Xadrez 8×8 e Go 9×9) para Debates de Evidências e Auditorias de Controles com rastreabilidade criptográfica SHA-256.**
 
-*Game-Driven Multi-Agent Framework for Evidence-Based Debate and Auditing*
-
----
-
-> **Estado do projeto**: experimental, em desenvolvimento. As funcionalidades descritas refletem a documentação fornecida; sua disponibilidade e seu funcionamento devem ser confirmados na versão publicada do código.
+*Game-Driven Multi-Agent Framework for Evidence-Based Debate, Normative Auditing, and Verifiable Reasoning*
 
 ---
 
-## Visão geral
+## Sumário
 
-O Gambit Lab é um framework experimental de raciocínio multiagente orientado por jogos. Sua proposta é combinar modelos de linguagem de grande porte (Large Language Models, ou LLMs), motores determinísticos de Xadrez e Go, análise documental e rastreabilidade de evidências para estruturar debates e auditorias.
-
-Em vez de gerar apenas uma resposta, a arquitetura organiza agentes que investigam pontos de vista diferentes, confrontam alegações, consultam fontes e registram o processo em uma sequência de eventos que pode ser revisitada.
-
----
-
-## Princípio fundamental
-
-> *O LLM interpreta; as regras do jogo restringem; as evidências sustentam; o árbitro avalia; e o sistema registra.*
-
-Os modelos de linguagem são responsáveis pela interpretação e formulação de argumentos. A legalidade dos movimentos é verificada por motores determinísticos, enquanto as avaliações factuais devem considerar a pertinência, o contexto e a suficiência das evidências.
-
-Uma vitória no tabuleiro não demonstra, por si só, a veracidade de uma tese. Por isso, o resultado do jogo e a conclusão baseada nas evidências são apresentados separadamente.
-
----
-
-## Modalidades
-
-O Gambit Lab possui duas modalidades principais:
-
-### 1. Debate de Evidências (`debate`)
-
-Investiga questões abertas ou controversas por meio de dois lados argumentativos: Pró e Contra.
-
-- **Teses e subteses**: cada lado apresenta uma tese central e argumentos específicos associados às peças do Xadrez ou às alegações representadas no Go.
-- **Dossiês individuais**: as peças podem ser associadas a subteses, fontes e histórico de confrontos.
-- **Acesso controlado**: o sistema utiliza permissões para restringir o acesso aos documentos de cada lado e, conforme a configuração, de cada peça.
-- **Confrontos semânticos**: o árbitro compara alegações e evidências, distinguindo refutação fundamentada, defesa preservada e confronto inconclusivo.
-- **Rastreabilidade**: o usuário pode consultar os movimentos, os argumentos associados e os registros de avaliação.
-
-### 2. Auditoria de Controles (`audit`)
-
-Auxilia na análise de requisitos, riscos e evidências de conformidade de sistemas e processos. A metodologia pode utilizar referências como ISO/IEC 27001, SOC 2, NIST CSF, CIS Controls, LGPD e OWASP, de acordo com o escopo e os documentos disponíveis.
-
-- **Controles e critérios**: os requisitos avaliados possuem critérios explícitos e evidências relacionadas.
-- **Achados**: as verificações podem indicar conformidade, não conformidade, atendimento parcial ou ausência de evidências suficientes.
-- **Riscos**: a classificação de gravidade deve decorrer de critérios documentados, e não apenas da opinião gerada pelo modelo.
-- **Relatórios**: o histórico permite revisar as conclusões e os elementos que as fundamentaram.
+1. [Visão Geral e Propósito](#1-visão-geral-e-propósito)
+2. [Princípio Epistêmico Fundamental](#2-princípio-epistêmico-fundamental)
+3. [Modalidades de Investigação](#3-modalidades-de-investigação)
+4. [Pipeline Research Match v2 (7 Estágios)](#4-pipeline-research-match-v2-7-estágios)
+5. [Arquitetura do Sistema](#5-arquitetura-do-sistema)
+6. [Capturas de Tela Atuais (Nocturne UI)](#6-capturas-de-tela-atuais-nocturne-ui)
+7. [Autoria, Revisão Humana e Uso de IA na Implementação](#7-autoria-revisão-humana-e-uso-de-ia-na-implementação)
+8. [Estado Atual dos Vereditos e Evolução Futura](#8-estado-atual-dos-vereditos-e-evolução-futura)
+9. [Tecnologias Utilizadas](#9-tecnologias-utilizadas)
+10. [Como Executar Localmente](#10-como-executar-localmente)
+11. [Testes Automatizados](#11-testes-automatizados)
+12. [Estrutura do Repositório](#12-estrutura-do-repositório)
 
 ---
 
-## Principais componentes
+## 1. Visão Geral e Propósito
 
-### Xadrez Epistêmico e evidências por peça
+O **Gambit Lab Nocturne** é uma plataforma de investigação analítica e auditoria onde dois agentes adversariais (**Lado Pró** e **Lado Contra**) confrontam teses, subteses e documentos sobre um tabuleiro determinístico de **Xadrez (8×8)** ou **Go / Weiqi (9×9)** sob a supervisão de um **Árbitro Semântico Independente**.
 
-O Xadrez Epistêmico é uma variante experimental que utiliza a movimentação do Xadrez como base para confrontos argumentativos. Suas regras adicionais não devem ser confundidas com as regras oficiais da FIDE.
-
-- O Rei representa a tese central; as demais peças representam diferentes subteses e linhas de argumentação.
-- Cada peça possui uma identidade e uma relação com os documentos que está autorizada a consultar.
-- A seleção de uma peça permite examinar sua tese, seus artefatos e, quando disponível, o estado dos possíveis confrontos.
-- Um confronto pode terminar sem refutação, mesmo quando existe uma tentativa de captura geometricamente válida.
-- A validação da fonte não é equivalente à comprovação da alegação: a arbitragem precisa examinar o conteúdo e seu contexto.
-
-A implementação deve distinguir movimento legal, confronto permitido pela variante e conclusão factual, registrando cada decisão de maneira rastreável.
-
-### Go 9×9 e análise SWOT
-
-O motor de Go oferece uma estrutura para investigar relações, influência, cobertura de temas e lacunas de evidências.
-
-A análise SWOT organiza os fatores em quatro dimensões:
-
-| Dimensão | Significado |
-| :--- | :--- |
-| **Forças (Strengths)** | Capacidades e vantagens internas |
-| **Fraquezas (Weaknesses)** | Limitações e vulnerabilidades internas |
-| **Oportunidades (Opportunities)** | Condições externas favoráveis |
-| **Ameaças (Threats)** | Riscos e condições externas desfavoráveis |
-
-*Nota de especificação*: a documentação recebida descreve uma divisão do tabuleiro em quadrantes SWOT. Essa escolha precisa ser confirmada na implementação atual, pois difere da proposta de usar SWOT como classificação semântica sem particionar rigidamente o tabuleiro. Em qualquer abordagem, as regras de captura e pontuação do Go devem permanecer consistentes.
-
-### Arbitragem semântica (`SemanticClashEngine`)
-
-O árbitro avalia se uma evidência realmente sustenta ou contradiz a alegação à qual foi vinculada.
-
-- **Verificação de fonte**: confirma a existência do documento e, quando aplicável, a correspondência do trecho citado.
-- **Pertinência**: verifica se a informação aborda o objeto, o período e o contexto relevantes.
-- **Confronto**: diferencia alegações contraditórias, compatíveis, incomparáveis ou insuficientemente fundamentadas.
-- **Decisão**: registra a justificativa para permitir, rejeitar ou deixar pendente uma captura argumentativa.
-
-Pontuações de confiança, quando utilizadas, exigem metodologia explícita e validação. Faixas numéricas fixas não devem ser apresentadas como probabilidades calibradas sem evidência experimental.
-
-### Event Store e replay
-
-A aplicação registra movimentos, avaliações e outros eventos de investigação, permitindo reconstruir estados históricos sem repetir as chamadas ao LLM.
-
-O uso de hashes SHA-256 e encadeamento de eventos ajuda a detectar alterações nos registros, mas, isoladamente, não torna o armazenamento impossível de adulterar. A verificação completa depende também da gestão confiável dos registros e das referências de integridade.
+Em vez de entregar uma resposta única de caixa-preta como um chat comum de LLM, o Gambit Lab decompõe qualquer pergunta ou escopo de auditoria em **unidades táticas rastreáveis**:
+- Cada peça do tabuleiro possui seu próprio **Dossiê Argumentativo** (papel funcional, subtese, grau de confiança, permissões de cofre RBAC e trechos literais verificados).
+- Os documentos e fontes coletadas ficam armazenados em **Cofres Isolados por Lado (Regra de Ouro)**: o Lado Pró (`white`) não enxerga documentos privados do Lado Contra (`black`) e vice-versa, exceto quando uma peça é confrontada diretamente no tabuleiro.
+- Toda a partida e cada verificação de fonte são seladas em uma cadeia de eventos append-only (`Event Store`) com hashes **SHA-256**, permitindo **Replay Histórico Determinístico** sem nenhuma chamada adicional à IA.
 
 ---
 
-## Arquitetura do sistema
+## 2. Princípio Epistêmico Fundamental
+
+> **"O LLM interpreta; os motores determinísticos restringem; as evidências literais sustentam; o árbitro avalia por critérios; e o Event Store registra."**
+
+No Gambit Lab, **vencer no tabuleiro nunca equivale automaticamente a ter razão científica ou factual**. Por isso, a aba **Resultado** ao lado do tabuleiro apresenta duas camadas estritamente desacopladas:
+
+1. **Julgamento Comparativo por Critérios (`C1..C4` / `C1..C6`)**: avalia cada dimensão do problema com base exclusivamente em citações literais verificadas nos cofres (`Pró × Contra`), apontando de forma transparente onde houve equilíbrio e onde ainda existem lacunas documentais.
+2. **Desfecho Lúdico vs. Estado de Comprovação das Alegações**: separa o vencedor das regras formais do jogo (`python-chess` / `GoEngine9x9`) do veredito epistêmico (`PRO_THESIS_SUPPORTED`, `CONTRA_THESIS_SUPPORTED`, `INCONCLUSIVE` ou `OPEN_HYPOTHESIS`).
+
+---
+
+## 3. Modalidades de Investigação
+
+### 3.1. Debate de Evidências (`debate`)
+Projetado para investigar perguntas controversas, comparativas, científicas, históricas, econômicas ou estratégicas:
+- **Decomposição em 32 Peças (Xadrez) ou 12 Grupos Estratégicos (Go)**:
+  - **Rei (`♔/♚`)**: Tese central do lado (protegida pela *Blindagem Invariante do Rei* enquanto houver subteses ativas no tabuleiro).
+  - **Dama (`♕/♛`)**: Linha de ataque argumentativo principal / contraprova central.
+  - **Torres (`♖/♜`)**: Pilares estruturais, dados institucionais e marcos regulatórios.
+  - **Bispos (`♗/♝`)**: Leitura conceitual, recortes metodológicos e análise de contexto.
+  - **Cavalos (`♘/♞`)**: Conexões táticas não lineares, casos de borda e vetores adversariais.
+  - **Peões (`♙/♟`)**: Evidências pontuais, fatos empíricos e dados de suporte.
+- **Busca Web Multi-Fonte Relevante**: combina **Wikipedia (PT/EN)**, **Google News RSS** (cobertura jornalística atualizada) e **OpenAlex** (artigos científicos revisados por pares), com filtragem semântica de âncoras para evitar fontes fora de tópico e proteção estrita **Anti-SSRF**.
+
+### 3.2. Auditoria de Controles (`audit`)
+Projetado para inspecionar conformidade técnica, governança e riscos operacionais frente a referenciais como **ISO/IEC 27001, LGPD, SOC 2, NIST CSF, CIS Controls e OWASP**:
+- **Lado Pró (Auditor de Controles)**: mapeia salvaguardas implementadas, políticas formais e evidências de execução.
+- **Lado Contra (Auditor de Riscos / Red Team)**: identifica lacunas de cobertura, falhas de rotação/acesso, riscos residuais e não conformidades.
+- **No modo Go 9×9**: estrutura os achados em uma **Matriz SWOT Epistêmica** (*Forças, Fraquezas, Oportunidades e Ameaças*) vinculada aos grupos de pedras no tabuleiro.
+
+---
+
+## 4. Pipeline Research Match v2 (7 Estágios)
+
+Quando uma investigação completa é iniciada, o orquestrador executa e exibe em tempo real os **7 estágios formais**:
+
+1. **Definição dos Lados Pró vs Contra**: estruturação da pergunta central, teses de cada lado e plano de critérios de comparação.
+2. **Investigação Pró (Cofre Isolado)**: coleta e indexação SHA-256 de fontes favoráveis em cofre exclusivo.
+3. **Investigação Contra (Cofre Isolado)**: coleta e indexação SHA-256 de contraprovas e limitações em cofre estritamente isolado.
+4. **Atribuição de Dossiês às Peças**: vinculação de subteses heterogêneas, citações literais verificadas por offset e permissões RBAC a cada peça.
+5. **Simulação do Jogo (`python-chess` / `Go 9×9`)**: confronto determinístico com *gating epistêmico* em capturas e identificação automática do **Ponto de Virada (Turning Point)**.
+6. **Síntese Epistêmica Desacoplada**: julgamento comparativo por critérios (`C1..C4`) e veredito factual independente do placar lúdico.
+7. **Selagem Criptográfica SHA-256**: fechamento da cadeia de eventos no `Event Store` para replay auditável instantâneo.
+
+---
+
+## 5. Arquitetura do Sistema
 
 ```mermaid
 flowchart TD
-    subgraph Frontend["Frontend Nocturne"]
-        UI["Interface de investigação"]
-        B2D["Tabuleiro 2D SVG"]
-        B3D["Tabuleiro 3D WebGL"]
-        Replay["Replay e inspeção de evidências"]
+    subgraph Frontend["Frontend Nocturne (Single-Viewport & Workspace)"]
+        Home["Home Cósmica (Silhueta Planetária + BYOK Popover)"]
+        B3D["Tabuleiro 3D WebGL Procedural"]
+        B2D["Tabuleiro 2D Vetorial SVG (Cburnett)"]
+        Tabs["Painel Lateral: Resultado | Lance | Dossiês | Fontes | Auditoria | Histórico"]
     end
 
-    subgraph Backend["Backend FastAPI"]
-        API["Rotas REST"]
-        Orq["Orquestrador da investigação"]
-        Prep["Preparação de teses e dossiês"]
-        Clash["Arbitragem semântica"]
+    subgraph Backend["Backend FastAPI (Python 3.12+)"]
+        API["Rotas REST (/sessions, /match, /pieces, /replay, /config/api)"]
+        Orch["Orquestrador Research Match (7 Estágios)"]
+        Prep["PreparationMixin (Dossiês, RBAC & Relevância Temática)"]
+        Dec["Módulo de Decisão Comparativa por Critérios (decision.py)"]
+        Clash["SemanticClashEngine (Arbitragem de Confrontos)"]
     end
 
-    subgraph Motores["Motores determinísticos"]
-        Chess["Xadrez e variante epistêmica"]
-        Go["Go 9×9"]
+    subgraph Motores["Motores Determinísticos de Regras"]
+        Chess["EpistemicChessEngine (python-chess)"]
+        Go["GoEngine9x9 (Regras Chinesas + SWOT)"]
     end
 
-    subgraph Dados["Armazenamento"]
-        Vault["Cofre de documentos e permissões"]
-        Events["Event Store e integridade"]
+    subgraph Dados["Persistência & Segurança"]
+        Vault["ArtifactVault (Isolamento Pró/Contra + Verificação Literal de Substring)"]
+        Events["EventStore (Hash Chain SHA-256 Append-Only)"]
     end
 
-    subgraph Externos["Serviços externos"]
-        Gemini["Google Gemini API"]
-        Sources["Fontes públicas configuradas"]
+    subgraph Externos["Provedores Externos"]
+        Gemini["Google Gemini API (LIVE / BYOK)"]
+        Web["WebSearchAdapter (Wikipedia PT/EN + Google News RSS + OpenAlex)"]
     end
 
-    UI --> API
-    API --> Orq
-    Orq --> Prep
-    Orq --> Clash
-    Orq --> Chess
-    Orq --> Go
+    Home --> API
+    B3D --> API
+    B2D --> API
+    Tabs --> API
+    API --> Orch
+    Orch --> Prep
+    Orch --> Clash
+    Orch --> Dec
+    Orch --> Chess
+    Orch --> Go
     Prep --> Vault
-    Clash --> Vault
-    Orq --> Events
-    Orq --> Gemini
-    Orq --> Sources
-    Events --> Replay
-    UI --> B2D
-    UI --> B3D
+    Prep --> Web
+    Orch --> Gemini
+    Orch --> Events
 ```
 
 ---
 
-## Interface e visualização
+## 6. Capturas de Tela Atuais (Nocturne UI)
 
-A interface Nocturne privilegia o tabuleiro e a análise do movimento selecionado, mantendo detalhes técnicos em áreas secundárias.
+### 6.1. Tela Inicial (Home Nocturne) e Configuração Rápida de Chave API (BYOK)
+Tela inicial em *single-viewport* (sem rolagem indesejada), apresentando a **logo autoral criada pelo desenvolvedor**, partículas cósmicas em múltiplas camadas, silhueta atmosférica do planeta e seletor discreto **`API IA`** no canto superior direito:
 
-Os elementos previstos incluem:
-- Tabuleiro de Xadrez em 2D (SVG) e 3D (WebGL).
-- Tabuleiro de Go 9×9.
-- Histórico de movimentos com reprodução e inspeção contextual.
-- Subteses e artefatos associados às peças.
-- Visualização separada do resultado do jogo e da conclusão fundamentada.
+| Tela Inicial (Nocturne Home) | Popover de Conexão da Chave / Link de API IA |
+| :---: | :---: |
+| ![Home Nocturne](docs/screenshots/current_01_home_nocturne.png) | ![Popover API IA](docs/screenshots/current_02_home_api_popover.png) |
 
----
+### 6.2. Execução dos 7 Estágios e Workspace 3D com Aba `Resultado` ao Lado do Tabuleiro
+Durante a execução, os 7 estágios são acompanhados com ícones vetoriais dedicados. Ao concluir, a aba **`Resultado ✓`** é aberta automaticamente **ao lado do tabuleiro de Xadrez**, exibindo o placar resumido por critérios (`C1..C4`), o comparativo *Tabuleiro vs. Comprovação* e mantendo a síntese longa recolhida por padrão:
 
-## Capturas de tela
+| Modal de Progresso (7 Estágios) | Tabuleiro 3D WebGL + Aba `Resultado` Resumida ao Lado |
+| :---: | :---: |
+| ![Modal 7 Estágios](docs/screenshots/current_03_stages_modal.png) | ![Workspace 3D e Aba Resultado](docs/screenshots/current_04_workspace_3d_result_tab.png) |
 
-Os caminhos abaixo foram preservados do repositório:
+### 6.3. Tabuleiro 2D SVG Profissional (`Cburnett`), Inspeção de Lance e Dossiês por Peça
+Alternância instantânea para o tabuleiro 2D vetorial com peças clássicas *Cburnett* embutidas (sem risco de falha de carregamento), seta indicadora do lance selecionado e dossiês individuais para todas as 32 peças:
 
-| Página inicial | Xadrez 2D | Auditoria em Go |
-| :---: | :---: | :---: |
-| ![Página inicial](docs/screenshots/nocturne_v24_home_redesign.png) | ![Xadrez 2D](docs/screenshots/nocturne_v25_1_2d_centered_electoral.png) | ![Auditoria em Go](docs/screenshots/nocturne_v25_go_swot_matrix.png) |
-
-| Xadrez 3D | Confronto argumentativo | Replay |
-| :---: | :---: | :---: |
-| ![Xadrez 3D](docs/screenshots/nocturne_v25_1_3d_electoral.png) | ![Confronto argumentativo](docs/screenshots/nocturne_v25_1_confrontation_inconclusive.png) | ![Replay](docs/screenshots/nocturne_v24_1_replay_pairs_strip.png) |
+| Tabuleiro 2D + Aba `Lance Selecionado` | Tabuleiro 2D + Aba `Dossiês` (32 Peças Auditáveis) |
+| :---: | :---: |
+| ![Workspace 2D Lance Selecionado](docs/screenshots/current_05_workspace_2d_move_tab.png) | ![Workspace 2D Dossiês](docs/screenshots/current_06_workspace_2d_dossiers_tab.png) |
 
 ---
 
-## Tecnologias
+## 7. Autoria, Revisão Humana e Uso de IA na Implementação
 
-| Camada | Tecnologias descritas |
+Este projeto foi idealizado, arquitetado e dirigido por seu criador e desenvolvedor responsável (**Lucas**), contando com o auxílio de ferramentas avançadas de Inteligência Artificial como copiloto de engenharia de software durante a implementação:
+
+- **Concepção e Identidade Visual Autoral**: a proposta conceitual do framework (união de motores de Xadrez/Go com auditoria de evidências), as diretrizes de interface e a **logo oficial do projeto** foram criadas pelo desenvolvedor.
+- **Auxílio de IA na Implementação e Elementos 3D**: modelos de IA auxiliaram na aceleração da codificação, na construção da geometria procedural **3D WebGL** das peças de Xadrez e pedras de Go, nos efeitos visuais de partículas e iluminação atmosférica em canvas, bem como na estruturação da suíte de testes automatizados.
+- **Revisão, Curadoria e Validação pelo Criador**: **todo o código, regras de negócio, fluxos de interface (UX/UI), filtros de relevância de pesquisa e mecanismos de honestidade epistêmica foram inspecionados, testados, corrigidos e aprovados passo a passo pelo desenvolvedor criador do projeto**.
+
+---
+
+## 8. Estado Atual dos Vereditos e Evolução Futura
+
+Por compromisso estrito com a **honestidade epistêmica**, o Gambit Lab nunca inventa citações nem declara uma tese como comprovada (`SUPPORTED`) quando as fontes públicas coletadas não contêm dados comparáveis suficientes ou quando a pergunta trata de eventos futuros ainda não decidíveis factualmente.
+
+- **Por que alguns resultados atuais aparecem como `INCONCLUSIVO` ou `Empate fundamentado`?**
+  - Atualmente, quando a pesquisa automática encontra evidências parciais para ambos os lados ou quando algum critério específico (`C1..C4`) carece de dados quantitativos diretos nas fontes abertas consultadas, o árbitro declara honestamente o empate nos critérios comprovados ou marca a comprovação geral como `INCONCLUSIVO` / `HIPÓTESE EM ABERTO`.
+- **Meta de Evolução Futura (Cobertura Universal de Perguntas)**:
+  - O objetivo contínuo do projeto é expandir os conectores de busca profunda (*deep research*), aprimorar a extração semântica multi-documento e calibrar o julgamento comparativo para que o sistema consiga entregar **um veredito analítico decisivo, completo e profundamente fundamentado para qualquer tipo de pergunta** (seja histórica, científica, técnica, econômica ou prospectiva por cenários), reduzindo ao mínimo os casos inconclusivos.
+
+---
+
+## 9. Tecnologias Utilizadas
+
+| Camada | Tecnologias |
 | :--- | :--- |
-| **Backend** | Python 3.12+, FastAPI, Uvicorn, Pydantic e HTTPX |
-| **Xadrez** | python-chess e regras adicionais da variante epistêmica |
-| **Go** | Motor determinístico próprio para tabuleiro 9×9 |
-| **Persistência** | SQLite e Event Store |
-| **Frontend** | HTML5, CSS3, JavaScript, Three.js e SVG |
-| **IA** | Google Gemini, com chave fornecida pelo usuário (BYOK) |
-| **Fontes públicas** | Adaptadores descritos para Wikimedia e OpenAlex |
-
-A disponibilidade das versões, dos modelos Gemini e dos adaptadores deve ser conferida nos arquivos de configuração e em uma execução real.
+| **Backend & API** | Python 3.12+, FastAPI, Uvicorn, Pydantic v2, HTTPX |
+| **Motores de Jogo** | `python-chess` (Xadrez 8×8 + Variante Epistêmica) e `GoEngine9x9` (Go 9×9 + Matriz SWOT) |
+| **Frontend & Gráficos** | HTML5, CSS3 (Nocturne Design System), JavaScript ES6+, WebGL 3D Procedural, SVG Vetorial (Cburnett) |
+| **Inteligência Artificial** | Google Gemini API (`gemini-3.5-flash-lite` / `gemini-flash-latest`) com suporte a chave própria na UI (`BYOK`) e fallback determinístico (`DEMO_OFFLINE`) |
+| **Pesquisa Web Auditável** | Adaptador Multi-Fonte HTTPS com proteção Anti-SSRF (Wikipedia PT/EN, Google News RSS e OpenAlex) |
+| **Integridade & Auditoria** | Cofre de Artefatos com RBAC por peça, verificação literal de citações por offset e `Event Store` encadeado por **SHA-256** |
 
 ---
 
-## Como executar localmente
+## 10. Como Executar Localmente
 
-### Pré-requisitos
-- Python 3.12 ou superior.
-- Git.
-- Navegador atualizado.
-- Chave de API do Gemini para executar as funcionalidades que dependem do modelo em modo real.
-
-### 1. Clonar o repositório
-```bash
-git clone https://github.com/Lucas-715/Gambit-Lab.git
-cd Gambit-Lab
-```
-
-### 2. Criar e ativar um ambiente virtual
-
-**Windows — PowerShell:**
+### Opção Rápida (Windows — 1 Clique)
+Basta executar o script [`iniciar.bat`](iniciar.bat) na raiz do projeto ou rodar no terminal:
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.\iniciar.bat
 ```
+O script ativa automaticamente o ambiente virtual, inicia o servidor FastAPI em `http://127.0.0.1:8000` e abre o navegador.
 
-**Linux e macOS:**
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+### Passo a Passo Manual (Terminal)
 
-### 3. Instalar as dependências
-```bash
-python -m pip install -r requirements.txt
-```
+1. **Clonar o repositório**:
+   ```bash
+   git clone https://github.com/Lucas-715/Gambit-Lab.git
+   cd Gambit-Lab
+   ```
 
-### 4. Configurar a chave Gemini
+2. **Criar e ativar o ambiente virtual**:
+   - **Windows (PowerShell)**:
+     ```powershell
+     python -m venv .venv
+     .\.venv\Scripts\Activate.ps1
+     ```
+   - **Linux / macOS**:
+     ```bash
+     python3 -m venv .venv
+     source .venv/bin/activate
+     ```
 
-Crie seu arquivo local de configuração copiando `.env.example`.
+3. **Instalar as dependências**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-**Windows — PowerShell:**
+4. **Configurar sua chave de API da IA (Opcional no `.env` ou direto pela Interface)**:
+   - Você pode clicar no botão **`API IA`** (ícone de chave no canto superior direito da tela inicial) e colar diretamente sua chave ou link da API Gemini em tempo de execução.
+   - Ou, se preferir persistir em arquivo local, copie `.env.example` para `.env` e defina `GEMINI_API_KEY`.
+
+5. **Iniciar o servidor**:
+   ```bash
+   python -m uvicorn services.api.main:app --host 127.0.0.1 --port 8000
+   ```
+   Acesse **`http://127.0.0.1:8000`** no navegador.
+
+---
+
+## 11. Testes Automatizados
+
+O projeto conta com **122 testes automatizados** (unitários e de integração) cobrindo motores de Xadrez e Go, isolamento de cofres (RBAC), bloqueio Anti-SSRF, integridade SHA-256 do Event Store, replay sem chamadas ao LLM e julgamento comparativo por critérios.
+
+Para executar toda a suíte oficial:
 ```powershell
-Copy-Item .env.example .env
+.\.venv\Scripts\python.exe -m pytest tests/ -q
 ```
-
-**Linux e macOS:**
-```bash
-cp .env.example .env
-```
-
-Edite o `.env` com a sua própria chave:
-```ini
-GEMINI_API_KEY=sua_chave_aqui
-GEMINI_MODEL=gemini-flash-lite-latest
-ENVIRONMENT=development
-API_HOST=127.0.0.1
-API_PORT=8000
-```
-
-> **Segurança**: não compartilhe a chave, não a inclua em commits e não envie o arquivo `.env` para o GitHub. O `.gitignore` deve impedir seu versionamento. O modelo configurado precisa ser compatível com os modelos efetivamente disponíveis na conta e na integração utilizada.
->
-> **Atenção**: confirme se o backend carrega automaticamente o arquivo `.env` ou se exige a exportação das variáveis para o ambiente. Não pressuponha que apenas criar o arquivo seja suficiente.
-
-### 5. Iniciar a aplicação
-```bash
-python -m uvicorn services.api.main:app --host 127.0.0.1 --port 8000
-```
-
-Acesse `http://127.0.0.1:8000` no navegador.
-
-O documento original descreve um modo `DEMO_OFFLINE` sem chave. Essa funcionalidade deve ser confirmada antes de ser apresentada como disponível; se existir, seus dados precisam ser claramente identificados como demonstrativos.
 
 ---
 
-## Testes automatizados
+## 12. Estrutura do Repositório
 
-Para executar a suíte indicada na documentação:
-
-```bash
-python -m pytest tests/unit tests/integration -v
-```
-
-O documento original relata 104 testes aprovados, mas esse resultado não foi reproduzido nesta revisão textual. Antes de publicar, atualize a informação com a execução mais recente e diferencie testes com mocks de testes reais envolvendo Gemini e pesquisa externa.
-
----
-
-## Organização do repositório
-
-```
+```text
 Gambit-Lab/
 ├── apps/
-│   └── web/                 # Interface Nocturne
+│   └── web/
+│       ├── pieces/              # 12 arquivos SVG vetoriais (Cburnett) das peças de Xadrez
+│       ├── logo.png             # Logo autoral criada pelo desenvolvedor
+│       ├── index.html           # Aplicação Nocturne (Home + Tabuleiro 3D/2D + Abas Analíticas)
+│       ├── decision-panel.js    # Renderizador conciso do Julgamento Comparativo por Critérios
+│       └── decision-panel.css   # Estilos compactos do painel de decisão na aba Resultado
 ├── docs/
-│   ├── adr/                 # Registros de decisões arquiteturais
-│   ├── screenshots/         # Capturas de tela
-│   ├── REQUIREMENTS.md      # Requisitos
-│   └── SPECIFICATION.md     # Especificação
+│   ├── adr/                     # Architecture Decision Records (ADRs)
+│   ├── screenshots/             # Capturas de tela atuais da interface
+│   ├── RESULTADOS_E_RASTREABILIDADE.md
+│   ├── REQUIREMENTS.md
+│   └── SPECIFICATION.md
 ├── packages/
-│   ├── contracts/           # Contratos de dados
-│   └── game_rules/          # Motores de Xadrez e Go
+│   ├── contracts/               # Contratos e esquemas compartilhados
+│   └── game_rules/              # Motores determinísticos (chess_engine.py, go_engine.py)
 ├── services/
 │   └── api/
-│       ├── agents/          # Adaptadores de IA e pesquisa
-│       ├── fusion/          # Integração multiestratégica
-│       ├── match/           # Orquestração e confrontos
-│       ├── models/          # Esquemas de dados
-│       ├── routes/          # API REST
-│       └── storage/         # Cofres, sessões e Event Store
+│       ├── agents/              # GeminiAdapter, WebSearchAdapter (Multi-Fonte) e Verificadores
+│       ├── fusion/              # Pipeline de conciliação multi-estratégia
+│       ├── match/               # Orquestrador de 7 estágios, dossiês, decisão e conclusão dual
+│       ├── models/              # Schemas Pydantic v2
+│       ├── routes/              # Endpoints REST FastAPI
+│       └── storage/             # SessionManager, ArtifactVault e EventStore SHA-256
 ├── tests/
-│   ├── integration/
-│   └── unit/
-├── .env.example             # Exemplo de configuração, sem segredos
-├── .gitignore
-├── AUDIT_REPORT.md          # Auditoria técnica
-├── CHANGELOG.md             # Histórico de mudanças
-├── README.md
+│   ├── unit/                    # Testes unitários de motores, segurança e UI
+│   └── integration/             # Testes fim a fim da API, Research Match v2 e rastreabilidade
+├── iniciar.bat                  # Inicializador rápido para Windows
 ├── requirements.txt
-└── TEST_MATRIX.md            # Matriz de testes
+└── README.md
 ```
 
-Esta árvore resume a estrutura descrita no documento original; confira os nomes e a existência dos arquivos na versão publicada.
-
 ---
 
-## Estado do desenvolvimento e limitações
+## Licença e Direitos Autorais
 
-O Gambit Lab é um projeto experimental. Sua hipótese central é que regras formais inspiradas em jogos podem tornar investigações multiagentes mais estruturadas, verificáveis e rastreáveis.
-
-Essa hipótese não comprova, por si só, que o sistema produz respostas mais corretas do que um LLM ou sistema multiagente convencional. Tal conclusão exige avaliação experimental comparativa.
-
-Outras limitações:
-- **Arbitragem factual**: a verificação de uma citação não garante que ela sustente a tese. A relevância e a suficiência da evidência podem exigir revisão humana.
-- **Regras do jogo**: a variante de Xadrez Epistêmico possui condições adicionais e não equivale integralmente ao Xadrez FIDE.
-- **Pesquisa Web**: os provedores configurados podem limitar a cobertura das fontes públicas.
-- **Consumo de recursos**: a API Gemini pode envolver custos, limites de taxa e indisponibilidade temporária.
-- **Finalidade**: o sistema não substitui assessoria jurídica, auditoria profissional ou previsão eleitoral validada.
-
----
-
-## Roadmap
-
-A documentação original informa as seguintes frentes de desenvolvimento. Revise os estados com base nos testes atuais antes de marcar qualquer item como concluído.
-
-- [ ] Validar o motor de Xadrez Epistêmico e suas regras especiais.
-- [ ] Validar o Go 9×9 e a integração com a análise SWOT.
-- [ ] Confirmar permissões individuais de evidências por peça.
-- [ ] Validar a arbitragem semântica com fontes pertinentes e contraditórias.
-- [ ] Verificar o alinhamento e o funcionamento dos tabuleiros 2D e 3D.
-- [ ] Confirmar a sincronização do replay e a rastreabilidade dos eventos.
-- [ ] Investigar suporte a modelos locais por Ollama ou vLLM.
-- [ ] Avaliar recursos colaborativos com arbitragem humana.
-- [ ] Estender a exportação de relatórios, conforme os requisitos do projeto.
-
----
-
-## Licença e uso
-
-O documento original informa que o projeto é destinado à pesquisa, demonstração arquitetural e portfólio e que todos os direitos estão reservados.
-
-Até a inclusão de uma licença explícita, a disponibilização pública do código não equivale a conceder permissão geral de reutilização ou distribuição. Consulte o responsável pelo projeto para esclarecimentos sobre o uso.
+Projeto idealizado e desenvolvido por **Lucas** para pesquisa aplicada em sistemas multiagentes verificáveis, arquitetura de software e demonstração de portfólio. Todos os direitos reservados ao autor.

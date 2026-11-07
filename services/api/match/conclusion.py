@@ -10,7 +10,9 @@ Princípios (testados em tests/integration/test_research_match_v2.py):
 from typing import Any, Dict, List, Optional, Tuple
 
 from services.api.agents.gemini_adapter import is_future_projection_topic
+from services.api.agents.gemini_adapter import BudgetExceededError, ProviderUnavailableError
 from services.api.models.schemas import MatchConclusionSchema
+from services.api.match.decision import comparison_plan, decide
 
 # v2.3 C03: Unidade de comparação é alegação independente; peso unitário (a verdade não é multiplicada por rei/dama)
 ROLE_EPISTEMIC_WEIGHTS = {
@@ -34,14 +36,14 @@ def epistemic_scores(pieces: List[Dict[str, Any]]) -> Tuple[float, float, int, i
     for p in pieces:
         side = p["side"]
         refs = [a for a in p.get("supporting_artifacts", []) if a.get("verified")]
-        # No v2.3, SOURCE_VERIFIED, EVIDENCE_REVIEWED e SUPPORTED com refs verificadas contam
+        # Fontes verificadas são contadas separadamente da sustentação das alegações.
         if p.get("epistemic_status") in ("SOURCE_VERIFIED", "EVIDENCE_REVIEWED", "SUPPORTED") and refs:
             for a in refs:
                 h = a.get("sha256") or a.get("url") or a.get("artifact_id")
                 if h:
                     seen_sources[side].add(h)
             claim_key = (p.get("claim") or "").strip().lower()
-            if claim_key and claim_key not in seen_claims[side]:
+            if p.get("epistemic_status") == "SUPPORTED" and claim_key and claim_key not in seen_claims[side]:
                 seen_claims[side].add(claim_key)
                 s[side] += 1.0
 
@@ -50,6 +52,13 @@ def epistemic_scores(pieces: List[Dict[str, Any]]) -> Tuple[float, float, int, i
 
 class ConclusionMixin:
     def _ludic_outcome(self, sess: Dict[str, Any], mstate: Dict[str, Any], play: Dict[str, Any]) -> Dict[str, Any]:
+        if sess.get("_result_interrupted"):
+            return {
+                "termination_criterion": "INTERRUPTED",
+                "termination_reason": "Execução interrompida; resultado parcial baseado nos registros disponíveis. É possível tentar novamente a etapa pendente.",
+                "ludic_result": "UNDECIDED", "ludic_score_label": "Sem resultado formal do tabuleiro",
+                "winner_side": "none",
+            }
         if not play["finished"]:
             n = mstate["plies_played"]
             return {
@@ -64,6 +73,15 @@ class ConclusionMixin:
             }
         term = play["termination"]
         wc = play["winner_color"]
+        if term == 'adjudication':
+            label = 'Brancas vencem' if wc == 'white' else 'Pretas vencem' if wc == 'black' else 'Empate'
+            return {
+                'termination_criterion': 'ADJUDICATED',
+                'termination_reason': play['adjudication']['method'] + ' Partida encerrada; não exige lances adicionais.',
+                'ludic_result': 'WHITE_WINS' if wc == 'white' else 'BLACK_WINS' if wc == 'black' else 'DRAW',
+                'ludic_score_label': label + ' por adjudicação',
+                'winner_side': 'draw' if wc is None else 'pro' if wc == mstate['pro_color'] else 'contra',
+            }
         if wc is None:
             labels = {
                 "stalemate": "Empate por afogamento (1/2-1/2)",
@@ -118,6 +136,8 @@ class ConclusionMixin:
             res, label = "OPEN_HYPOTHESIS", "Hipótese aberta (projeção sobre evento futuro — não decidível factualmente)"
         elif v_pro == 0 and v_con == 0:
             res, label = "OPEN_HYPOTHESIS", "Hipótese aberta (nenhuma fonte com citação literal verificada em nenhum dos cofres)"
+        elif total == 0:
+            res, label = "INCONCLUSIVE", "Evidências localizadas; sustentação factual das teses ainda não demonstrada"
         elif abs(pro_n - con_n) < INCONCLUSIVE_MARGIN:
             res, label = "INCONCLUSIVE", "Inconclusivo (evidências verificadas equilibradas entre Pró e Contra)"
         elif pro_n > con_n:
@@ -147,13 +167,16 @@ class ConclusionMixin:
         )
 
     def _stage_6_evaluate_winner(self, sess: Dict[str, Any], mstate: Dict[str, Any]) -> str:
-        play = sess["_match_internal"]["play"]
+        play = sess["_match_internal"].get("play") or {"finished": False, "highlights": []}
         ludic = self._ludic_outcome(sess, mstate, play)
         epi = self._epistemic_outcome(sess, mstate)
         tp_ply, tp_sum = self._turning_point(mstate["timeline"])
-        provisional = ludic["termination_criterion"] == "BUDGET_EXHAUSTED"
+        provisional = ludic["termination_criterion"] in ("BUDGET_EXHAUSTED", "INTERRUPTED")
 
-        synth = self.sm.gemini_adapter.generate_match_synthesis(
+        synth = self._safe_synthesis(
+            force_local=bool(sess.get("_result_interrupted")),
+            evidence_records=self._evidence_trace(mstate),
+            comparison_plan=mstate.get('comparison_plan') or comparison_plan(sess['title'], sess.get('mode')),
             topic=sess["title"],
             pro_thesis=mstate["pro_thesis"],
             contra_thesis=mstate["contra_thesis"],
@@ -176,17 +199,79 @@ class ConclusionMixin:
         if sess["execution_mode"] == "DEMO_OFFLINE":
             limitations.append("Execução DEMO_OFFLINE: textos sintéticos de demonstração, sem pesquisa nem modelo reais.")
 
+        decision = decide(mstate.get('comparison_plan') or comparison_plan(sess['title'], sess.get('mode')),
+                          synth.get('criterion_reviews', []), self._evidence_trace(mstate),
+                          sess['execution_mode'], sess.get('mode'))
+        limitations.append('O julgamento por critérios é uma interpretação do árbitro com referências verificadas; sua correção semântica requer revisão. Critérios sem comparação válida não pontuam.')
+
         mstate["conclusion"] = MatchConclusionSchema(
             **ludic, **epi,
             pro_thesis=mstate["pro_thesis"], contra_thesis=mstate["contra_thesis"],
             turning_point_ply=tp_ply, turning_point_summary=tp_sum,
             is_provisional=provisional,
-            final_synthesis=synth["final_synthesis"],
+            final_synthesis=(decision['answer'] + '\n\n' + synth['final_synthesis']) if decision['assessed_criteria'] else decision['answer'],
             key_arguments_pro=synth["key_arguments_pro"],
             key_arguments_contra=synth["key_arguments_contra"],
             limitations=limitations,
+            synthesis_source=synth.get("synthesis_source", "provider"),
+            decision=decision,
+            board_adjudication=play.get('adjudication', {}),
+            evidence_trace=self._evidence_trace(mstate),
+            next_steps=[
+                "Revisar a pertinência e a suficiência de cada trecho em relação à alegação.",
+                "Anexar evidências para as alegações sem fonte e registrar os critérios de aceitação."
+                if sess.get("mode") == "audit" else
+                "Investigar as lacunas e confrontar as alegações com fontes independentes.",
+            ],
         ).model_dump()
         return f"Resultado lúdico: {ludic['ludic_score_label']} · Epistêmico: {epi['epistemic_verdict_label']}."
+
+    def _safe_synthesis(self, **kwargs) -> Dict[str, Any]:
+        force_local = kwargs.pop("force_local", False)
+        try:
+            if force_local:
+                raise ValueError("Interrupted investigation")
+            result = self.sm.gemini_adapter.generate_match_synthesis(**kwargs)
+            if (isinstance(result, dict) and isinstance(result.get("final_synthesis"), str)
+                    and result["final_synthesis"].strip()
+                    and all(isinstance(result.get(k), list) and all(isinstance(v, str) for v in result[k])
+                            for k in ("key_arguments_pro", "key_arguments_contra", "limitations"))):
+                result["synthesis_source"] = "demo_offline" if kwargs.get("force_demo") else "provider"
+                return result
+        except (BudgetExceededError, ProviderUnavailableError, ValueError, KeyError, TypeError):
+            pass
+        verdict_label = {
+            "OPEN_HYPOTHESIS": "hipótese em aberto, sem comprovação factual suficiente",
+            "INCONCLUSIVE": "inconclusivo; os registros não permitem decidir entre as teses",
+            "PRO_THESIS_SUPPORTED": "maior sustentação documental das alegações do lado Pró",
+            "CONTRA_THESIS_SUPPORTED": "maior sustentação documental das alegações do lado Contra",
+        }.get(kwargs["epistemic_result"], kwargs["epistemic_result"])
+        return {
+            "synthesis_source": "deterministic_fallback",
+            "final_synthesis": (
+                f"Investigação encerrada para: {kwargs['topic']}. "
+                f"Resultado das evidências: {verdict_label}. "
+                f"Fontes verificadas: Pró {kwargs['verified_pro']}; Contra {kwargs['verified_contra']}. "
+                "Consulte as alegações e os trechos vinculados abaixo. Uma citação existente não comprova, por si só, a tese."
+            ),
+            "key_arguments_pro": [], "key_arguments_contra": [],
+            "limitations": ["Síntese automática indisponível; resultado produzido a partir dos registros, sem nova geração de argumentos."],
+        }
+
+    @staticmethod
+    def _evidence_trace(mstate: Dict[str, Any]) -> List[Dict[str, Any]]:
+        rows = []
+        for piece in mstate.get("pieces", []):
+            moves = [t for t in mstate.get("timeline", []) if t.get("piece_id") == piece["piece_id"]]
+            rows.append({
+                "piece_id": piece["piece_id"], "side": piece["side"],
+                "claim": piece.get("claim", ""), "status": piece.get("epistemic_status", "HYPOTHESIS"),
+                "evidence": piece.get("supporting_artifacts", []),
+                "plies": [t["ply"] for t in moves],
+                "event_seqs": [t["event_seq"] for t in moves],
+                "finding": next((t["control_audit"] for t in reversed(moves) if t.get("control_audit")), None),
+            })
+        return rows
 
     def _stage_7_build_replay(self, sess: Dict[str, Any], mstate: Dict[str, Any]) -> str:
         play = sess["_match_internal"]["play"]
@@ -204,6 +289,7 @@ class ConclusionMixin:
                 "ludic_result": conc["ludic_result"],
                 "epistemic_result": conc["epistemic_result"],
                 "turning_point_ply": conc["turning_point_ply"],
+                "conclusion": conc,
             },
         )
         return (

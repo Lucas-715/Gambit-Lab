@@ -337,7 +337,7 @@ class FusionSynthesisReportSchema(BaseModel):
 
 
 MatchDepth = Literal["quick", "standard", "deep"]
-TerminationCriterion = Literal["BOARD_VICTORY", "DRAW_BY_RULE", "BUDGET_EXHAUSTED"]
+TerminationCriterion = Literal["BOARD_VICTORY", "DRAW_BY_RULE", "BUDGET_EXHAUSTED", "INTERRUPTED", "ADJUDICATED"]
 LudicResult = Literal["WHITE_WINS", "BLACK_WINS", "DRAW", "UNDECIDED"]
 EpistemicResult = Literal[
     "PRO_THESIS_SUPPORTED",
@@ -537,6 +537,11 @@ class MatchConclusionSchema(BaseModel):
     turning_point_summary: Optional[str] = None
     is_provisional: bool = False
     final_synthesis: str
+    synthesis_source: str = "provider"
+    decision: Dict[str, Any] = Field(default_factory=dict)
+    board_adjudication: Dict[str, Any] = Field(default_factory=dict)
+    evidence_trace: List[Dict[str, Any]] = Field(default_factory=list)
+    next_steps: List[str] = Field(default_factory=list)
     key_arguments_pro: List[str] = Field(default_factory=list)
     key_arguments_contra: List[str] = Field(default_factory=list)
     limitations: List[str] = Field(default_factory=list)
@@ -554,6 +559,7 @@ class ResearchMatchStateSchema(BaseModel):
     pro_color: Literal["white", "black"] = "white"
     contra_color: Literal["white", "black"] = "black"
     pro_thesis: str = ""
+    comparison_plan: Dict[str, Any] = Field(default_factory=dict)
     contra_thesis: str = ""
     current_stage: int = 0
     percent_complete: int = 0

@@ -14,12 +14,16 @@ Pipeline de 7 estágios (cada um é uma chamada curta e REINICIÁVEL; falha de p
 """
 import copy
 import datetime
+from collections import defaultdict
+from threading import RLock
 from typing import Any, Dict, List, Optional
 
 from services.api.match.conclusion import ConclusionMixin
 from services.api.match.play import PlayMixin
 from services.api.match.preparation import PreparationMixin
 from services.api.match.recording import RecordingMixin
+from services.api.agents.gemini_adapter import BudgetExceededError, ProviderUnavailableError
+from services.api.agents.web_search_adapter import WebSearchUnavailableError
 from services.api.models.schemas import MatchStageInfoSchema, ResearchMatchStateSchema
 
 STAGE_DEFINITIONS = [
@@ -47,6 +51,7 @@ class MatchStateConflictError(RuntimeError):
 class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, RecordingMixin):
     def __init__(self, session_manager: Any):
         self.sm = session_manager
+        self._execution_locks = defaultdict(RLock)
 
     # ------------------------------------------------------------------ estado
     def init_match_state(self, sess: Dict[str, Any], depth: Optional[str] = None) -> Dict[str, Any]:
@@ -132,6 +137,10 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
 
     # ------------------------------------------------------------------ execução por estágio
     def run_next_stage(self, session_id: str, depth: Optional[str] = None) -> Dict[str, Any]:
+        with self._execution_locks[session_id]:
+            return self._run_next_stage(session_id, depth)
+
+    def _run_next_stage(self, session_id: str, depth: Optional[str] = None) -> Dict[str, Any]:
         sess = self._sess(session_id)
         mstate = self._ensure_state(sess, depth)
         if mstate["is_complete"]:
@@ -149,6 +158,15 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
             stage["status"], stage["detail"] = "failed", str(exc)
             sess["status"] = "PAUSED"
             sess["last_error"] = str(exc)
+            if isinstance(exc, (BudgetExceededError, ProviderUnavailableError, WebSearchUnavailableError)):
+                sess["_result_interrupted"] = True
+                try:
+                    self._stage_6_evaluate_winner(sess, mstate)
+                    self.sm._append_session_event(session_id, "MATCH_PARTIAL_RESULT", {
+                        "failed_stage": idx, "conclusion": mstate["conclusion"],
+                    })
+                finally:
+                    sess.pop("_result_interrupted", None)
             raise
         stage["status"], stage["detail"] = "completed", detail
         mstate["current_stage"] = idx
@@ -168,8 +186,20 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
         return mstate
 
     def run_full_match(self, session_id: str, depth: Optional[str] = None) -> Dict[str, Any]:
+        with self._execution_locks[session_id]:
+            return self._run_full_match(session_id, depth)
+
+    def _run_full_match(self, session_id: str, depth: Optional[str] = None) -> Dict[str, Any]:
         sess = self._sess(session_id)
-        self._ensure_state(sess, depth)
+        state = self._ensure_state(sess, depth)
+        if state.get('status') == 'BUDGET_EXHAUSTED' and sess.get('_match_internal', {}).get('play'):
+            self.sm._append_session_event(session_id, 'LEGACY_MATCH_CLOSING_RULE_ACCEPTED', {
+                'rule': 'Encerrar a sessão anterior por adjudicação, sem acrescentar lances.',
+            })
+            self._adjudicate_match(sess, state, sess['_match_internal']['play'])
+            state.update(current_stage=5, is_complete=False, game_finished=True, resumable=False, status='IN_PROGRESS')
+            for stage in state['stages'][5:]:
+                stage['status'] = 'pending'
         while not sess["research_match"]["is_complete"]:
             self.run_next_stage(session_id, depth=depth)
         return sess["research_match"]
@@ -182,22 +212,6 @@ class ResearchMatchOrchestrator(PreparationMixin, PlayMixin, ConclusionMixin, Re
             raise MatchStateConflictError(
                 "NOT_RESUMABLE: somente partidas interrompidas por orçamento (BUDGET_EXHAUSTED) podem ser retomadas."
             )
-        extra = extra_plies or DEPTH_PLIES_BUDGET[sess["game"]][mstate["depth"]]
-        mstate["plies_budget"] += extra
-        sess["max_steps"] = sess["budget"]["max_steps"] = mstate["plies_budget"]
-        mstate["current_stage"] = 4
-        mstate["is_complete"] = False
-        mstate["resumable"] = False
-        mstate["status"] = "IN_PROGRESS"
-        mstate["conclusion"] = None
-        for st in mstate["stages"][4:]:
-            st["status"], st["detail"] = "pending", None
-        mstate["percent_complete"] = int(round(4 / 7 * 100))
-        sess["status"] = "RUNNING"
-        self.sm._append_session_event(
-            session_id, "MATCH_RESUMED",
-            {"extra_plies": extra, "plies_budget": mstate["plies_budget"], "plies_played": mstate["plies_played"]},
-        )
         return self.run_full_match(session_id)
 
     def _execute_stage(self, sess: Dict[str, Any], mstate: Dict[str, Any], idx: int) -> str:

@@ -7,6 +7,7 @@ Persistência append-only com encadeamento de hash SHA-256 e replay determiníst
 import json
 import hashlib
 import datetime
+import copy
 from typing import Dict, Any, List, Optional
 from packages.game_rules.chess_engine import EpistemicChessEngine
 from packages.game_rules.go_engine import GoEngine9x9
@@ -81,7 +82,7 @@ class EventStore:
             "prev_hash": prev_hash,
             "event_hash": event_hash,
             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            "payload": payload,
+            "payload": copy.deepcopy(payload),
         }
 
         events.append(event_record)

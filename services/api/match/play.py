@@ -31,72 +31,6 @@ RESIGN_DEFICIT_CP = 800        # ≈ uma Dama de desvantagem
 RESIGN_STREAK = 3              # turnos consecutivos do próprio lado nessa condição
 RESIGN_MIN_PLY = 24
 
-AUDIT_FRAMEWORK_CONTROLS = [
-    {
-        "control_id": "ISO 27001 § A.10.1",
-        "name": "Gestão de Chaves Criptográficas (KMS)",
-        "requirement": "Políticas e controles técnicos devem ser implementados para geração, rotação, armazenamento e destruição de chaves criptográficas.",
-        "expected_criteria": "Auto-rotação de chaves ativada com período máximo de 90 dias e segregação de privilégios de custódia.",
-        "risk_level": "CRÍTICO",
-        "recommendation": "Habilitar rotação automática via IaC e auditar logs de decriptação no CloudTrail/CloudAudit."
-    },
-    {
-        "control_id": "SOC 2 CC6.1",
-        "name": "Controle de Acesso Lógico e Perímetro",
-        "requirement": "A infraestrutura deve restringir o acesso lógico somente a usuários autorizados por MFA resistente a phishing.",
-        "expected_criteria": "MFA obrigatório para 100% dos acessos administrativos e princípio do menor privilégio (PoLP).",
-        "risk_level": "ALTO",
-        "recommendation": "Revogar credenciais estáticas não rotacionadas e implementar WebAuthn/FIDO2."
-    },
-    {
-        "control_id": "NIST SP 800-53 AC-3",
-        "name": "Fiscalização de Acesso Baseada em Atributos (ABAC)",
-        "requirement": "O sistema deve aplicar decisões de autorização com base em atributos de identidade, recurso e contexto operacional.",
-        "expected_criteria": "Políticas contextuais validadas dinamicamente com negação por padrão (deny-by-default).",
-        "risk_level": "ALTO",
-        "recommendation": "Implementar validação contínua de postura de segurança de endpoints antes da concessão de sessão."
-    },
-    {
-        "control_id": "CIS Control 4.1",
-        "name": "Configuração Segura de Ativos Corporativos",
-        "requirement": "Estabelecer e manter processos de baseline e configuração segura para servidores, contêineres e bancos de dados.",
-        "expected_criteria": "Imagens de contêiner assinadas criptograficamente e bloqueio de execução com privilégios de root.",
-        "risk_level": "MÉDIO",
-        "recommendation": "Impor verificação Sigstore/Cosign no admission controller do Kubernetes."
-    },
-    {
-        "control_id": "LGPD Art. 46 / GDPR Art. 32",
-        "name": "Segurança e Criptografia de Dados Pessoais",
-        "requirement": "Adoção de medidas de segurança técnicas e administrativas aptas a proteger dados pessoais de acessos não autorizados.",
-        "expected_criteria": "Criptografia em trânsito (TLS 1.3) e em repouso (AES-256-GCM) em todos os armazenamentos com PII.",
-        "risk_level": "CRÍTICO",
-        "recommendation": "Classificar dados pessoais automaticamente e aplicar pseudonimização em ambientes de homologação."
-    },
-    {
-        "control_id": "OWASP Top 10 A01:2021",
-        "name": "Prevenção de Quebra de Controle de Acesso (BOLA/IDOR)",
-        "requirement": "Validação rigorosa de propriedade de recursos no backend em todas as rotas e métodos REST/GraphQL.",
-        "expected_criteria": "Zero exposição de chaves primárias sequenciais e verificação de tenant em cada consulta SQL.",
-        "risk_level": "CRÍTICO",
-        "recommendation": "Adicionar testes automatizados de controle de acesso horizontal e vertical no pipeline de CI/CD."
-    },
-    {
-        "control_id": "ISO 27001 § A.12.4",
-        "name": "Registro e Monitoramento de Eventos (Audit Logging)",
-        "requirement": "Registros de log registrando atividades do usuário, exceções, falhas e eventos de segurança devem ser gerados e mantidos íntegros.",
-        "expected_criteria": "Encaminhamento síncrono para SIEM imutável com retenção mínima de 365 dias e hash chain SHA-256.",
-        "risk_level": "MÉDIO",
-        "recommendation": "Habilitar proteção de Bucket Lock e criptografia com chave gerenciada pelo cliente (CMEK) nos logs."
-    },
-    {
-        "control_id": "NIST SP 800-53 IA-5",
-        "name": "Gestão de Autenticadores e Segredos",
-        "requirement": "O sistema gerencia autenticadores do sistema da informação estabelecendo requisitos para controle administrativo.",
-        "expected_criteria": "Segredos externalizados em cofre seguro (Vault/Secret Manager), sem armazenamento em texto claro em código ou repositório.",
-        "risk_level": "CRÍTICO",
-        "recommendation": "Adicionar pre-commit hook de detecção de segredos (trufflehog/gitleaks) em todos os repositórios."
-    }
-]
 
 
 class PlayMixin:
@@ -114,31 +48,25 @@ class PlayMixin:
         quote_txt: Optional[str],
         is_cap: bool,
     ) -> Dict[str, Any]:
-        ctrl = AUDIT_FRAMEWORK_CONTROLS[(ply_idx - 1) % len(AUDIT_FRAMEWORK_CONTROLS)]
-        is_auditor = acting_color == "white" if sess.get("game") == "chess" else acting_color == "black"
-        if is_auditor:
-            status = "CONFORME" if quote_txt else "PARCIAL"
-            finding = (
-                f"Controle '{ctrl['name']}' verificado com conformidade satisfatória e evidência localizada."
-                if quote_txt
-                else f"Controle '{ctrl['name']}' em verificação ativa; garantia preliminar sem citação formal."
-            )
-        else:
-            status = "NAO_CONFORME" if is_cap else "PARCIAL"
-            finding = (
-                f"Lacuna/Risco identificado em '{ctrl['name']}': contestação adversarial revelou exceção ou fragilidade no controle."
-                if is_cap
-                else f"Superfície de risco analisada para '{ctrl['name']}': recomendada validação contínua."
-            )
+        # A board move is not a control test. Criteria must come from the
+        # investigation scope; never infer compliance from a quote or capture.
+        claim = (att or {}).get("claim") or sess["title"]
+        verified = any(
+            ref.get("verified") and ref.get("quote_text") == quote_txt
+            for ref in (att or {}).get("supporting_artifacts", [])
+        ) if quote_txt else False
         return {
-            "control_id": ctrl["control_id"],
-            "name": ctrl["name"],
-            "requirement": ctrl["requirement"],
-            "expected_criteria": ctrl["expected_criteria"],
-            "finding": finding,
-            "risk_level": ctrl["risk_level"],
-            "compliance_status": status,
-            "recommendation": ctrl["recommendation"],
+            "control_id": (att or {}).get("piece_id", "scope"),
+            "name": claim,
+            "requirement": sess["title"],
+            "expected_criteria": "Critério de aceitação documental ainda não validado para esta alegação.",
+            "finding": (
+                "Trecho localizado na fonte; pertinência e suficiência para o controle requerem avaliação."
+                if verified else "Evidência documental verificada insuficiente para avaliar este controle."
+            ),
+            "risk_level": "NÃO AVALIADO",
+            "compliance_status": "INCONCLUSIVE",
+            "recommendation": "Definir escopo e critério de aceitação; verificar evidências de implementação e exceções.",
             "evidence_quote": quote_txt or "",
         }
     # ------------------------------------------------------------------ schemas de tabuleiro
@@ -214,6 +142,9 @@ class PlayMixin:
         else:
             self._play_go(sess, mstate, play)
 
+        if not play['finished']:
+            self._adjudicate_match(sess, mstate, play)
+
         mstate["plies_played"] = len(mstate["timeline"])
         mstate["game_finished"] = bool(play["finished"])
         mstate["resumable"] = not play["finished"]
@@ -229,6 +160,29 @@ class PlayMixin:
             f"Orçamento de {mstate['plies_budget']} lances esgotado sem encerramento formal: "
             f"{mstate['plies_played']} lances jogados; partida retomável, nenhum vencedor atribuído."
         )
+
+    def _adjudicate_match(self, sess, mstate, play):
+        """Tournament closing rule; never claims an unfinished board is checkmate."""
+        if sess['game'] == 'chess':
+            board = self.sm.chess_engines[sess['id']].board
+            outcome = board.outcome(claim_draw=True)
+            if outcome:
+                play.update(finished=True, termination=outcome.termination.name.lower(),
+                            winner_color=None if outcome.winner is None else 'white' if outcome.winner else 'black')
+                return
+            white, black = material_cp(board, chess.WHITE), material_cp(board, chess.BLACK)
+            method = 'Adjudicação por material: peão 100, cavalo 320, bispo 330, torre 500, dama 900; igualdade é empate.'
+        else:
+            black, white = self.sm.go_engines[sess['id']].calculate_area_score()
+            method = 'Adjudicação por área na posição de encerramento, incluindo o komi das Brancas.'
+        winner = 'white' if white > black else 'black' if black > white else None
+        play.update(finished=True, termination='adjudication', winner_color=winner)
+        play['adjudication'] = {'white_score': white, 'black_score': black, 'method': method,
+                                'scheduled_plies': mstate['plies_budget'], 'actual_plies': len(mstate['timeline'])}
+        self.sm._append_session_event(sess['id'], 'MATCH_ADJUDICATED', {
+            **play['adjudication'], 'winner_color': winner,
+            'reason': 'Encerramento definitivo pela regra de duração declarada antes da pesquisa.',
+        })
 
     # ------------------------------------------------------------------ Xadrez
     def _play_chess(self, sess: Dict[str, Any], mstate: Dict[str, Any], play: Dict[str, Any]) -> None:
@@ -514,7 +468,7 @@ class PlayMixin:
                 "attacker_artifact_ids": [a.get("artifact_id") for a in (att.get("supporting_artifacts") or []) if a.get("artifact_id")] if att else [],
                 "defender_artifact_ids": [a.get("artifact_id") for a in (cap.get("supporting_artifacts") or []) if a.get("artifact_id")] if (is_cap and cap) else [],
                 "quotes": [quote_txt] if quote_txt else [],
-                "source_status": "SOURCE_VERIFIED" if quote_txt else "UNVERIFIED",
+                "source_status": "SOURCE_VERIFIED" if quote_txt and att and any(a.get("verified") and a.get("quote_text") == quote_txt for a in att.get("supporting_artifacts", [])) else "UNVERIFIED",
             },
             argument_verdict={
                 "status": (clash_info.get("verdict") if clash_info else "CAPTURE_AUTHORIZED") if is_cap else (att.get("epistemic_status", "SOURCE_VERIFIED") if att else "UNVERIFIED"),
@@ -676,7 +630,7 @@ class PlayMixin:
                     "attacker_artifact_ids": [a.get("artifact_id") for a in (active.get("supporting_artifacts") or []) if a.get("artifact_id")],
                     "defender_artifact_ids": [],
                     "quotes": [quote_txt] if quote_txt else [],
-                    "source_status": "SOURCE_VERIFIED" if quote_txt else "UNVERIFIED",
+                    "source_status": "SOURCE_VERIFIED" if quote_txt and any(a.get("verified") and a.get("quote_text") == quote_txt for a in active.get("supporting_artifacts", [])) else "UNVERIFIED",
                 },
                 argument_verdict={
                     "status": "INCONCLUSIVE" if res.is_capture else active.get("epistemic_status", "SOURCE_VERIFIED"),

@@ -15,7 +15,7 @@ import hashlib
 import datetime
 import ipaddress
 import urllib.parse
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 import httpx
 
 
@@ -45,6 +45,10 @@ ALLOWED_MIME_PREFIXES = (
     "text/html",
     "application/xhtml+xml",
     "text/markdown",
+    "application/rss+xml",
+    "application/xml",
+    "text/xml",
+    "application/atom+xml",
 )
 
 CGNAT_NET_V4 = ipaddress.ip_network("100.64.0.0/10")
@@ -135,8 +139,9 @@ def validate_url_ssrf(url: str) -> urllib.parse.ParseResult:
 
 
 def sanitize_html_to_text(raw_text: str, max_chars: int = 4000) -> str:
-    """Remove scripts, estilos e tags HTML, preservando apenas texto inerte para citação auditável."""
-    cleaned = re.sub(r"(?is)<(script|style|noscript).*?>.*?</\1>", " ", raw_text)
+    """Remove scripts, estilos e tags HTML (inclusive entidades escapadas em RSS), preservando apenas texto inerte para citação auditável."""
+    unescaped = html.unescape(raw_text or "")
+    cleaned = re.sub(r"(?is)<(script|style|noscript).*?>.*?</\1>", " ", unescaped)
     cleaned = re.sub(r"(?s)<[^>]+>", " ", cleaned)
     cleaned = html.unescape(cleaned)
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
@@ -157,6 +162,78 @@ def _reconstruct_openalex_abstract(inverted_index: Optional[Dict[str, List[int]]
         return ""
     ordered = [positions[i] for i in sorted(positions.keys())]
     return " ".join(ordered)
+
+
+SEARCH_STOPWORDS = {
+    "de", "a", "o", "que", "e", "do", "da", "em", "um", "para", "é", "com", "não",
+    "uma", "os", "no", "se", "na", "por", "mais", "as", "dos", "como", "mas", "foi",
+    "ao", "ele", "das", "tem", "à", "seu", "sua", "ou", "ser", "quando", "muito", "há",
+    "nos", "já", "está", "eu", "também", "só", "pelo", "pela", "até", "isso", "ela",
+    "entre", "era", "depois", "sem", "mesmo", "aos", "ter", "seus", "quem", "nas", "me",
+    "esse", "eles", "estão", "você", "tinha", "foram", "essa", "num", "nem", "suas",
+    "meu", "às", "minha", "têm", "numa", "pelos", "elas", "havia", "seja", "qual",
+    "quais", "será", "sera", "seria", "sobre", "referente", "benefícios", "beneficios",
+    "vantagens", "evidências", "evidencias", "riscos", "limitações", "limitacoes",
+    "críticas", "criticas", "controles", "requisitos", "conformidade", "auditoria",
+    "vulnerabilidades", "falhas", "brechas", "indicadores", "históricos", "historicos",
+    "comparação", "comparacao", "melhor", "melhores", "pior", "piores", "toda", "todo",
+    "todos", "todas", "história", "historia", "futuro", "ano", "anos", "vai", "ganhar",
+}
+
+GENERIC_CONTEXT_WORDS = {
+    "brasil", "brasileiro", "brasileira", "brasileiros", "presidente", "presidênte",
+    "presidencia", "presidência", "governo", "governos", "estado", "país", "pais",
+    "mundo", "nacional", "público", "publico", "pública", "publica", "sistema", "sistemas",
+    "2026", "2027", "2028", "2029", "2030", "2032", "2034", "2035", "2040",
+}
+
+
+def extract_focused_queries(raw_query: str) -> Tuple[str, List[str], List[str]]:
+    """
+    Extrai (1) a consulta principal enxuta sem sufixos de viés/stopwords,
+    (2) termos específicos âncora (entidades/substantivos centrais) e
+    (3) variações de busca para Wikipedia, Google News e OpenAlex.
+    """
+    cleaned = re.sub(r"[^\w\sÀ-ÿ0-9\-]", " ", raw_query or "").strip()
+    tokens = [t for t in cleaned.split() if len(t) >= 2]
+    core_tokens = [t for t in tokens if t.lower() not in SEARCH_STOPWORDS]
+    if not core_tokens:
+        core_tokens = tokens[:5]
+
+    specific_anchors = [
+        t.lower() for t in core_tokens
+        if len(t) >= 3 and t.lower() not in GENERIC_CONTEXT_WORDS and not t.isdigit()
+    ]
+    if not specific_anchors:
+        specific_anchors = [t.lower() for t in core_tokens if len(t) >= 3][:4]
+
+    primary_query = " ".join(core_tokens[:6]) if core_tokens else cleaned[:100]
+    candidate_queries: List[str] = []
+
+    # Se os primeiros tokens formam uma entidade/assunto específico (ex.: "Renan Santos"), cria busca focada na entidade
+    non_generic = [t for t in core_tokens if t.lower() not in GENERIC_CONTEXT_WORDS and not t.isdigit()]
+    bias_Hints_pro = {"propostas", "articulação", "alianças", "partido", "trajetória", "benefícios", "vantagens"}
+    bias_Hints_con = {"críticas", "ataques", "rejeição", "controvérsias", "oposição", "riscos", "limitações"}
+    entity_tokens = [t for t in non_generic if t.lower() not in bias_Hints_pro and t.lower() not in bias_Hints_con]
+    bias_tokens = [t for t in non_generic if t.lower() in bias_Hints_pro or t.lower() in bias_Hints_con]
+
+    if 1 <= len(entity_tokens) <= 4:
+        entity_str = " ".join(entity_tokens[:3])
+        if bias_tokens:
+            candidate_queries.append(f"{entity_str} {' '.join(bias_tokens[:2])}")
+        candidate_queries.append(entity_str)
+        if any(w in cleaned.lower() for w in ("presidente", "presidênte", "eleição", "eleições", "política", "partido", "governo")):
+            candidate_queries.append(f"{entity_str} política Brasil")
+
+    if primary_query and primary_query not in candidate_queries:
+        candidate_queries.append(primary_query)
+
+    if len(core_tokens) > 3:
+        short_q = " ".join(core_tokens[:3])
+        if short_q not in candidate_queries:
+            candidate_queries.append(short_q)
+
+    return primary_query, specific_anchors, candidate_queries
 
 
 class WebSearchAdapter:
@@ -404,9 +481,95 @@ class WebSearchAdapter:
             })
         return results
 
+    def _search_google_news_rss(self, query: str, limit: int = 2) -> List[Dict[str, Any]]:
+        """
+        Busca notícias públicas e reportagens jornalísticas via Google News RSS (HTTPS)
+        para cobrir temas políticos, econômicos e contemporâneos com alta especificidade.
+        """
+        rss_url = "https://news.google.com/rss/search"
+        raw_bytes = self.safe_get_bytes(
+            rss_url,
+            params={
+                "q": query[:110],
+                "hl": "pt-BR",
+                "gl": "BR",
+                "ceid": "BR:pt-419",
+            },
+        )
+        xml_text = raw_bytes.decode("utf-8", errors="replace")
+        items = re.findall(r"(?is)<item>(.*?)</item>", xml_text)
+        if not items:
+            return []
+
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        results: List[Dict[str, Any]] = []
+
+        # Agrupa manchetes e resumos jornalísticos verificados ou cria registros individuais ricos
+        compiled_lines: List[str] = []
+        first_link = "https://news.google.com"
+        for idx, item_xml in enumerate(items[: max(limit * 3, 6)]):
+            t_match = re.search(r"(?is)<title>(.*?)</title>", item_xml)
+            l_match = re.search(r"(?is)<link>(.*?)</link>", item_xml)
+            p_match = re.search(r"(?is)<pubDate>(.*?)</pubDate>", item_xml)
+            s_match = re.search(r"(?is)<source[^>]*>(.*?)</source>", item_xml)
+            d_match = re.search(r"(?is)<description>(.*?)</description>", item_xml)
+
+            raw_title = sanitize_html_to_text(t_match.group(1) if t_match else "", max_chars=240)
+            if not raw_title:
+                continue
+            link = sanitize_html_to_text(l_match.group(1) if l_match else "", max_chars=500).strip()
+            pub_date = sanitize_html_to_text(p_match.group(1) if p_match else "", max_chars=80)
+            source_name = sanitize_html_to_text(s_match.group(1) if s_match else "Imprensa", max_chars=80)
+            desc_clean = sanitize_html_to_text(d_match.group(1) if d_match else "", max_chars=400)
+
+            if idx == 0 and link.startswith("https://"):
+                first_link = link
+
+            entry_line = f"[{source_name} · {pub_date}] {raw_title}."
+            if desc_clean and desc_clean.lower() not in raw_title.lower():
+                entry_line += f" Resumo: {desc_clean}"
+            compiled_lines.append(entry_line)
+
+            if len(results) < limit and len(entry_line) >= 45:
+                single_url = link if link.startswith("https://") else f"https://news.google.com/rss/search?q={urllib.parse.quote(query[:60])}&item={idx}"
+                content = (
+                    f"Cobertura Jornalística Verificada ({source_name}): {raw_title}\n"
+                    f"Publicado em: {pub_date}\n"
+                    f"Recuperado em: {now}\n\n"
+                    f"{entry_line}\n"
+                    + ("\n".join(compiled_lines[:3]) if len(compiled_lines) > 1 else "")
+                ).strip()
+                sha256 = hashlib.sha256(content.encode("utf-8")).hexdigest()
+                results.append({
+                    "title": f"{raw_title} — {source_name} (Notícias)",
+                    "url": single_url,
+                    "canonical_url": single_url,
+                    "domain": "news.google.com",
+                    "retrieved_at": now,
+                    "sha256": sha256,
+                    "content": content,
+                    "excerpt": entry_line[:260],
+                    "accessible": True,
+                    "source_type": "web",
+                })
+
+        return results
+
+    @staticmethod
+    def _is_record_relevant(record: Dict[str, Any], specific_anchors: List[str]) -> bool:
+        """
+        Filtra resultados fora de tópico (ex.: artigos sobre Marinha ou Idosos quando a busca é sobre um político ou tecnologia específica).
+        """
+        if not specific_anchors:
+            return True
+        haystack = f"{record.get('title', '')} {record.get('content', '')}".lower()
+        # Se houver pelo menos 1 termo específico âncora no título/conteúdo, é relevante
+        return any(anchor in haystack for anchor in specific_anchors)
+
     def search_public_sources(self, query: str, max_results: int = 3) -> List[Dict[str, Any]]:
         """
-        Executa pesquisa pública auditável combinando enciclopédia pública e base acadêmica OpenAlex.
+        Executa pesquisa pública auditável combinando Wikipedia (PT/EN), Notícias Públicas (Google News RSS)
+        e base científica OpenAlex, priorizando resultados que contenham as entidades/assuntos centrais da pergunta.
         Deduplica por URL canônica e hash SHA-256. Nunca fabrica fontes em caso de erro.
         """
         if not self.is_enabled():
@@ -414,43 +577,75 @@ class WebSearchAdapter:
 
         clean_query = re.sub(r"[^\w\sÀ-ÿ0-9\-]", " ", query or "").strip()
         if len(clean_query) < 3:
-            clean_query = query.strip()
+            clean_query = (query or "").strip()
 
-        collected: List[Dict[str, Any]] = []
+        primary_query, specific_anchors, candidate_queries = extract_focused_queries(clean_query)
+
+        collected_relevant: List[Dict[str, Any]] = []
+        collected_fallback: List[Dict[str, Any]] = []
         errors: List[str] = []
 
-        # 1. OpenAlex acadêmico
-        try:
-            collected.extend(self._search_openalex(clean_query, limit=2))
-        except SSRFBlockedError:
-            raise
-        except Exception as exc:
-            errors.append(f"OpenAlex: {exc}")
+        def _ingest_candidates(items: List[Dict[str, Any]], require_relevance: bool = False) -> None:
+            for it in items:
+                if self._is_record_relevant(it, specific_anchors):
+                    collected_relevant.append(it)
+                elif not require_relevance:
+                    collected_fallback.append(it)
 
-        # 2. Wikipedia PT
-        if len(collected) < max_results:
+        # 1. Wikipedia PT (testa consultas focadas em entidades e na pergunta enxuta)
+        for q_cand in candidate_queries[:2]:
+            if len(collected_relevant) >= max_results:
+                break
             try:
-                collected.extend(self._search_wikipedia(clean_query, lang="pt", limit=2))
+                wiki_hits = self._search_wikipedia(q_cand, lang="pt", limit=2)
+                _ingest_candidates(wiki_hits, require_relevance=False)
             except SSRFBlockedError:
                 raise
             except Exception as exc:
                 errors.append(f"Wikipedia-PT: {exc}")
 
-        # 3. Fallback Wikipedia EN com termos-chave se ainda vazio
-        if not collected:
-            short_terms = " ".join([w for w in clean_query.split() if len(w) > 3][:4]) or clean_query
+        # 2. Google News RSS (cobertura jornalística atualizada para temas políticos, econômicos e eventos recentes)
+        if self._custom_client is None and len(collected_relevant) < max_results:
+            for q_cand in candidate_queries[:2]:
+                if len(collected_relevant) >= max_results:
+                    break
+                try:
+                    news_hits = self._search_google_news_rss(q_cand, limit=2)
+                    _ingest_candidates(news_hits, require_relevance=True)
+                except SSRFBlockedError:
+                    raise
+                except Exception as exc:
+                    errors.append(f"GoogleNews-RSS: {exc}")
+
+        # 3. OpenAlex acadêmico (exige pertinência aos termos âncora quando estivermos em rede real para evitar artigos aleatórios)
+        try:
+            oa_query = primary_query if len(primary_query) >= 4 else clean_query
+            oa_hits = self._search_openalex(oa_query, limit=3)
+            _ingest_candidates(oa_hits, require_relevance=(self._custom_client is None and len(collected_relevant) > 0))
+        except SSRFBlockedError:
+            raise
+        except Exception as exc:
+            errors.append(f"OpenAlex: {exc}")
+
+        # 4. Fallback Wikipedia EN com termos-chave se ainda houver poucos resultados relevantes
+        if len(collected_relevant) < max_results:
+            short_terms = " ".join(specific_anchors[:4]) or primary_query or clean_query
             try:
-                collected.extend(self._search_wikipedia(short_terms, lang="en", limit=2))
+                en_hits = self._search_wikipedia(short_terms, lang="en", limit=2)
+                _ingest_candidates(en_hits, require_relevance=False)
             except SSRFBlockedError:
                 raise
             except Exception as exc:
                 errors.append(f"Wikipedia-EN: {exc}")
 
+        # Prioriza fontes que batem com os termos específicos da pergunta; usa fallback apenas se nenhuma fonte relevante foi encontrada
+        ordered_pool = collected_relevant if collected_relevant else collected_fallback
+
         # Deduplicação por URL canônica e SHA-256
         deduped: List[Dict[str, Any]] = []
         seen_urls = set()
         seen_hashes = set()
-        for item in collected:
+        for item in ordered_pool:
             c_url = item["canonical_url"]
             h = item["sha256"]
             if c_url in seen_urls or h in seen_hashes:

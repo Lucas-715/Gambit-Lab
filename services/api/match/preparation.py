@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Tuple
 from services.api.agents.gemini_adapter import is_future_projection_topic
 from services.api.agents.web_search_adapter import WebSearchUnavailableError
 from services.api.models.schemas import PieceArtifactRefSchema, PieceDossierSchema
+from services.api.match.decision import comparison_plan, historical_comparison
 
 
 class VaultIsolationError(RuntimeError):
@@ -18,6 +19,11 @@ class VaultIsolationError(RuntimeError):
 class PreparationMixin:
     def _stage_1_build_sides(self, sess: Dict[str, Any], mstate: Dict[str, Any]) -> str:
         topic = sess["title"]
+        mstate["comparison_plan"] = comparison_plan(topic, sess.get("mode"))
+        self.sm._append_session_event(sess['id'], 'MATCH_RULES_DECLARED', {
+            'comparison_plan': mstate['comparison_plan'], 'scheduled_plies': mstate['plies_budget'],
+            'closing_rule': 'Fim natural ou adjudicação: material no xadrez; área com komi no Go. Igualdade resulta em empate. Não determina verdade factual.',
+        })
         pro_c = mstate["pro_color"]
         contra_c = mstate["contra_color"]
         # O orçamento de lances da partida (plies_budget) substitui o teto de 12 etapas da investigação manual.
@@ -52,12 +58,20 @@ class PreparationMixin:
                     if side == "pro"
                     else f"{topic} riscos vulnerabilidades falhas brechas"
                 )
+            elif self._detect_topic_domain(topic) == "political_electoral":
+                query_focus = (
+                    f"{topic} propostas articulação alianças partido"
+                    if side == "pro"
+                    else f"{topic} críticas ataques rejeição controvérsias oposição"
+                )
             else:
                 query_focus = (
                     f"{topic} benefícios vantagens evidências"
                     if side == "pro"
                     else f"{topic} riscos limitações críticas"
                 )
+            if historical_comparison(topic):
+                query_focus = f"{topic} indicadores históricos PIB pobreza desigualdade instituições comparação governos"
             existing_urls = {
                 a.get("canonical_url") or a.get("url")
                 for a in sess["artifacts"]
@@ -125,6 +139,7 @@ class PreparationMixin:
             artifacts=side_artifacts,
             budget=sess["budget"],
             force_demo=force_demo,
+            comparison_plan=mstate.get('comparison_plan'),
         )
         if raw_side.get("provider_usage"):
             sess["provider_usage"] = raw_side["provider_usage"]
@@ -141,9 +156,24 @@ class PreparationMixin:
             f"{len(side_artifacts)} fonte(s) acessível(is) no cofre isolado ({web_added} nova(s) da web)."
         )
 
+    @staticmethod
+    def _is_garbage_or_url_quote(quote: str) -> bool:
+        """Rejeita fragmentos de URL, tokens base64 longos ou linhas de metadados como citação literal."""
+        q = (quote or "").strip()
+        if not q:
+            return True
+        q_low = q.lower()
+        if any(p in q_low for p in ("http://", "https://", "com/rss/", "news.google.com", "url canônica:", "recuperado em:", "publicado em:")):
+            return True
+        if re.search(r"\S{42,}", q):
+            return True
+        return False
+
     def _is_quote_relevant_to_topic(self, topic: str, quote: str, art_title: str) -> bool:
         """Verifica se uma citação ou título possui pertinência temática com a pergunta investigada."""
         if not quote and not art_title:
+            return False
+        if quote and self._is_garbage_or_url_quote(quote):
             return False
         stop_words = {
             "de", "a", "o", "que", "e", "do", "da", "em", "um", "para", "é", "com", "não",
@@ -153,14 +183,24 @@ class PreparationMixin:
             "entre", "era", "depois", "sem", "mesmo", "aos", "ter", "seus", "quem", "nas", "me",
             "esse", "eles", "estão", "você", "tinha", "foram", "essa", "num", "nem", "suas",
             "meu", "às", "minha", "têm", "numa", "pelos", "elas", "havia", "seja", "qual",
-            "será", "seria", "sobre", "referente"
+            "quais", "será", "sera", "seria", "sobre", "referente", "melhor", "melhores",
+            "pior", "piores", "toda", "todo", "todos", "todas", "história", "historia",
+            "ano", "anos", "vai", "ganhar"
+        }
+        generic_words = {
+            "brasil", "brasileiro", "brasileira", "brasileiros", "presidente", "presidênte",
+            "presidencia", "presidência", "governo", "governos", "estado", "país", "pais",
+            "mundo", "nacional", "público", "publico", "pública", "publica", "sistema", "sistemas",
+            "2026", "2027", "2028", "2029", "2030", "2032", "2034", "2035", "2040",
         }
         words = [re.sub(r'[^\w]', '', w.lower()) for w in topic.split() if len(w) >= 3]
         substantive = [w for w in words if w and w not in stop_words]
         if not substantive:
             return True
+        specific_words = [w for w in substantive if w not in generic_words and not w.isdigit()]
+        target_words = specific_words if specific_words else substantive
         evidence_text = f"{art_title} {quote}".lower()
-        return any(w in evidence_text for w in substantive) or ("mfa" in evidence_text and "multifator" in topic.lower())
+        return any(w in evidence_text for w in target_words) or ("mfa" in evidence_text and "multifator" in topic.lower())
 
     def _build_artifact_ref(
         self,
@@ -192,22 +232,34 @@ class PreparationMixin:
                     verified = True
                     break
 
-        if not matched_art and accessible_arts and not future_flag:
+        if not matched_art and accessible_arts:
             for cand in accessible_arts:
                 body = (cand.get("content") or cand.get("content_preview") or "").strip()
-                sents = [s.strip() for s in body.replace("\n", ". ").split(".") if len(s.strip()) >= 22]
-                for s in sents[:3]:
-                    test_q = s[:160]
-                    ok, _ = self.sm.vault.find_verified_quote_offset(cand["id"], test_q)
-                    if ok and self._is_quote_relevant_to_topic(topic, test_q, cand.get("name", "")):
-                        matched_art = cand
-                        final_quote = test_q
-                        verified = True
-                        break
+                clean_lines = [
+                    ln.strip() for ln in body.splitlines()
+                    if ln.strip() and not ln.strip().lower().startswith(
+                        ("fonte web pública:", "url canônica:", "recuperado em:", "publicado em:", "citações acadêmicas:")
+                    )
+                ]
+                clean_body = "\n".join(clean_lines)
+                sents = [
+                    s.strip() for s in re.split(r"[\n\.]+", clean_body)
+                    if len(s.strip()) >= 28 and not self._is_garbage_or_url_quote(s.strip())
+                ]
+                if sents:
+                    rotated_sents = sents[piece_idx % len(sents):] + sents[:piece_idx % len(sents)]
+                    for s in rotated_sents[:6]:
+                        test_q = s[:160]
+                        ok, _ = self.sm.vault.find_verified_quote_offset(cand["id"], test_q)
+                        if ok and self._is_quote_relevant_to_topic(topic, test_q, cand.get("name", "")):
+                            matched_art = cand
+                            final_quote = test_q
+                            verified = True
+                            break
                 if verified:
                     break
-            # Se não encontrou citação comprovadamente relevante, ainda assim vincula o documento do cofre ao RBAC da peça, mas com verified=False (sem autorização indevida de captura)
-            if not matched_art and accessible_arts:
+            # Se não encontrou citação comprovadamente relevante, ainda assim vincula o documento do cofre ao RBAC da peça (em tópicos não-prospectivos), mas com verified=False
+            if not matched_art and accessible_arts and not future_flag:
                 matched_art = accessible_arts[0]
                 verified = False
 
@@ -240,6 +292,8 @@ class PreparationMixin:
 
     def _detect_topic_domain(self, topic: str) -> str:
         """Detecta o domínio temático principal da investigação."""
+        if historical_comparison(topic):
+            return "historical_comparison"
         t_lower = topic.lower()
         political_terms = [
             "presidente", "eleição", "eleitoral", "candidato", "candidatura",
@@ -273,6 +327,12 @@ class PreparationMixin:
         """Retorna dimensão analítica específica baseada no domínio, tipo de peça, casa e lado (Pró/Contra)."""
         is_pro = (side == "pro")
         file_letter = sq[0].lower() if len(sq) >= 2 else "x"
+
+        if domain == 'historical_comparison':
+            dimensions = comparison_plan(topic, 'debate')['criteria']
+            index = (ord(file_letter) - ord('a')) % len(dimensions)
+            dimension = dimensions[index]['label']
+            return f"{dimension}: comparar governos, períodos e indicadores equivalentes; {'sustentação' if is_pro else 'contraprovas'} da tese, com controle de contexto histórico"
 
         if domain == "political_electoral":
             if ptype == "king":
@@ -405,6 +465,9 @@ class PreparationMixin:
         dimension = self._get_domain_role_dimension(domain, ptype, sq, side, topic)
 
         has_verified_quote = bool(refs and refs[0].quote_text and refs[0].verified)
+        raw_claim = (r_entry.get("claim") or "").strip()
+        if raw_claim.startswith("[DEMO_OFFLINE]"):
+            raw_claim = ""
 
         if ptype == "king":
             base_king = mstate["pro_thesis"] if is_pro else mstate["contra_thesis"]
@@ -415,8 +478,15 @@ class PreparationMixin:
         if has_verified_quote:
             art_title = refs[0].title or "Documento verificado"
             quote_text = refs[0].quote_text or ""
-            return f"{dimension}: evidência documental comprobatória em '{art_title}' [Fonte: '{quote_text[:90]}...']"
-        
+            if raw_claim and raw_claim.lower() not in dimension.lower():
+                return f"{dimension} — {raw_claim} [Fonte: '{art_title}' · \"{quote_text[:95]}...\"]"
+            return f"{dimension}: evidência documental comprobatória em '{art_title}' [Fonte: '{quote_text[:95]}...']"
+
+        # Se o modelo gerou uma análise específica para o papel e o tema é prospectivo/hipotético, combina com a dimensão da peça
+        if raw_claim and ptype in ("queen", "rook", "bishop", "knight") and sq in ("d1", "d8", "a1", "a8", "c1", "c8", "b1", "b8"):
+            prefix = "Hipótese a investigar" if is_pro else "Hipótese adversa a investigar"
+            return f"{prefix} ({dimension}): {raw_claim} (aguardando fundamentação documental)."
+
         # Sem evidência comprovada: rotula explicitamente como hipótese investigável aberta
         prefix = "Hipótese a investigar" if is_pro else "Hipótese adversa a investigar"
         return f"{prefix}: {dimension} referente a '{topic}', aguardando fundamentação documental."
@@ -488,22 +558,31 @@ class PreparationMixin:
                     ("black", "contra", "pawn", "♟", f"Peão Preto {file_ch}7 (Fato Limitante Contra)", "Evidências pontuais, fatos e dados de suporte", f"{file_ch}7")
                 )
 
+            used_quotes_by_side: Dict[str, set] = {"pro": set(), "contra": set()}
             for idx, (color, side, ptype, sym, label, role_desc, sq) in enumerate(chess_roster):
                 raw_roles = pro_raw.get("roles", {}) if side == "pro" else contra_raw.get("roles", {})
                 side_arts = pro_arts if side == "pro" else contra_arts
                 r_entry = raw_roles.get(ptype) or {}
-                
-                # Diversifica artefato usado entre peças do mesmo tipo quando há múltiplas fontes no cofre
+
+                # Diversifica artefato e trecho usado entre peças do mesmo tipo (evita repetir a mesma citação em 8 peões)
                 rotated_arts = side_arts[idx % len(side_arts):] + side_arts[:idx % len(side_arts)] if side_arts else []
+                cand_quote = (r_entry.get("quote_text") or "").strip()
+                cand_art_id = r_entry.get("artifact_id", "")
+                if cand_quote and cand_quote in used_quotes_by_side[side]:
+                    cand_quote = ""
+                    cand_art_id = ""
+
                 refs, is_ver, base_conf = self._build_artifact_ref(
                     session_id=session_id,
                     owner_color=color,
-                    raw_art_id=r_entry.get("artifact_id", ""),
-                    raw_quote=r_entry.get("quote_text", ""),
+                    raw_art_id=cand_art_id,
+                    raw_quote=cand_quote,
                     accessible_arts=rotated_arts,
                     topic=topic,
                     piece_idx=idx,
                 )
+                if is_ver and refs and refs[0].quote_text:
+                    used_quotes_by_side[side].add(refs[0].quote_text)
 
                 # Gera subtese heterogênea única por peça (v2.5)
                 claim_txt = self._generate_heterogeneous_subthesis(

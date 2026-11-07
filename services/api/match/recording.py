@@ -83,14 +83,14 @@ class RecordingMixin:
                 claim_identity_score=1.0,
                 comparability_score=0.92 if verdict == "SUPPORTED" else 0.7,
                 provenance_score=1.0 if verdict == "SUPPORTED" else 0.45,
-                excerpt_verification=(verdict == "SUPPORTED"),
+                excerpt_verification=bool(citations),
                 support_or_refutation_match=(verdict == "SUPPORTED"),
                 uncertainty_recognized=True,
                 role_conflict_free=True,
             ),
             rationale=confrontation_note or (
                 "Citação literal verificada no cofre isolado da peça."
-                if verdict == "SUPPORTED"
+                if citations
                 else "Subtese registrada sem citação literal decisiva; mantida como hipótese."
             ),
         )
